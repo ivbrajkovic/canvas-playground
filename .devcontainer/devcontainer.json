@@ -32,7 +32,9 @@
         "dtoplak.vscode-glsllint",
         "raczzalan.webgl-glsl-editor",
         "slevesque.shader",
-        "mateuszmigas.webgl-shader-viewer"
+        "mateuszmigas.webgl-shader-viewer",
+        "heybourn.headwind",
+        "bradlc.vscode-tailwindcss"
       ]
     }
   },
