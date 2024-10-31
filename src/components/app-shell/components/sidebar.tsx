@@ -2,16 +2,16 @@ import * as React from 'react';
 
 import { SideBarItems } from '@/components/app-shell/components/sidebar-items';
 import {
-  Sidebar,
+  Sidebar as SidebarUI,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { links } from '@/components/app-shell/links';
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function Sidebar({ ...props }: React.ComponentProps<typeof SidebarUI>) {
   return (
-    <Sidebar
+    <SidebarUI
       // collapsible='icon'
       {...props}
     >
@@ -22,6 +22,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SideBarItems data={links} />
       </SidebarContent>
       <SidebarRail />
-    </Sidebar>
+    </SidebarUI>
   );
 }

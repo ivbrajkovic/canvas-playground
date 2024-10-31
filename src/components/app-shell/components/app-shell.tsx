@@ -6,7 +6,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/app-shell/components/app-sidebar';
+import { Sidebar } from '@/components/app-shell/components/sidebar';
 import { HeaderTitle } from '@/components/app-shell/components/header-title';
 
 type AppShellProps = PropsWithChildren;
@@ -14,7 +14,7 @@ type AppShellProps = PropsWithChildren;
 export const AppShell = (props: AppShellProps) => {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <Sidebar />
       <SidebarInset>
         <header className='sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4'>
           <SidebarTrigger className='-ml-1' />
@@ -24,7 +24,7 @@ export const AppShell = (props: AppShellProps) => {
           />
           <HeaderTitle />
         </header>
-        <div className='flex flex-1 flex-col gap-4 p-4'>{props.children}</div>
+        <div className='flex-1 relative'>{props.children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

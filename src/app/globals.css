@@ -86,3 +86,7 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+#canvas {
+  @apply bg-red-500 absolute top-0 left-0 w-full h-full;
+}

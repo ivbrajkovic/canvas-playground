@@ -6,7 +6,7 @@ export const links: SidebarData[] = [
     projects: [
       { title: 'Particles', url: '/particles' },
       { title: 'Particles New', url: '/particles-new' },
-      { title: 'Family', url: '/family' },
+      { title: 'Bouncing Balls', url: '/bouncing-balls' },
     ],
   },
   {
