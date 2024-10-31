@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:22.11.0
 
 RUN apt update && apt install -y sudo
 

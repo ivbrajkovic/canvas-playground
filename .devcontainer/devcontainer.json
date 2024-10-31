@@ -51,7 +51,7 @@
   // Add the global pnpm store and pnpm home as a volume
   "mounts": [
     "source=global-pnpm-store,target=${containerWorkspaceFolder}/.pnpm-store,type=volume",
-    "target=/home/node/.pnpm,type=volume"
+    "source=${localWorkspaceFolderBasename}-pnpm-home,target=/home/node/.pnpm,type=volume"
   ],
 
   // Set the pnpm environment variables
@@ -64,5 +64,6 @@
   "postCreateCommand": "sudo chown -R node:node .pnpm-store && pnpm config set store-dir .pnpm-store && pnpm install",
 
   // Set container name
-  "runArgs": ["--name", "canvas-playground", "-p", "3000:3000"]
+  // "runArgs": ["--name", "canvas-playground", "-p", "3000:3000"]
+  "runArgs": ["--name", "canvas-playground"]
 }
