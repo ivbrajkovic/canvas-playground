@@ -1,49 +1,61 @@
 import debounce from 'lodash/fp/debounce';
 
-export class Canvas {
-  private _canvas: HTMLCanvasElement;
-  private _context: CanvasRenderingContext2D;
+export class Canvas2D {
+  private _canvas: HTMLCanvasElement | null = null;
+  private _context: CanvasRenderingContext2D | null = null;
 
   resizeDebounced: () => void;
+  onResize?: () => void;
+
+  get canvas() {
+    if (!this._canvas) {
+      this._canvas = this.setupCanvas();
+      this.resize();
+      window.addEventListener('resize', this._resizeListener);
+    }
+    return this._canvas;
+  }
 
   get context() {
+    if (!this._context) this._context = this.setupContext();
     return this._context;
   }
 
   get width() {
-    return this._canvas.width;
+    return this.canvas.width;
   }
 
   get height() {
-    return this._canvas.height;
+    return this.canvas.height;
   }
 
   constructor() {
-    const { canvas, context } = this.setupCanvas();
-    this._canvas = canvas;
-    this._context = context;
     this.resizeDebounced = debounce(250, this.resize);
-    this.resize();
   }
 
   private setupCanvas() {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     if (!canvas) throw new Error('Canvas element not found');
-    const context = canvas.getContext('2d');
-    if (!context) throw new Error('Canvas 2D rendering context not found');
-    return { canvas, context };
+    return canvas;
   }
 
-  resize = () => {
-    this._canvas.width = this._canvas.clientWidth;
-    this._canvas.height = this._canvas.clientHeight;
+  private setupContext() {
+    const context = this.canvas.getContext('2d');
+    if (!context) throw new Error('Canvas 2D rendering context not found');
+    return context;
+  }
+
+  private _resizeListener = () => {
+    this.resizeDebounced();
+    this.onResize?.();
   };
 
-  startResizeListener() {
-    window.addEventListener('resize', this.resizeDebounced);
-  }
+  resize = () => {
+    this.canvas.width = this.canvas.clientWidth;
+    this.canvas.height = this.canvas.clientHeight;
+  };
 
-  stopResizeListener() {
-    window.removeEventListener('resize', this.resizeDebounced);
-  }
+  destroy = () => {
+    window.removeEventListener('resize', this._resizeListener);
+  };
 }

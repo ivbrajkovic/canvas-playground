@@ -19,7 +19,6 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { usePathname } from 'next/navigation';
-import { useRenderCount } from '@/hooks/use-render-count';
 
 export type SidebarData = {
   name: string;
@@ -34,8 +33,6 @@ type SidebarItemsProps = {
 };
 
 export function SideBarItems(props: SidebarItemsProps) {
-  useRenderCount('SideBarItems');
-
   const pathname = usePathname();
 
   return (
