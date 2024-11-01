@@ -6,23 +6,19 @@ export class BouncingBall extends Circle {
   }
 
   update(context: CanvasRenderingContext2D) {
-    if (
-      this.x + this.radius > context.canvas.width ||
-      this.x - this.radius < 0
-    ) {
+    const canvas = context.canvas;
+
+    // Bounce off canvas boundaries
+    if (this.x + this.radius > canvas.width || this.x - this.radius < 0)
       this.vx = -this.vx;
-    }
-
-    if (
-      this.y + this.radius > context.canvas.height ||
-      this.y - this.radius < 0
-    ) {
+    if (this.y + this.radius > canvas.height || this.y - this.radius < 0)
       this.vy = -this.vy;
-    }
 
+    // Move ball by velocity
     this.x += this.vx;
     this.y += this.vy;
 
+    // Draw ball on canvas
     this.draw(context);
   }
 }

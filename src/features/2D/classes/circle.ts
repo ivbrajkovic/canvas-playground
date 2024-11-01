@@ -1,4 +1,4 @@
-export class Circle {
+export abstract class Circle {
   constructor(
     public x: number,
     public y: number,
@@ -16,7 +16,5 @@ export class Circle {
     context.closePath();
   }
 
-  update(context: CanvasRenderingContext2D) {
-    this.draw(context);
-  }
+  abstract update(context: CanvasRenderingContext2D): void;
 }
