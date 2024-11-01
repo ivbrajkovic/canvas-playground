@@ -7,6 +7,7 @@ export const links: SidebarData[] = [
       { title: 'Particles', url: '/particles' },
       { title: 'Particles New', url: '/particles-new' },
       { title: 'Bouncing Balls', url: '/bouncing-balls' },
+      { title: 'Circle Outline', url: '/circle-outline' },
     ],
   },
   {
