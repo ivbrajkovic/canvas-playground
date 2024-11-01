@@ -3,7 +3,8 @@ export class AnimationController {
   #animation: FrameRequestCallback | null = null;
 
   #tick = (time: number) => {
-    this.#animation!(time); // We know this is not null
+    if (this.#animation === null) return;
+    this.#animation(time);
     this.#requestId = requestAnimationFrame(this.#tick);
   };
 
@@ -13,14 +14,22 @@ export class AnimationController {
 
   start = (animation: FrameRequestCallback) => {
     this.setAnimation(animation);
-    if (this.#requestId === null)
-      this.#requestId = requestAnimationFrame(this.#tick);
-    return this.dispose;
+    this.resume();
   };
 
-  dispose = () => {
+  stop = () => {
     if (this.#requestId === null) return;
     cancelAnimationFrame(this.#requestId);
     this.#requestId = null;
+  };
+
+  resume = () => {
+    if (this.#requestId !== null) return;
+    this.#requestId = requestAnimationFrame(this.#tick);
+  };
+
+  toggle = (value: boolean) => {
+    if (value) this.resume();
+    else this.stop();
   };
 }

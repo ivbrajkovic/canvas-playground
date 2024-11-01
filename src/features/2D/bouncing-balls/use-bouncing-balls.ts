@@ -9,22 +9,22 @@ import { AnimationController } from '@/controllers/animation-controller';
 import { FpsTracker } from '@/classes/fps-tracker';
 
 export const useBouncingBalls = () => {
-  const settingsRef = useRef({ ball_trail: 0.05 });
-  const [canvas] = useState(() => new CanvasController());
+  const settingsRef = useRef({ active: true, ball_trail: 0.05 });
   const [fpsTracker] = useState(() => new FpsTracker());
   const [bouncingBalls] = useState(() => new BouncingBalls());
+  const [canvasController] = useState(() => new CanvasController());
   const [animationController] = useState(() => new AnimationController());
 
   useEffect(() => {
-    canvas.init();
+    canvasController.init();
     fpsTracker.init();
-    bouncingBalls.init(canvas.width, canvas.height);
+    bouncingBalls.init(canvasController.width, canvasController.height);
 
     const animation = () => {
       const ballTrail = settingsRef.current.ball_trail;
-      const context = canvas.context;
+      const context = canvasController.context;
       context.fillStyle = `rgba(0, 0, 0, ${ballTrail})`;
-      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillRect(0, 0, canvasController.width, canvasController.height);
       bouncingBalls.update(context);
       fpsTracker.track();
     };
@@ -32,15 +32,17 @@ export const useBouncingBalls = () => {
     animationController.start(animation);
 
     return () => {
-      animationController.dispose();
+      animationController.stop();
       fpsTracker.dispose();
-      canvas.dispose();
+      canvasController.dispose();
     };
-  }, [animationController, bouncingBalls, canvas, fpsTracker]);
+  }, [animationController, bouncingBalls, canvasController, fpsTracker]);
 
   useDatGui((gui) => {
     const settings = bouncingBalls.settings;
-    const initBalls = () => bouncingBalls.init(canvas.width, canvas.height);
+    const initBalls = () =>
+      bouncingBalls.init(canvasController.width, canvasController.height);
+    gui.add(settingsRef.current, 'active').onChange(animationController.toggle);
     gui.add(settings, 'speed_min', -10, 10, 0.1).onFinishChange(initBalls);
     gui.add(settings, 'speed_max', -10, 10, 0.1).onFinishChange(initBalls);
     gui.add(settings, 'radius_min', 0, 100, 1).onFinishChange(initBalls);
