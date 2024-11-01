@@ -52,8 +52,8 @@ export class MouseController implements IMouseController {
     this.#x = 0;
     this.#y = 0;
     this.#target = null;
-    this.#getDistanceBetweenCoords = getDistanceBetweenCoords;
     this.getDistanceBetweenPoints = getDistanceBetweenPoints;
+    this.#getDistanceBetweenCoords = getDistanceBetweenCoords;
   }
 
   init(): void;
@@ -71,6 +71,8 @@ export class MouseController implements IMouseController {
     const finalTarget =
       target || (targetOrX instanceof Element ? targetOrX : window);
 
+    console.log({ target, finalTarget });
+
     this.#x = x;
     this.#y = finalY;
     this.#target = finalTarget;
@@ -78,12 +80,14 @@ export class MouseController implements IMouseController {
   }
 
   #handleMousemove = (e: MouseEvent) => {
-    this.#x = e.clientX;
-    this.#y = e.clientY;
+    this.#x = e.offsetX;
+    this.#y = e.offsetY;
     this.onMouseMove?.(this.#x, this.#y);
   };
 
   #addMousemoveListener = () => {
+    console.log('Adding mousemove listener', { target: this.#target });
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.#target?.addEventListener('mousemove', this.#handleMousemove as any);
   };

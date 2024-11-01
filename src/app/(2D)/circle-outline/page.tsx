@@ -1,5 +1,9 @@
-const Page = () => {
-  return <div>Page</div>;
-};
+'use client';
 
-export default Page;
+import { useCircleOutline } from '@/features/2D/circle-outline/use-circle-outline';
+
+export default function Page() {
+  useCircleOutline();
+
+  return <canvas id='canvas' />;
+}
