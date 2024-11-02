@@ -19,13 +19,11 @@ export class CircleOutline extends Circle {
 
   processMouseRadius(mouseX: number, mouseY: number): void {
     const distance = this.getDistanceFromCoords(mouseX, mouseY, true);
-    if (distance < this.mouseRadius && this.opacity <= 0.2) {
-      // const opacity = 1 - distance / this.mouseRadius;
-      const newOpacity = this.opacity + 0.01;
-      this.opacity = newOpacity > 1 ? 1 : newOpacity;
+
+    if (distance < this.mouseRadius && this.opacity < 1) {
+      this.opacity = Math.min(1, this.opacity + 0.1);
     } else if (this.opacity > 0) {
-      const newOpacity = this.opacity - 0.01;
-      this.opacity = newOpacity < 0 ? 0 : newOpacity;
+      this.opacity = Math.max(0, this.opacity - 0.1);
     }
   }
 }

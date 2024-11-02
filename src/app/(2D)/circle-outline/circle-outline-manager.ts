@@ -18,7 +18,7 @@ export class CircleOutlineManager extends CirclesBase {
     radius_min: 20,
     radius_max: 40,
     mouse_radius: 200,
-    circle_count: 80,
+    circle_count: 200,
   };
   populate = () => {
     this.circles = Array.from({ length: this.settings.circle_count }, () => {
