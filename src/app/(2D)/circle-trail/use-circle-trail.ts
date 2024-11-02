@@ -24,7 +24,7 @@ export const useCircleTrail = () => {
       const ballTrail = settingsRef.current.circle_trail;
       const context = canvasController.context;
       context.fillStyle = `rgba(0, 0, 0, ${ballTrail})`;
-      context.fillRect(0, 0, canvasController.width, canvasController.height);
+      context.fillRect(0, 0, context.canvas.width, context.canvas.height);
       circles.render(context);
       fpsTracker.track();
     };

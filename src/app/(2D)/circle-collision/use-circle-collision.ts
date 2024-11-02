@@ -23,7 +23,6 @@ export const useCircleCollision = () => {
     const animation = () => {
       const context = canvasController.context;
       context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-
       circles.circles.forEach((circle) => {
         circle.processCircleCollisions(circles.circles);
         circle.move(context);

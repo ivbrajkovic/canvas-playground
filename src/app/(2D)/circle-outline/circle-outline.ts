@@ -1,32 +1,20 @@
 import { Circle, Vec2 } from '@/features/2D/classes/circle';
-import { getDistanceBetweenCoords } from '@/lib/get-distance';
 
 export class CircleOutline extends Circle {
   opacity: number;
   mouseRadius: number;
-
-  #getDistanceBetweenCoords: (
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    precise?: boolean,
-  ) => number;
 
   constructor(
     x: number,
     y: number,
     vector: Vec2,
     color: string,
-    mass: number,
     radius: number,
     mouseRadius: number,
-    getDistanceBetweenCoordsFn = getDistanceBetweenCoords,
   ) {
     super(x, y, vector, radius, 1, color, color);
     this.opacity = 0;
     this.mouseRadius = mouseRadius;
-    this.#getDistanceBetweenCoords = getDistanceBetweenCoordsFn;
   }
 
   processMouseRadius(mouseX: number, mouseY: number): void {
