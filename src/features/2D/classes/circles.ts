@@ -12,7 +12,7 @@ type Settings = {
   radius_max: number;
 };
 
-export abstract class CircleBase {
+export abstract class CirclesBase {
   random = random;
   canvasWidth = DEFAULT_WIDTH;
   canvasHeight = DEFAULT_HEIGHT;
@@ -20,7 +20,6 @@ export abstract class CircleBase {
 
   abstract settings: Settings;
   abstract populate(...args: unknown[]): void;
-  abstract render(...args: unknown[]): void;
 
   init(canvasWidth: number, canvasHeight: number) {
     this.canvasWidth = canvasWidth;

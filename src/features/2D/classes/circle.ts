@@ -1,3 +1,5 @@
+import { getDistanceBetweenCoords } from '@/lib/get-distance';
+
 export type Vec2 = {
   x: number;
   y: number;
@@ -13,6 +15,10 @@ export class Circle {
     public fillColor: string,
     public strokeColor: string,
   ) {}
+
+  getDistanceFromCoords = (x: number, y: number, precise?: boolean) => {
+    return getDistanceBetweenCoords(this.x, this.y, x, y, precise);
+  };
 
   draw(context: CanvasRenderingContext2D) {
     context.beginPath();

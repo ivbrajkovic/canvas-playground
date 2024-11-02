@@ -1,5 +1,5 @@
 import { Circle } from '@/features/2D/classes/circle';
-import { CircleBase } from '@/features/2D/classes/circles';
+import { CirclesBase } from '@/features/2D/classes/circles';
 
 type Settings = {
   speed_min: number;
@@ -10,7 +10,7 @@ type Settings = {
   particles_count: number;
 };
 
-export class Particles extends CircleBase {
+export class Particles extends CirclesBase {
   circles: Circle[] = [];
   settings: Settings = {
     speed_min: -2.0,

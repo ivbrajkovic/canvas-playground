@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { useDatGui } from '@/hooks/use-dat-gui';
-import { Circles } from '@/app/(2D)/circle-trail/circles';
+import { CircleManager } from '@/app/(2D)/circle-trail/circle-manager';
 import { CanvasController } from '@/features/2D/classes/canvas-controller';
 import { AnimationController } from '@/controllers/animation-controller';
 import { FpsTracker } from '@/classes/fps-tracker';
@@ -12,7 +12,7 @@ export const useCircleTrail = () => {
   const [animationController] = useState(() => new AnimationController());
   const [canvasController] = useState(() => new CanvasController());
   const [fpsTracker] = useState(() => new FpsTracker());
-  const [circles] = useState(() => new Circles());
+  const [circles] = useState(() => new CircleManager());
   const settingsRef = useRef({ active: true, circle_trail: 0.05 });
 
   useEffect(() => {

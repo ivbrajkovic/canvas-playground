@@ -1,5 +1,5 @@
 import { CircleOutline } from '@/app/(2D)/circle-outline/circle-outline';
-import { CircleBase } from '@/features/2D/classes/circles';
+import { CirclesBase } from '@/features/2D/classes/circles';
 // import { getDistanceBetweenCoords } from '@/lib/get-distance';
 
 type Settings = {
@@ -13,7 +13,7 @@ type Settings = {
   circle_count: number;
 };
 
-export class Circles extends CircleBase {
+export class CircleOutlineManager extends CirclesBase {
   circles: CircleOutline[] = [];
   settings: Settings = {
     speed_min: -2.0,
@@ -25,7 +25,7 @@ export class Circles extends CircleBase {
     mouse_radius: 200,
     circle_count: 80,
   };
-  populate() {
+  populate = () => {
     this.circles = Array.from({ length: this.settings.circle_count }, () => {
       const radius = this.random(this.settings.radius_min, this.settings.radius_max);
       const x = this.random(radius, this.canvasWidth - radius);
@@ -36,32 +36,15 @@ export class Circles extends CircleBase {
       const mass = this.random(this.settings.mass_min, this.settings.mass_max);
       const color = `hsl(${this.random(0, 360)}, 50%, 50%)`;
       const mouseRadius = this.settings.mouse_radius;
-
-      // if (i > 0) {
-      //   for (let j = 0; j < this.particles.length; j++) {
-      //     const distance = getDistanceBetweenCoords(
-      //       x,
-      //       y,
-      //       this.particles[j].x,
-      //       this.particles[j].y,
-      //     );
-      //     if (distance - radius * 2 < 0) {
-      //       x = random(radius, canvasWidth - radius);
-      //       y = random(radius, canvasHeight - radius);
-      //       j = -1;
-      //     }
-      //   }
-      // }
-
       return new CircleOutline(x, y, vector, color, mass, radius, mouseRadius);
     });
-  }
-  render(mouseX: number, mouseY: number, context: CanvasRenderingContext2D) {
+  };
+  render = (mouseX: number, mouseY: number, context: CanvasRenderingContext2D) => {
     this.circles.forEach((particle) => {
       particle.processMouseRadius(mouseX, mouseY);
       // particle.processCircleCollisions(this.particles);
       particle.move(context);
       particle.draw(context);
     });
-  }
+  };
 }

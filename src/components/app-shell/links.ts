@@ -5,9 +5,9 @@ export const links: SidebarData[] = [
     name: '2D Projects',
     projects: [
       { title: 'Particles', url: '/particles' },
-      { title: 'Particles New', url: '/particles-new' },
       { title: 'Circle Trail', url: '/circle-trail' },
-      { title: 'Circle Outline Mouse Effect', url: '/circle-outline' },
+      { title: 'Circle Collision', url: '/circle-collision' },
+      { title: 'Circle Outline Effect', url: '/circle-outline' },
     ],
   },
   {

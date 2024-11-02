@@ -1,5 +1,5 @@
 import { Circle } from '@/features/2D/classes/circle';
-import { CircleBase } from '@/features/2D/classes/circles';
+import { CirclesBase } from '@/features/2D/classes/circles';
 
 type Settings = {
   speed_min: number;
@@ -9,7 +9,7 @@ type Settings = {
   circle_count: number;
 };
 
-export class Circles extends CircleBase {
+export class CircleManager extends CirclesBase {
   circles: Circle[] = [];
   settings: Settings = {
     speed_min: -2.0,
@@ -18,7 +18,7 @@ export class Circles extends CircleBase {
     radius_max: 35,
     circle_count: 80,
   };
-  populate() {
+  populate = () => {
     this.circles = Array.from({ length: this.settings.circle_count }, () => {
       const radius = this.random(this.settings.radius_min, this.settings.radius_max);
       const x = this.random(radius, this.canvasWidth - radius);
@@ -29,11 +29,11 @@ export class Circles extends CircleBase {
       const color = `hsl(${this.random(360, true)}, 50%, 50%)`;
       return new Circle(x, y, vector, radius, 1, color, color);
     });
-  }
-  render(context: CanvasRenderingContext2D) {
+  };
+  render = (context: CanvasRenderingContext2D) => {
     this.circles.forEach((circle) => {
       circle.move(context);
       circle.draw(context);
     });
-  }
+  };
 }
