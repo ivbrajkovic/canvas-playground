@@ -1,8 +1,7 @@
 import random from 'lodash/random';
-import { CircleOutline } from '@/features/2D/circle-outline/circle-outline';
-
-const DEFAULT_WIDTH = 600;
-const DEFAULT_HEIGHT = 400;
+import { CircleOutline } from '@/app/(2D)/circle-outline/circle-outline';
+import { CircleBase } from '@/features/2D/classes/circles';
+// import { getDistanceBetweenCoords } from '@/lib/get-distance';
 
 type Settings = {
   speed_min: number;
@@ -12,38 +11,43 @@ type Settings = {
   mass_min: number;
   mass_max: number;
   mouse_radius: number;
-  particle_count: number;
+  circle_count: number;
 };
 
-export class Particles {
-  particles: CircleOutline[] = [];
+export class Circles extends CircleBase {
+  circles: CircleOutline[] = [];
   settings: Settings = {
-    speed_min: -1.0,
-    speed_max: 1.0,
+    speed_min: -2.0,
+    speed_max: 2.0,
     radius_min: 15,
     radius_max: 35,
     mass_min: 1,
     mass_max: 3,
     mouse_radius: 200,
-    particle_count: 100,
+    circle_count: 80,
   };
-  init(canvasWidth = DEFAULT_WIDTH, canvasHeight = DEFAULT_HEIGHT) {
-    this.particles = Array.from({ length: this.settings.particle_count }, () => {
+  init(
+    canvasWidth = this.defaultCanvasWidth,
+    canvasHeight = this.defaultCanvasHeight,
+  ) {
+    this.circles = Array.from({ length: this.settings.circle_count }, () => {
       const radius = random(this.settings.radius_min, this.settings.radius_max);
       const x = random(radius, canvasWidth - radius);
       const y = random(radius, canvasHeight - radius);
       const vx = random(this.settings.speed_min, this.settings.speed_max, true);
       const vy = random(this.settings.speed_min, this.settings.speed_max, true);
+      const vector = { x: vx, y: vy };
       const mass = random(this.settings.mass_min, this.settings.mass_max);
       const color = `hsl(${random(0, 360)}, 50%, 50%)`;
       const mouseRadius = this.settings.mouse_radius;
 
       // if (i > 0) {
+      //   for (let j = 0; j < this.particles.length; j++) {
       //     const distance = getDistanceBetweenCoords(
       //       x,
       //       y,
-      //       particles[j].x,
-      //       particles[j].y,
+      //       this.particles[j].x,
+      //       this.particles[j].y,
       //     );
       //     if (distance - radius * 2 < 0) {
       //       x = random(radius, canvasWidth - radius);
@@ -53,14 +57,15 @@ export class Particles {
       //   }
       // }
 
-      return new CircleOutline(x, y, vx, vy, mass, color, radius, mouseRadius);
+      return new CircleOutline(x, y, vector, color, mass, radius, mouseRadius);
     });
   }
   update(mouseX: number, mouseY: number, context: CanvasRenderingContext2D) {
-    this.particles.forEach((particle) => {
+    this.circles.forEach((particle) => {
       particle.processMouseRadius(mouseX, mouseY);
-      particle.draw(context);
+      // particle.processCircleCollisions(this.particles);
       particle.move(context);
+      particle.draw(context);
     });
   }
 }

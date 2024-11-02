@@ -6,7 +6,7 @@ import { rotate } from '@/lib/rotate';
 export type Particle = {
   x: number;
   y: number;
-  velocity: { x: number; y: number };
+  vector: { x: number; y: number };
   mass: number;
 };
 
@@ -17,13 +17,10 @@ export type Particle = {
  * @param particle - The first particle involved in the collision.
  * @param otherParticle - The second particle involved in the collision.
  */
-export function elasticCollision(
-  particle: Particle,
-  otherParticle: Particle,
-): void {
+export function elasticCollision(particle: Particle, otherParticle: Particle): void {
   // Calculate relative velocity
-  const xVelocityDiff = particle.velocity.x - otherParticle.velocity.x;
-  const yVelocityDiff = particle.velocity.y - otherParticle.velocity.y;
+  const xVelocityDiff = particle.vector.x - otherParticle.vector.x;
+  const yVelocityDiff = particle.vector.y - otherParticle.vector.y;
 
   // Calculate the distance between particles
   const xDist = otherParticle.x - particle.x;
@@ -42,8 +39,8 @@ export function elasticCollision(
   const massDiff = m1 - m2;
 
   // Rotate velocities to the collision coordinate system
-  const u1 = rotate(particle.velocity, angle);
-  const u2 = rotate(otherParticle.velocity, angle);
+  const u1 = rotate(particle.vector, angle);
+  const u2 = rotate(otherParticle.vector, angle);
 
   // Velocity after 1D collision equations
   const v1 = {
@@ -60,8 +57,8 @@ export function elasticCollision(
   const vFinal2 = rotate(v2, -angle);
 
   // Update particle velocities
-  particle.velocity.x = vFinal1.x;
-  particle.velocity.y = vFinal1.y;
-  otherParticle.velocity.x = vFinal2.x;
-  otherParticle.velocity.y = vFinal2.y;
+  particle.vector.x = vFinal1.x;
+  particle.vector.y = vFinal1.y;
+  otherParticle.vector.x = vFinal2.x;
+  otherParticle.vector.y = vFinal2.y;
 }

@@ -68,10 +68,7 @@ export class MouseController implements IMouseController {
     const finalY = typeof y === 'number' ? y : 0;
 
     // Determine the `target` element, defaulting to `window` if not provided
-    const finalTarget =
-      target || (targetOrX instanceof Element ? targetOrX : window);
-
-    console.log({ target, finalTarget });
+    const finalTarget = target || (targetOrX instanceof Element ? targetOrX : window);
 
     this.#x = x;
     this.#y = finalY;
