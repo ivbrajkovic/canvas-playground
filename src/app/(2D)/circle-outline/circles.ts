@@ -1,4 +1,3 @@
-import random from 'lodash/random';
 import { CircleOutline } from '@/app/(2D)/circle-outline/circle-outline';
 import { CircleBase } from '@/features/2D/classes/circles';
 // import { getDistanceBetweenCoords } from '@/lib/get-distance';
@@ -26,19 +25,16 @@ export class Circles extends CircleBase {
     mouse_radius: 200,
     circle_count: 80,
   };
-  init(
-    canvasWidth = this.defaultCanvasWidth,
-    canvasHeight = this.defaultCanvasHeight,
-  ) {
+  populate() {
     this.circles = Array.from({ length: this.settings.circle_count }, () => {
-      const radius = random(this.settings.radius_min, this.settings.radius_max);
-      const x = random(radius, canvasWidth - radius);
-      const y = random(radius, canvasHeight - radius);
-      const vx = random(this.settings.speed_min, this.settings.speed_max, true);
-      const vy = random(this.settings.speed_min, this.settings.speed_max, true);
+      const radius = this.random(this.settings.radius_min, this.settings.radius_max);
+      const x = this.random(radius, this.canvasWidth - radius);
+      const y = this.random(radius, this.canvasHeight - radius);
+      const vx = this.random(this.settings.speed_min, this.settings.speed_max, true);
+      const vy = this.random(this.settings.speed_min, this.settings.speed_max, true);
       const vector = { x: vx, y: vy };
-      const mass = random(this.settings.mass_min, this.settings.mass_max);
-      const color = `hsl(${random(0, 360)}, 50%, 50%)`;
+      const mass = this.random(this.settings.mass_min, this.settings.mass_max);
+      const color = `hsl(${this.random(0, 360)}, 50%, 50%)`;
       const mouseRadius = this.settings.mouse_radius;
 
       // if (i > 0) {
@@ -60,7 +56,7 @@ export class Circles extends CircleBase {
       return new CircleOutline(x, y, vector, color, mass, radius, mouseRadius);
     });
   }
-  update(mouseX: number, mouseY: number, context: CanvasRenderingContext2D) {
+  render(mouseX: number, mouseY: number, context: CanvasRenderingContext2D) {
     this.circles.forEach((particle) => {
       particle.processMouseRadius(mouseX, mouseY);
       // particle.processCircleCollisions(this.particles);

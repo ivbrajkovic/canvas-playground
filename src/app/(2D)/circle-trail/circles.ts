@@ -1,6 +1,5 @@
 import { Circle } from '@/features/2D/classes/circle';
 import { CircleBase } from '@/features/2D/classes/circles';
-import random from 'lodash/random';
 
 type Settings = {
   speed_min: number;
@@ -11,7 +10,7 @@ type Settings = {
 };
 
 export class Circles extends CircleBase {
-  balls: Circle[] = [];
+  circles: Circle[] = [];
   settings: Settings = {
     speed_min: -2.0,
     speed_max: 2.0,
@@ -19,25 +18,22 @@ export class Circles extends CircleBase {
     radius_max: 35,
     circle_count: 80,
   };
-  init(
-    canvasWidth = this.defaultCanvasWidth,
-    canvasHeight = this.defaultCanvasHeight,
-  ) {
-    this.balls = Array.from({ length: this.settings.circle_count }, () => {
-      const radius = random(this.settings.radius_min, this.settings.radius_max);
-      const x = random(radius, canvasWidth - radius);
-      const y = random(radius, canvasHeight - radius);
-      const vx = random(this.settings.speed_min, this.settings.speed_max, true);
-      const vy = random(this.settings.speed_min, this.settings.speed_max, true);
+  populate() {
+    this.circles = Array.from({ length: this.settings.circle_count }, () => {
+      const radius = this.random(this.settings.radius_min, this.settings.radius_max);
+      const x = this.random(radius, this.canvasWidth - radius);
+      const y = this.random(radius, this.canvasHeight - radius);
+      const vx = this.random(this.settings.speed_min, this.settings.speed_max, true);
+      const vy = this.random(this.settings.speed_min, this.settings.speed_max, true);
       const vector = { x: vx, y: vy };
-      const color = `hsl(${random(360, true)}, 50%, 50%)`;
+      const color = `hsl(${this.random(360, true)}, 50%, 50%)`;
       return new Circle(x, y, vector, radius, 1, color, color);
     });
   }
-  update(context: CanvasRenderingContext2D) {
-    this.balls.forEach((ball) => {
-      ball.move(context);
-      ball.draw(context);
+  render(context: CanvasRenderingContext2D) {
+    this.circles.forEach((circle) => {
+      circle.move(context);
+      circle.draw(context);
     });
   }
 }

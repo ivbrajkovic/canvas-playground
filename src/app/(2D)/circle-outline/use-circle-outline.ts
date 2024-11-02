@@ -12,8 +12,7 @@ export const useCircleOutline = () => {
   const [mouseController] = useState(() => new MouseController());
   const [fpsTracker] = useState(() => new FpsTracker());
   const [circles] = useState(() => new Circles());
-
-  const settingsRef = useRef({ active: true, particle_count: 10 });
+  const settingsRef = useRef({ active: true });
 
   useEffect(() => {
     canvasController.init();
@@ -26,7 +25,7 @@ export const useCircleOutline = () => {
       context.fillStyle = 'rgba(0, 0, 0, 0.05)';
       // context.clearRect(0, 0, context.canvas.width, context.canvas.height);
       context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-      circles.update(mouseController.x, mouseController.y, context);
+      circles.render(mouseController.x, mouseController.y, context);
       fpsTracker.track();
     };
 
@@ -42,14 +41,11 @@ export const useCircleOutline = () => {
 
   useDatGui((gui) => {
     const settings = circles.settings;
-    const initParticles = () =>
-      circles.init(canvasController.width, canvasController.height);
-
     gui.add(settingsRef.current, 'active').onChange(animationController.toggle);
-    gui.add(settings, 'speed_min', -10, 10, 0.1).onFinishChange(initParticles);
-    gui.add(settings, 'speed_max', -10, 10, 0.1).onFinishChange(initParticles);
-    gui.add(settings, 'radius_min', 0, 100, 1).onFinishChange(initParticles);
-    gui.add(settings, 'radius_max', 0, 100, 1).onFinishChange(initParticles);
-    gui.add(settings, 'circle_count', 1, 5000, 1).onFinishChange(initParticles);
+    gui.add(settings, 'speed_min', -10, 10, 0.1).onFinishChange(circles.populate);
+    gui.add(settings, 'speed_max', -10, 10, 0.1).onFinishChange(circles.populate);
+    gui.add(settings, 'radius_min', 0, 100, 1).onFinishChange(circles.populate);
+    gui.add(settings, 'radius_max', 0, 100, 1).onFinishChange(circles.populate);
+    gui.add(settings, 'circle_count', 1, 5000, 1).onFinishChange(circles.populate);
   });
 };

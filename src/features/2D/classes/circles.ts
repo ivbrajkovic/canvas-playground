@@ -1,3 +1,5 @@
+import random from 'lodash/random';
+
 import { Circle } from '@/features/2D/classes/circle';
 
 const DEFAULT_WIDTH = 600;
@@ -11,10 +13,18 @@ type Settings = {
 };
 
 export abstract class CircleBase {
-  defaultCanvasWidth = DEFAULT_WIDTH;
-  defaultCanvasHeight = DEFAULT_HEIGHT;
+  random = random;
+  canvasWidth = DEFAULT_WIDTH;
+  canvasHeight = DEFAULT_HEIGHT;
   circles: Circle[] = [];
+
   abstract settings: Settings;
-  abstract init(canvasWidth?: number, canvasHeight?: number): void;
-  abstract update(...args: unknown[]): void;
+  abstract populate(...args: unknown[]): void;
+  abstract render(...args: unknown[]): void;
+
+  init(canvasWidth: number, canvasHeight: number) {
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
+    this.populate();
+  }
 }

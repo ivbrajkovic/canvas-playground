@@ -21,14 +21,24 @@ export class Particles extends CircleBase {
     particles_count: 80,
   };
 
-  init(
+  populate(
     canvasWidth = this.defaultCanvasWidth,
     canvasHeight = this.defaultCanvasHeight,
   ): void {
-    throw new Error('Method not implemented.');
+    this.circles = Array.from({ length: this.settings.particles_count }, () => {
+      const radius = this.random(this.settings.radius_min, this.settings.radius_max);
+      const x = this.random(radius, canvasWidth - radius);
+      const y = this.random(radius, canvasHeight - radius);
+      const vx = this.random(this.settings.speed_min, this.settings.speed_max, true);
+      const vy = this.random(this.settings.speed_min, this.settings.speed_max, true);
+      const vector = { x: vx, y: vy };
+      const color = `hsl(${this.random(0, 360)}, 50%, 50%)`;
+
+      return new Circle(x, y, vector, radius, 1, color, color);
+    });
   }
 
-  update(...args: unknown[]): void {
+  render(...args: unknown[]): void {
     throw new Error('Method not implemented.');
   }
 }

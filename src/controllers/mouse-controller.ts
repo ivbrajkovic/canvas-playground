@@ -83,8 +83,6 @@ export class MouseController implements IMouseController {
   };
 
   #addMousemoveListener = () => {
-    console.log('Adding mousemove listener', { target: this.#target });
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this.#target?.addEventListener('mousemove', this.#handleMousemove as any);
   };
