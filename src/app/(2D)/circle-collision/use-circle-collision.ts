@@ -12,7 +12,7 @@ export const useCircleCollision = () => {
   const [mouseController] = useState(() => new MouseController());
   const [fpsTracker] = useState(() => new FpsTracker());
   const [circles] = useState(() => new CircleCollisionManager());
-  const settingsRef = useRef({ active: false });
+  const settingsRef = useRef({ active: true });
 
   useEffect(() => {
     canvasController.init();
@@ -46,8 +46,10 @@ export const useCircleCollision = () => {
     gui.add(settingsRef.current, 'active').onChange(animationController.toggle);
     gui.add(settings, 'speed_min', -10, 10, 0.1).onFinishChange(circles.populate);
     gui.add(settings, 'speed_max', -10, 10, 0.1).onFinishChange(circles.populate);
-    gui.add(settings, 'radius_min', 0, 60, 1).onFinishChange(circles.populate);
-    gui.add(settings, 'radius_max', 0, 70, 1).onFinishChange(circles.populate);
-    gui.add(settings, 'circle_count', 1, 50, 1).onFinishChange(circles.populate);
+    gui.add(settings, 'radius_min', 1, 60, 1).onFinishChange(circles.populate);
+    gui.add(settings, 'radius_max', 1, 70, 1).onFinishChange(circles.populate);
+    gui.add(settings, 'mass_min', 1, 100, 0.1).onFinishChange(circles.populate);
+    gui.add(settings, 'mass_max', 1, 100, 0.1).onFinishChange(circles.populate);
+    gui.add(settings, 'circle_count', 1, 60, 1).onFinishChange(circles.populate);
   });
 };

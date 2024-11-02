@@ -1,5 +1,8 @@
 'use client';
 
+import { useParticles } from '@/app/(2D)/particles/use-particles';
+
 export default function Particles() {
-  return <div>Particles</div>;
+  useParticles();
+  return <canvas id="canvas" />;
 }

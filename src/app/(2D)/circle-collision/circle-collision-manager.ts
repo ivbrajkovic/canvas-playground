@@ -19,8 +19,8 @@ export class CircleCollisionManager extends CirclesBase {
     speed_min: -2.0,
     speed_max: 2.0,
     radius_min: 10,
-    radius_max: 60,
-    mass_min: 0.5,
+    radius_max: 50,
+    mass_min: 1,
     mass_max: 50,
     circle_count: 40,
   };
@@ -32,21 +32,23 @@ export class CircleCollisionManager extends CirclesBase {
       const radius = this.random(this.settings.radius_min, this.settings.radius_max);
       const { x, y } = this.placeCircleWithoutOverlap(radius);
 
-      const vx = interpolate(
+      let vx = interpolate(
         radius,
         this.settings.radius_min - 1,
         this.settings.radius_max,
         this.settings.speed_min,
         this.settings.speed_max,
       );
+      vx = this.random() < 0.5 ? -vx : vx;
 
-      const vy = interpolate(
+      let vy = interpolate(
         radius,
         this.settings.radius_min - 1,
         this.settings.radius_max,
         this.settings.speed_min,
         this.settings.speed_max,
       );
+      vy = this.random() < 0.5 ? -vy : vy;
 
       const mass = interpolate(
         radius,

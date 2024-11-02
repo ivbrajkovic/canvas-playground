@@ -16,9 +16,6 @@ export interface IMouseController {
   init(x: number, y: number): void;
   init(x: number, y: number, target: Element): void;
 
-  getDistanceFromCoords: (x: number, y: number, precise?: boolean) => number;
-  getDistanceFromPoints: (point: Point2D, precise?: boolean) => number;
-
   dispose: () => void;
 }
 
@@ -93,14 +90,6 @@ export class MouseController implements IMouseController {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.#handleMousemove as any,
     );
-  };
-
-  getDistanceFromCoords = (x: number, y: number, precise?: boolean) => {
-    return this.#getDistanceBetweenCoords(this.#x, this.#y, x, y, precise);
-  };
-
-  getDistanceFromPoints = (point: Point2D, precise?: boolean) => {
-    return this.getDistanceBetweenPoints(this.coords, point, precise);
   };
 
   dispose = () => {
