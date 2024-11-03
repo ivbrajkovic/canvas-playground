@@ -14,7 +14,8 @@ export class ParticleManager {
 
   public particleColor = '#ffffff';
   public lineColor = '#ffffff';
-  public connectionDistance = 120;
+  public linkingDistance = 120;
+  public ghosting = 1;
 
   // prettier-ignore
   get particleCount() { return this._particleCount; }
@@ -55,10 +56,7 @@ export class ParticleManager {
   };
 
   private _removeMouseMoveListener = () => {
-    this._context.canvas.removeEventListener(
-      'mousemove',
-      this._mouseMoveListener,
-    );
+    this._context.canvas.removeEventListener('mousemove', this._mouseMoveListener);
   };
 
   private _render = () => {
@@ -66,7 +64,7 @@ export class ParticleManager {
     const canvasWidth = context.canvas.width;
     const canvasHeight = context.canvas.height;
     const lineWidth = this._lineWidth;
-    const connectionDistance = this.connectionDistance;
+    const connectionDistance = this.linkingDistance;
     const particleColor = this.particleColor;
     const lineColor = this.lineColor;
 
@@ -117,7 +115,9 @@ export class ParticleManager {
     const canvasWidth = context.canvas.width;
     const canvasHeight = context.canvas.height;
 
-    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
+    context.fillRect(0, 0, canvasWidth, canvasHeight);
+
     this._render();
     this._mouse.reduceRadius();
     this._fpsTracker.track();

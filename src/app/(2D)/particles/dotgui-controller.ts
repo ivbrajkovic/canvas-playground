@@ -5,7 +5,7 @@ export class DotGuiController {
 
   constructor() {
     this.gui = import('dat.gui') //
-      .then((dat) => {
+      .then(async (dat) => {
         const gui = new dat.GUI();
         gui.domElement.style.marginTop = '64px';
         gui.domElement.style.marginRight = '0px';

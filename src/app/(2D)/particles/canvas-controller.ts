@@ -4,6 +4,7 @@ export class CanvasController {
   private _canvas: HTMLCanvasElement;
   private _resizeObserver!: ResizeObserver;
   private _context: CanvasRenderingContext2D;
+  private _isFirstRender = true;
 
   onResize?: (width: number, height: number) => void;
 
@@ -32,6 +33,10 @@ export class CanvasController {
 
   private _createResizeObserver = () => {
     this._resizeObserver = new ResizeObserver((entries) => {
+      if (this._isFirstRender) {
+        this._isFirstRender = false;
+        return;
+      }
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         this._resizeListener(width, height);
