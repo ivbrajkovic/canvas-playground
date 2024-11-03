@@ -1,6 +1,6 @@
 'use client';
 
-import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-manager-2';
+import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-trail-manager';
 import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
 import { DotGuiController } from '@/app/(2D)/particles/dotgui-controller';
 import { useEffect, useRef, useState } from 'react';
