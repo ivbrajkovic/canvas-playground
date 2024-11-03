@@ -1,8 +1,7 @@
 import { Particle } from '@/app/(2D)/particles/particle';
-import { ParticleOptions } from '@/app/(2D)/particles/types';
 import { Mouse } from '@/app/(2D)/particles/mouse';
-import { AnimationController } from '@/controllers/animation-controller';
 import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
+import { AnimationController } from '@/app/(2D)/particles/animation-controller';
 
 export class ParticleManager {
   private _context: CanvasRenderingContext2D;
@@ -10,21 +9,24 @@ export class ParticleManager {
   private _mouse: Mouse;
   private _fpsTracker: FpsTracker;
   private _particles: Particle[] = [];
+  private _particleCount = 200;
+  private _lineWidth = 1;
 
-  public options: ParticleOptions = {
-    color: {
-      opacity: 1,
-      particle: { r: 255, g: 255, b: 255 },
-      connection: { r: 255, g: 255, b: 255 },
-    },
-    connectionDistance: 120,
-    lineWidth: 1,
-    particleCountFactor: 12,
-    particleCount: 200,
-  };
+  public particleColor = '#ffffff';
+  public lineColor = '#ffffff';
+  public connectionDistance = 120;
 
   // prettier-ignore
-  get particleCount() { return this._particles.length; }
+  get particleCount() { return this._particleCount; }
+  set particleCount(value: number) {
+    this._particleCount = value;
+    this.populate();
+  }
+
+  // prettier-ignore
+  get isAnimating() { return this._animationController.isAnimating; }
+  // prettier-ignore
+  set isAnimating(value: boolean) { this._animationController.isAnimating = value; }
 
   constructor(
     context: CanvasRenderingContext2D,
@@ -36,6 +38,10 @@ export class ParticleManager {
     this._animationController = animationController;
     this._mouse = mouse;
     this._fpsTracker = fpsTracker;
+
+    animationController.animation = this._animation;
+    animationController.onStart = this._addMouseMoveListener;
+    animationController.onStop = this._removeMouseMoveListener;
   }
 
   private _mouseMoveListener = (event: MouseEvent) => {
@@ -56,17 +62,13 @@ export class ParticleManager {
   };
 
   private _render = () => {
-    // TODO: Refactor
     const context = this._context;
     const canvasWidth = context.canvas.width;
     const canvasHeight = context.canvas.height;
-    const colorOpacity = this.options.color.opacity;
-    const r = this.options.color.particle.r;
-    const g = this.options.color.particle.g;
-    const b = this.options.color.particle.b;
-    const lineWidth = this.options.lineWidth;
-    const connectionDistance = this.options.connectionDistance;
-    const particleColor = `rgba(${r},${g},${b},${colorOpacity})`;
+    const lineWidth = this._lineWidth;
+    const connectionDistance = this.connectionDistance;
+    const particleColor = this.particleColor;
+    const lineColor = this.lineColor;
 
     const targetX = this._mouse.x;
     const targetY = this._mouse.y;
@@ -96,14 +98,16 @@ export class ParticleManager {
         if (distanceSquared > connectionDistanceSquared) continue;
 
         opacityValue =
-          (1 - Math.pow(distanceSquared / connectionDistanceSquared, 0.5)) *
-          colorOpacity;
-        context.strokeStyle = `rgba(${r},${g},${b},${opacityValue})`;
+          1 - Math.pow(distanceSquared / connectionDistanceSquared, 0.5);
+        context.save();
+        context.strokeStyle = lineColor;
         context.lineWidth = lineWidth;
+        context.globalAlpha = opacityValue;
         context.beginPath();
         context.moveTo(particleA.x, particleA.y);
         context.lineTo(particleB.x, particleB.y);
         context.stroke();
+        context.restore();
       }
     }
   };
@@ -119,31 +123,16 @@ export class ParticleManager {
     this._fpsTracker.track();
   };
 
-  // TODO: Refactor
   populate = () => {
     const width = this._context.canvas.width;
     const height = this._context.canvas.height;
-    const particleCount =
-      this.options.particleCount ??
-      Math.ceil(((width + height) / 100) * this.options.particleCountFactor);
-    this._particles = Array.from(
-      { length: particleCount },
-      () => new Particle(width, height),
-    );
-  };
+    const length = this._particleCount;
 
-  startAnimation = () => {
-    this._animationController.start(this._animation);
-    this._addMouseMoveListener();
-  };
-
-  stopAnimation = () => {
-    this._animationController.stop();
-    this._removeMouseMoveListener();
+    this._particles = Array.from({ length }, () => new Particle(width, height));
   };
 
   dispose = () => {
-    this.stopAnimation();
+    this._animationController.isAnimating = false;
     this._fpsTracker.dispose();
     this._particles = [];
     this._context = null!;
