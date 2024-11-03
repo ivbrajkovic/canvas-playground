@@ -1,5 +1,5 @@
 import { CircleCollision } from '@/app/(2D)/circle-collision/circle-collision';
-import { CirclesBase } from '@/features/2D/classes/circles';
+import { CirclesBase } from '@/features/2D/classes/CirclesBase';
 import { getDistanceBetweenCoords } from '@/lib/get-distance';
 import { interpolate } from '@/lib/interpolate';
 

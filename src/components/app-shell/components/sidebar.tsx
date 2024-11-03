@@ -15,7 +15,7 @@ export function Sidebar({ ...props }: React.ComponentProps<typeof SidebarUI>) {
       // collapsible='icon'
       {...props}
     >
-      <SidebarHeader className='h-16 border-b border-sidebar-border justify-center items-center'>
+      <SidebarHeader className="h-16 border-b border-sidebar-border justify-center items-center">
         Canvas Playground
       </SidebarHeader>
       <SidebarContent>

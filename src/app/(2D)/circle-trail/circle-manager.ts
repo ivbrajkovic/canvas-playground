@@ -1,5 +1,5 @@
 import { Circle } from '@/features/2D/classes/circle';
-import { CirclesBase } from '@/features/2D/classes/circles';
+import { CirclesBase } from '@/features/2D/classes/CirclesBase';
 
 type Settings = {
   speed_min: number;

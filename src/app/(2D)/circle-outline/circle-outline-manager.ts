@@ -1,5 +1,5 @@
 import { CircleOutline } from '@/app/(2D)/circle-outline/circle-outline';
-import { CirclesBase } from '@/features/2D/classes/circles';
+import { CirclesBase } from '@/features/2D/classes/CirclesBase';
 
 type Settings = {
   speed_min: number;

@@ -1,57 +1,92 @@
 import { Particle } from '@/app/(2D)/particles/particle';
-import random from 'lodash/random';
+import { ParticleOptions } from '@/app/(2D)/particles/types';
+import { Mouse } from '@/app/(2D)/particles/mouse';
+
+const DEFAULT_CANVAS_WIDTH = 800;
+const DEFAULT_CANVAS_HEIGHT = 600;
 
 type Settings = {
-  vector_min: number;
-  vector_max: number;
+  speed_min: number;
+  speed_max: number;
   radius_min: number;
   radius_max: number;
-  particle_density: number;
-  particle_count: number;
-  particle_color: string;
-  line_color: string;
-  mouse_radius: number;
 };
 
 export class ParticleManager {
-  canvasWidth = 600;
-  canvasHeight = 400;
-  circles: Particle[] = [];
-  settings: Settings = {
-    vector_min: -2.0,
-    vector_max: 2.0,
-    radius_min: 1,
-    radius_max: 3,
-    particle_density: 10,
-    particle_color: '#ffffff',
-    line_color: '#ffffff',
-    particle_count: 100,
-    mouse_radius: 200,
+  particles: Particle[] = [];
+  options: ParticleOptions = {
+    color: {
+      opacity: 1,
+      particle: { r: 255, g: 255, b: 255 },
+      connection: { r: 255, g: 255, b: 255 },
+    },
+    connectionDistance: 120,
+    lineWidth: 1,
+    particleCountFactor: 12,
+    particleCount: 200,
   };
 
-  init(canvasWidth: number, canvasHeight: number) {
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.populate();
-  }
+  constructor() {}
 
-  populate() {
-    this.circles = Array.from({ length: this.settings.particle_count }, () => {
-      const radius = random(this.settings.radius_min, this.settings.radius_max);
-      const x = random(radius, this.canvasWidth - radius);
-      const y = random(radius, this.canvasHeight - radius);
-      const vx = random(this.settings.vector_min, this.settings.vector_max, true);
-      const vy = random(this.settings.vector_min, this.settings.vector_max, true);
-      const vector = { x: vx, y: vy };
-      const color = this.settings.particle_color;
-      const density = this.settings.particle_density;
-      const line = {
-        distance: 100,
-        color: '#ffffff',
-        opacity: 0.1,
-        width: 1,
-      };
-      return new Particle(x, y, vector, color, radius, density, line);
-    });
-  }
+  populate = (width: number, height: number) => {
+    const particleCount =
+      this.options.particleCount ??
+      Math.ceil(((width + height) / 100) * this.options.particleCountFactor);
+    this.particles = Array.from(
+      { length: particleCount },
+      () => new Particle(width, height),
+    );
+  };
+
+  draw = (
+    context: CanvasRenderingContext2D,
+    targetX: number,
+    targetY: number,
+    targetRadius: number,
+  ) => {
+    const canvasWidth = context.canvas.width;
+    const canvasHeight = context.canvas.height;
+    const colorOpacity = this.options.color.opacity;
+    const r = this.options.color.particle.r;
+    const g = this.options.color.particle.g;
+    const b = this.options.color.particle.b;
+    const lineWidth = this.options.lineWidth;
+    const connectionDistance = this.options.connectionDistance;
+    const particleColor = `rgba(${r},${g},${b},${colorOpacity})`;
+
+    let dx: number,
+      dy: number,
+      distanceSquared: number,
+      connectionDistanceSquared: number,
+      opacityValue: number;
+
+    for (let i = 0; i < this.particles.length; i++) {
+      const particleA = this.particles[i];
+
+      particleA.update(targetX, targetY, targetRadius);
+      particleA.move(canvasWidth, canvasHeight);
+      particleA.draw(context, particleColor);
+
+      for (let j = i; j < this.particles.length; j++) {
+        const particleB = this.particles[j];
+
+        dx = particleA.x - particleB.x;
+        dy = particleA.y - particleB.y;
+        distanceSquared = dx * dx + dy * dy;
+        connectionDistanceSquared = connectionDistance ** 2;
+
+        if (distanceSquared > connectionDistanceSquared) continue;
+
+        opacityValue =
+          (1 - Math.pow(distanceSquared / connectionDistanceSquared, 0.5)) *
+          colorOpacity;
+        context.strokeStyle = `rgba(${r},${g},${b},${opacityValue})`;
+        context.lineWidth = lineWidth;
+        context.beginPath();
+        context.moveTo(particleA.x, particleA.y);
+        context.lineTo(particleB.x, particleB.y);
+        context.stroke();
+      }
+    }
+  };
 }

@@ -25,11 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark flex flex-col min-h-screen`}
       >
         <AppShell>{children}</AppShell>
+        {/* <div className="flex-1 relative">{children}</div> */}
       </body>
     </html>
   );
