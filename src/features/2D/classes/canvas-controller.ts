@@ -63,8 +63,6 @@ export class CanvasController {
   };
 
   dispose = () => {
-    console.log('CanvasController.dispose');
-
     this.#removeResizeEventListener();
     this.context.reset();
     this.#canvas = null;

@@ -36,7 +36,7 @@ export class Particle {
     context.fill();
   }
 
-  update(targetX: number, targetY: number, targetRadius: number): void {
+  respondToForces(targetX: number, targetY: number, targetRadius: number): void {
     const dx = targetX - this.x;
     const dy = targetY - this.y;
     // const distance = Math.hypot(dx, dy);
