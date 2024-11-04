@@ -56,7 +56,10 @@ export class ParticleManager {
   };
 
   private _removeMouseMoveListener = () => {
-    this._context.canvas.removeEventListener('mousemove', this._mouseMoveListener);
+    this._context.canvas.removeEventListener(
+      'mousemove',
+      this._mouseMoveListener,
+    );
   };
 
   private _render = () => {

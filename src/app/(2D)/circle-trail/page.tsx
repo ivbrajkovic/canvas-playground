@@ -15,6 +15,7 @@ export default function Page() {
     const canvas = new CanvasController(canvasRef.current);
     const circles = new CircleTrailManager(canvas.context);
 
+    canvas.onResize = circles.populate;
     circles.populate();
     circles.isAnimating = true;
 
@@ -43,11 +44,11 @@ export default function Page() {
         .onFinishChange(circles.populate);
       circle
         .add(circles, 'speedMin', -10, 10, 0.1)
-        .name('Min')
+        .name('Speed Min')
         .onFinishChange(circles.populate);
       circle
         .add(circles, 'speedMax', -10, 10, 0.1)
-        .name('Max')
+        .name('Speed Max')
         .onFinishChange(circles.populate);
       circle
         .add(circles, 'radiusMin', 0, 100, 1)

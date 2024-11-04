@@ -15,6 +15,7 @@ export default function Particles() {
     const canvas = new CanvasController(canvasRef.current);
     const particles = new ParticleManager(canvas.context);
 
+    canvas.onResize = particles.populate;
     particles.populate();
     particles.isAnimating = true;
 
