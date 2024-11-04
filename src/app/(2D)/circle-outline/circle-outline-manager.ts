@@ -30,7 +30,7 @@ export class CircleOutlineManager {
   constructor(
     context: CanvasRenderingContext2D,
     animationController = new AnimationController(),
-    mouse = new Mouse(0, 0, 200, 0, 500),
+    mouse = new Mouse({ radius: 200, maxRadius: 500 }),
     fpsTracker = new FpsTracker(context.canvas.parentElement),
   ) {
     this._context = context;

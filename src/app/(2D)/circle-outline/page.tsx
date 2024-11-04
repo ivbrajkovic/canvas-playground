@@ -35,7 +35,7 @@ export default function Page() {
     datGui.configureGUI((gui) => {
       const canvasFolder = gui.addFolder('Canvas');
       canvasFolder.add(circles, 'isAnimating').name('Animate');
-      canvasFolder.add(circles, 'mouseRadius', 0, 500, 1).name('Radius');
+      canvasFolder.add(circles, 'mouseRadius', 0, 500, 1).name('Mouse Radius');
       canvasFolder.open();
 
       const circle = gui.addFolder('Circles');

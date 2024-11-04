@@ -6,7 +6,7 @@ const createSpan = () => {
   element.style.padding = '8px 16px';
   element.style.borderRadius = '4px';
   element.style.color = 'white';
-  element.style.minWidth = '120px';
+  element.style.minWidth = '100px';
   return element;
 };
 
@@ -32,7 +32,7 @@ export class FpsTracker {
 
     const delta = (now - this.lastFrameTime) * 0.001; // Time elapsed in seconds
     this.fps = this.frames / delta; // Average FPS over the elapsed time
-    this.trackerEl.textContent = `FPS: ${this.fps.toFixed(2)}`;
+    this.trackerEl.textContent = `FPS: ${~~this.fps}`;
     this.frames = 0;
     this.lastFrameTime = now;
   };

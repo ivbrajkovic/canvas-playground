@@ -36,7 +36,11 @@ export class Particle {
     context.fill();
   }
 
-  respondToForces(targetX: number, targetY: number, targetRadius: number): void {
+  respondToForces(
+    targetX: number,
+    targetY: number,
+    targetRadius: number,
+  ): void {
     const dx = targetX - this.x;
     const dy = targetY - this.y;
     // const distance = Math.hypot(dx, dy);
@@ -63,25 +67,25 @@ export class Particle {
     }
   }
 
-  move(canvasWidth: number, canvasHeight: number) {
+  move(maxWidth: number, maxHeight: number) {
     if (this.x + this.vector.x < 0) {
       this.vector.x *= -1;
       this.x = 0;
       this.baseX = 0;
-    } else if (this.x + this.vector.x > canvasWidth) {
+    } else if (this.x + this.vector.x > maxWidth) {
       this.vector.x *= -1;
-      this.x = canvasWidth;
-      this.baseX = canvasWidth;
+      this.x = maxWidth;
+      this.baseX = maxWidth;
     }
 
     if (this.y + this.vector.y < 0) {
       this.vector.y *= -1;
       this.y = 0;
       this.baseY = 0;
-    } else if (this.y + this.vector.y > canvasHeight) {
+    } else if (this.y + this.vector.y > maxHeight) {
       this.vector.y *= -1;
-      this.y = canvasHeight;
-      this.baseY = canvasHeight;
+      this.y = maxHeight;
+      this.baseY = maxHeight;
     } else {
       this.x += this.vector.x;
       this.baseX += this.vector.x;

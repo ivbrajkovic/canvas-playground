@@ -90,3 +90,8 @@ body {
 #canvas {
   @apply absolute top-0 left-0 w-full h-full;
 }
+
+.cr.color input,
+.cr.number input {
+  @apply bg-primary text-primary-foreground !m-0 !p-0 text-center;
+}

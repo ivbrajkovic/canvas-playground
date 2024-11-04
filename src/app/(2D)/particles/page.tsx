@@ -44,17 +44,25 @@ export default function Particles() {
           Full: 0,
         })
         .name('Ghosting').domElement.style.color = '#000';
+      canvasFolder
+        .add(particles, 'mouseRadius', 0, 500, 1)
+        .name('Mouse Radius');
       canvasFolder.open();
 
       const particlesFolder = gui.addFolder('Particles');
-      particlesFolder.add(particles, 'particleCount', 0, 500, 1).name('Count');
+      particlesFolder.add(particles, 'connections').name('Connect');
+      particlesFolder
+        .add(particles, 'particleCount', 0, 500, 1)
+        .name('Count')
+        .onFinishChange(particles.populate);
       particlesFolder
         .add(particles, 'linkingDistance', 0, 500, 1)
         .name('Distance');
+      particlesFolder.open();
 
       const colorFolder = gui.addFolder('Colors');
       colorFolder.addColor(particles, 'particleColor').name('Particle');
-      colorFolder.addColor(particles, 'lineColor').name('Line');
+      colorFolder.addColor(particles, 'lineColor').name('Connection');
     });
 
     return datGui.dispose;

@@ -9,30 +9,29 @@ export class ParticleManager {
   private _mouse: Mouse;
   private _fpsTracker: FpsTracker;
   private _particles: Particle[] = [];
-  private _particleCount = 200;
   private _lineWidth = 1;
 
+  public particleCount = 200;
+  public connections = true;
   public particleColor = '#ffffff';
   public lineColor = '#ffffff';
   public linkingDistance = 120;
   public ghosting = 1;
 
   // prettier-ignore
-  get particleCount() { return this._particleCount; }
-  set particleCount(value: number) {
-    this._particleCount = value;
-    this.populate();
-  }
-
-  // prettier-ignore
   get isAnimating() { return this._animationController.isAnimating; }
   // prettier-ignore
   set isAnimating(value: boolean) { this._animationController.isAnimating = value; }
 
+  // prettier-ignore
+  get mouseRadius() { return this._mouse.maxRadius; }
+  // prettier-ignore
+  set mouseRadius(value: number) { this._mouse.maxRadius = value; }
+
   constructor(
     context: CanvasRenderingContext2D,
     animationController = new AnimationController(),
-    mouse = new Mouse(),
+    mouse = new Mouse({ maxRadius: 250 }),
     fpsTracker = new FpsTracker(context.canvas.parentElement),
   ) {
     this._context = context;
@@ -88,6 +87,8 @@ export class ParticleManager {
       particleA.move(canvasWidth, canvasHeight);
       particleA.draw(context, particleColor);
 
+      if (!this.connections) continue;
+
       for (let j = i; j < this._particles.length; j++) {
         const particleB = this._particles[j];
 
@@ -122,14 +123,14 @@ export class ParticleManager {
     context.fillRect(0, 0, canvasWidth, canvasHeight);
 
     this._render();
-    this._mouse.reduceRadius();
+    this._mouse.decreaseRadius(4);
     this._fpsTracker.track();
   };
 
   populate = () => {
     const width = this._context.canvas.width;
     const height = this._context.canvas.height;
-    const length = this._particleCount;
+    const length = this.particleCount;
 
     this._particles = Array.from({ length }, () => new Particle(width, height));
   };
