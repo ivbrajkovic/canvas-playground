@@ -36,37 +36,6 @@ export class Particle {
     context.fill();
   }
 
-  respondToForces(
-    targetX: number,
-    targetY: number,
-    targetRadius: number,
-  ): void {
-    const dx = targetX - this.x;
-    const dy = targetY - this.y;
-    // const distance = Math.hypot(dx, dy);
-    const distSquared = dx * dx + dy * dy;
-    const distance = Math.sqrt(distSquared);
-
-    if (distance < targetRadius) {
-      const forceDirectionX = dx / distance;
-      const forceDirectionY = dy / distance;
-      const force = (targetRadius - distance) / targetRadius;
-      const directionX = forceDirectionX * force * this.density;
-      const directionY = forceDirectionY * force * this.density;
-      this.x -= directionX;
-      this.y -= directionY;
-    } else {
-      if (this.x !== this.baseX) {
-        const dx = this.x - this.baseX;
-        this.x -= dx / 50;
-      }
-      if (this.y !== this.baseY) {
-        const dy = this.y - this.baseY;
-        this.y -= dy / 50;
-      }
-    }
-  }
-
   move(maxWidth: number, maxHeight: number) {
     if (this.x + this.vector.x < 0) {
       this.vector.x *= -1;
@@ -91,6 +60,33 @@ export class Particle {
       this.baseX += this.vector.x;
       this.y += this.vector.y;
       this.baseY += this.vector.y;
+    }
+  }
+
+  update(targetX: number, targetY: number, targetRadius: number): void {
+    const dx = targetX - this.x;
+    const dy = targetY - this.y;
+    // const distance = Math.hypot(dx, dy);
+    const distSquared = dx * dx + dy * dy;
+    const distance = Math.sqrt(distSquared);
+
+    if (distance < targetRadius) {
+      const forceDirectionX = dx / distance;
+      const forceDirectionY = dy / distance;
+      const force = (targetRadius - distance) / targetRadius;
+      const directionX = forceDirectionX * force * this.density;
+      const directionY = forceDirectionY * force * this.density;
+      this.x -= directionX;
+      this.y -= directionY;
+    } else {
+      if (this.x !== this.baseX) {
+        const dx = this.x - this.baseX;
+        this.x -= dx / 50;
+      }
+      if (this.y !== this.baseY) {
+        const dy = this.y - this.baseY;
+        this.y -= dy / 50;
+      }
     }
   }
 }

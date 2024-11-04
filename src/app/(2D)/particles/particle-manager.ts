@@ -1,78 +1,76 @@
 import { Particle } from '@/app/(2D)/particles/particle';
 import { Mouse } from '@/app/(2D)/particles/mouse';
-import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
-import { AnimationController } from '@/app/(2D)/particles/animation-controller';
+// import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
+// import { AnimationController } from '@/app/(2D)/particles/animation-controller';
 
 export class ParticleManager {
-  private _context: CanvasRenderingContext2D;
-  private _animationController: AnimationController;
-  private _mouse: Mouse;
-  private _fpsTracker: FpsTracker;
+  // private _context: CanvasRenderingContext2D;
+  // private _animationController: AnimationController;
+  // private _mouse: Mouse;
+  // private _fpsTracker: FpsTracker;
   private _particles: Particle[] = [];
   private _lineWidth = 1;
 
-  public particleCount = 200;
-  public connections = true;
+  public isConnections = false;
+  public particleCount = 80;
   public particleColor = '#ffffff';
   public lineColor = '#ffffff';
   public linkingDistance = 120;
   public ghosting = 1;
 
   // prettier-ignore
-  get isAnimating() { return this._animationController.isAnimating; }
+  // get isAnimating() { return this._animationController.isAnimating; }
   // prettier-ignore
-  set isAnimating(value: boolean) { this._animationController.isAnimating = value; }
+  // set isAnimating(value: boolean) { this._animationController.isAnimating = value; }
 
   // prettier-ignore
-  get mouseRadius() { return this._mouse.maxRadius; }
+  // get mouseRadius() { return this._mouse.maxRadius; }
   // prettier-ignore
-  set mouseRadius(value: number) { this._mouse.maxRadius = value; }
+  // set mouseRadius(value: number) { this._mouse.maxRadius = value; }
 
   constructor(
-    context: CanvasRenderingContext2D,
-    mouse = new Mouse({ maxRadius: 250 }),
-    animationController = new AnimationController(),
-    fpsTracker = new FpsTracker(context.canvas.parentElement),
+    // context: CanvasRenderingContext2D,
+    // mouse = new Mouse({ maxRadius: 250 }),
+    // animationController = new AnimationController(),
+    // fpsTracker = new FpsTracker(context.canvas.parentElement),
   ) {
-    this._context = context;
-    this._animationController = animationController;
-    this._mouse = mouse;
-    this._fpsTracker = fpsTracker;
+    // this._context = context;
+    // this._animationController = animationController;
+    // this._mouse = mouse;
+    // this._fpsTracker = fpsTracker;
 
-    animationController.animation = this._animation;
-    animationController.onStart = this._addMouseMoveListener;
-    animationController.onStop = this._removeMouseMoveListener;
+    // animationController.animation = this._animation;
+    // animationController.onStart = this._addMouseMoveListener;
+    // animationController.onStop = this._removeMouseMoveListener;
   }
 
-  private _mouseMoveListener = (event: MouseEvent) => {
-    this._mouse.x = event.offsetX;
-    this._mouse.y = event.offsetY;
-    this._mouse.increaseRadius(10);
-  };
+  // private _mouseMoveListener = (event: MouseEvent) => {
+  //   this._mouse.x = event.offsetX;
+  //   this._mouse.y = event.offsetY;
+  //   this._mouse.increaseRadius(10);
+  // };
 
-  private _addMouseMoveListener = () => {
-    this._context.canvas.addEventListener('mousemove', this._mouseMoveListener);
-  };
+  // private _addMouseMoveListener = () => {
+  //   this._context.canvas.addEventListener('mousemove', this._mouseMoveListener);
+  // };
 
-  private _removeMouseMoveListener = () => {
-    this._context.canvas.removeEventListener(
-      'mousemove',
-      this._mouseMoveListener,
-    );
-  };
+  // private _removeMouseMoveListener = () => {
+  //   this._context.canvas.removeEventListener(
+  //     'mousemove',
+  //     this._mouseMoveListener,
+  //   );
+  // };
 
-  private _render = () => {
-    const context = this._context;
-    const canvasWidth = context.canvas.width;
-    const canvasHeight = context.canvas.height;
+  render = (
+    context: CanvasRenderingContext2D,
+    mouse: Mouse,
+    width: number,
+    height: number,
+  ) => {
     const lineWidth = this._lineWidth;
     const connectionDistance = this.linkingDistance;
     const particleColor = this.particleColor;
     const lineColor = this.lineColor;
-
-    const targetX = this._mouse.x;
-    const targetY = this._mouse.y;
-    const targetRadius = this._mouse.radius;
 
     let dx: number,
       dy: number,
@@ -83,11 +81,11 @@ export class ParticleManager {
     for (let i = 0; i < this._particles.length; i++) {
       const particleA = this._particles[i];
 
-      particleA.respondToForces(targetX, targetY, targetRadius);
-      particleA.move(canvasWidth, canvasHeight);
+      particleA.update(mouse.x, mouse.y, mouse.radius);
+      particleA.move(width, height);
       particleA.draw(context, particleColor);
 
-      if (!this.connections) continue;
+      if (!this.isConnections) continue;
 
       for (let j = i; j < this._particles.length; j++) {
         const particleB = this._particles[j];
@@ -114,34 +112,41 @@ export class ParticleManager {
     }
   };
 
-  private _animation = () => {
-    const context = this._context;
+  clearCanvas = (
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+  ) => {
+    context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
+    context.fillRect(0, 0, width, height);
+  };
+
+  animation = (context: CanvasRenderingContext2D) => {
     const canvasWidth = context.canvas.width;
     const canvasHeight = context.canvas.height;
 
     context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
     context.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    this._render();
-    this._mouse.decreaseRadius(4);
-    this._fpsTracker.track();
+    // this.render(context);
+    // this._mouse.decreaseRadius(4);
+    // this._fpsTracker.track();
   };
 
-  populate = () => {
-    const width = this._context.canvas.width;
-    const height = this._context.canvas.height;
-    const length = this.particleCount;
-
-    this._particles = Array.from({ length }, () => new Particle(width, height));
+  populate = (width: number, height: number) => {
+    this._particles = Array.from(
+      { length: this.particleCount },
+      () => new Particle(width, height),
+    );
   };
 
   dispose = () => {
-    this._animationController.isAnimating = false;
-    this._fpsTracker.dispose();
+    // this._animationController.isAnimating = false;
+    // this._fpsTracker.dispose();
     this._particles = [];
-    this._context = null!;
-    this._animationController = null!;
-    this._mouse = null!;
-    this._fpsTracker = null!;
+    // this._context = null!;
+    // this._animationController = null!;
+    // this._mouse = null!;
+    // this._fpsTracker = null!;
   };
 }

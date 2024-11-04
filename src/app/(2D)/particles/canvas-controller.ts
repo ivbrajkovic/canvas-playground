@@ -21,7 +21,8 @@ export class CanvasController {
 
     this._canvas = canvas;
     this._context = context;
-    this._devicePixelRatio = window.devicePixelRatio || 1;
+    // this._devicePixelRatio = window.devicePixelRatio || 1;
+    this._devicePixelRatio = 3;
 
     this._resize(canvas.clientWidth, canvas.clientHeight);
 
@@ -35,6 +36,8 @@ export class CanvasController {
   get width() { return this._canvas.width / this._devicePixelRatio; }
   // prettier-ignore
   get height() { return this._canvas.height / this._devicePixelRatio }
+  // prettier-ignore
+  get parentElement() { return this._canvas.parentElement!; }
 
   /**
    * Resizes the canvas element and adjusts for device pixel ratio.

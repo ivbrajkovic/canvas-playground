@@ -45,4 +45,11 @@ export class AnimationController {
     this._isAnimating = false;
     this.onStop?.();
   };
+
+  dispose = () => {
+    this.stop();
+    this._animation = null;
+    this.onStart = undefined;
+    this.onStop = undefined;
+  };
 }
