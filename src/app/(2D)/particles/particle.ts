@@ -36,25 +36,28 @@ export class Particle {
     context.fill();
   }
 
-  move(maxWidth: number, maxHeight: number) {
+  move(context: CanvasRenderingContext2D) {
+    const canvasWidth = context.canvas.width;
+    const canvasHeight = context.canvas.height;
+
     if (this.x + this.vector.x < 0) {
       this.vector.x *= -1;
       this.x = 0;
       this.baseX = 0;
-    } else if (this.x + this.vector.x > maxWidth) {
+    } else if (this.x + this.vector.x > canvasWidth) {
       this.vector.x *= -1;
-      this.x = maxWidth;
-      this.baseX = maxWidth;
+      this.x = canvasWidth;
+      this.baseX = canvasWidth;
     }
 
     if (this.y + this.vector.y < 0) {
       this.vector.y *= -1;
       this.y = 0;
       this.baseY = 0;
-    } else if (this.y + this.vector.y > maxHeight) {
+    } else if (this.y + this.vector.y > canvasHeight) {
       this.vector.y *= -1;
-      this.y = maxHeight;
-      this.baseY = maxHeight;
+      this.y = canvasHeight;
+      this.baseY = canvasHeight;
     } else {
       this.x += this.vector.x;
       this.baseX += this.vector.x;

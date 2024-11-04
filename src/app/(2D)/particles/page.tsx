@@ -19,28 +19,28 @@ export default function Particles() {
     if (!canvasRef.current) return console.error('Canvas element not found');
 
     const canvas = new CanvasController(canvasRef.current);
-    const context = canvas.context;
-    const width = canvas.width;
-    const height = canvas.height;
-
     const fptTracker = new FpsTracker(canvas.parentElement);
+    const particles = new ParticleManager(canvas.context);
     const animation = new AnimationController();
     const mouse = new Mouse({ maxRadius: 250 });
 
-    // canvas.onResize = particles.populate;
-
-    const particles = new ParticleManager();
-    particles.populate(width, height);
-
-    animation.animation = () => {
-      particles.clearCanvas(context, width, height);
-      particles.render(context, mouse, width, height);
+    const onMouseMove = (x: number, y: number) => {
+      mouse.x = x;
+      mouse.y = y;
+      mouse.increaseRadius(10);
+    };
+    const registerMouseMove = () => (canvas.onMouseMove = onMouseMove);
+    const unregisterMouseMove = () => (canvas.onMouseMove = null);
+    const renderAnimation = () => {
+      particles.animation(mouse);
+      mouse.decreaseRadius(4);
       fptTracker.track();
     };
 
-    // animation.onStart = () => (canvas.onMouseMove = mouse.updateCoords);
-    // animation.onStop = () => (canvas.onMouseMove = null);
-
+    canvas.onResize = particles.populate;
+    animation.onStart = registerMouseMove;
+    animation.onStop = unregisterMouseMove;
+    animation.animation = renderAnimation;
     animation.isAnimating = true;
 
     setAnimation(animation);

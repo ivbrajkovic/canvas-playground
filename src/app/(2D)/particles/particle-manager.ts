@@ -4,15 +4,15 @@ import { Mouse } from '@/app/(2D)/particles/mouse';
 // import { AnimationController } from '@/app/(2D)/particles/animation-controller';
 
 export class ParticleManager {
-  // private _context: CanvasRenderingContext2D;
-  // private _animationController: AnimationController;
+  private _context: CanvasRenderingContext2D;
   // private _mouse: Mouse;
+  // private _animationController: AnimationController;
   // private _fpsTracker: FpsTracker;
   private _particles: Particle[] = [];
   private _lineWidth = 1;
 
   public isConnections = false;
-  public particleCount = 80;
+  public particleCount = 200;
   public particleColor = '#ffffff';
   public lineColor = '#ffffff';
   public linkingDistance = 120;
@@ -29,14 +29,14 @@ export class ParticleManager {
   // set mouseRadius(value: number) { this._mouse.maxRadius = value; }
 
   constructor(
-    // context: CanvasRenderingContext2D,
-    // mouse = new Mouse({ maxRadius: 250 }),
-    // animationController = new AnimationController(),
-    // fpsTracker = new FpsTracker(context.canvas.parentElement),
+    context: CanvasRenderingContext2D,
+    // mouse: Mouse,
   ) {
-    // this._context = context;
-    // this._animationController = animationController;
+    this._context = context;
+    this.populate();
+    
     // this._mouse = mouse;
+    // this._animationController = animationController;
     // this._fpsTracker = fpsTracker;
 
     // animationController.animation = this._animation;
@@ -61,12 +61,8 @@ export class ParticleManager {
   //   );
   // };
 
-  render = (
-    context: CanvasRenderingContext2D,
-    mouse: Mouse,
-    width: number,
-    height: number,
-  ) => {
+  render = (mouse: Mouse) => {
+    const context = this._context;
     const lineWidth = this._lineWidth;
     const connectionDistance = this.linkingDistance;
     const particleColor = this.particleColor;
@@ -82,7 +78,7 @@ export class ParticleManager {
       const particleA = this._particles[i];
 
       particleA.update(mouse.x, mouse.y, mouse.radius);
-      particleA.move(width, height);
+      particleA.move(context);
       particleA.draw(context, particleColor);
 
       if (!this.isConnections) continue;
@@ -112,28 +108,31 @@ export class ParticleManager {
     }
   };
 
-  clearCanvas = (
-    context: CanvasRenderingContext2D,
-    width: number,
-    height: number,
-  ) => {
+  clearCanvas = () => {
+    const context = this._context;
+    const width = context.canvas.width;
+    const height = context.canvas.height;
     context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
     context.fillRect(0, 0, width, height);
   };
 
-  animation = (context: CanvasRenderingContext2D) => {
+  animation = (mouse: Mouse) => {
+    const context = this._context;
     const canvasWidth = context.canvas.width;
     const canvasHeight = context.canvas.height;
 
     context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
     context.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    // this.render(context);
+    this.render(mouse);
     // this._mouse.decreaseRadius(4);
     // this._fpsTracker.track();
   };
 
-  populate = (width: number, height: number) => {
+  populate = () => {
+    const context = this._context;
+    const width = context.canvas.width;
+    const height = context.canvas.height;
     this._particles = Array.from(
       { length: this.particleCount },
       () => new Particle(width, height),

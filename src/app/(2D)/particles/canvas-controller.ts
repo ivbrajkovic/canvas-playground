@@ -15,14 +15,13 @@ export class CanvasController {
     else this._removeMouseMoveListener();
   }
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, isDpiAdjusted = false) {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Canvas 2D rendering context not found');
 
     this._canvas = canvas;
     this._context = context;
-    // this._devicePixelRatio = window.devicePixelRatio || 1;
-    this._devicePixelRatio = 3;
+    this._devicePixelRatio = isDpiAdjusted ? window.devicePixelRatio : 1;
 
     this._resize(canvas.clientWidth, canvas.clientHeight);
 

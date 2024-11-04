@@ -27,18 +27,18 @@ export class Mouse {
     this.maxRadius = maxRadius;
   }
 
-  updateCoords(x: number, y: number) {
+  updateCoords = (x: number, y: number) => {
     this.x = x;
     this.y = y;
-  }
+  };
 
-  increaseRadius(value = 1) {
+  increaseRadius = (value = 1) => {
     const newRadius = this.radius + value;
     this.radius = newRadius > this.maxRadius ? this.maxRadius : newRadius;
-  }
+  };
 
-  decreaseRadius(value = 1) {
+  decreaseRadius = (value = 1) => {
     const newRadius = this.radius - value;
     this.radius = newRadius < this.minRadius ? this.minRadius : newRadius;
-  }
+  };
 }
