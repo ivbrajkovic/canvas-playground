@@ -30,8 +30,8 @@ export class ParticleManager {
 
   constructor(
     context: CanvasRenderingContext2D,
-    animationController = new AnimationController(),
     mouse = new Mouse({ maxRadius: 250 }),
+    animationController = new AnimationController(),
     fpsTracker = new FpsTracker(context.canvas.parentElement),
   ) {
     this._context = context;

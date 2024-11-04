@@ -2,6 +2,7 @@
 
 import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
 import { DotGuiController } from '@/app/(2D)/particles/dotgui-controller';
+import { Mouse } from '@/app/(2D)/particles/mouse';
 import { ParticleManager } from '@/app/(2D)/particles/particle-manager';
 import { useEffect, useRef, useState } from 'react';
 
@@ -16,6 +17,8 @@ export default function Particles() {
     const particles = new ParticleManager(canvas.context);
 
     canvas.onResize = particles.populate;
+    canvas.onMouseMove = particles.;
+
     particles.populate();
     particles.isAnimating = true;
 
