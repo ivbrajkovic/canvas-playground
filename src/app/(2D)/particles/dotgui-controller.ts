@@ -3,25 +3,19 @@ import { GUI } from 'dat.gui';
 export class GuiControls {
   #guiControls: Promise<GUI>;
 
-  // constructor(configureGUI: (gui: GUI) => void) {
-  //   this.guiControls = import('dat.gui') //
-  //     .then(async (dat) => {
-  //       const gui = new dat.GUI();
-  //       gui.domElement.style.marginTop = '64px';
-  //       gui.domElement.style.marginRight = '0px';
-  //       configureGUI(gui);
-  //       return gui;
-  //     });
-  // }
-
   constructor() {
-    this.#guiControls = import('dat.gui') //
-      .then((dat) => new dat.GUI());
+    this.#guiControls = import('dat.gui')
+      .then((dat) => new dat.GUI())
+      .then((gui) => {
+        gui.domElement.style.marginTop = '64px';
+        gui.domElement.style.marginRight = '0px';
+        return gui;
+      });
   }
 
-  add = (configureGUI: (gui: GUI) => void) => {
+  add = (setupGui: (gui: GUI) => void) => {
     this.#guiControls = this.#guiControls.then((gui) => {
-      configureGUI(gui);
+      setupGui(gui);
       return gui;
     });
     return this;

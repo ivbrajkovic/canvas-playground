@@ -3,8 +3,8 @@
 import { CircleCollisionManager } from '@/app/(2D)/circle-collision/circle-collision-manager';
 import { AnimationController } from '@/app/(2D)/particles/animation-controller';
 import { CanvasController } from '@/app/(2D)/particles/canvas-controller-2';
+import { GuiControls } from '@/app/(2D)/particles/dotgui-controller';
 import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
-import { useDatGui } from '@/hooks/use-dat-gui';
 import { useEffect, useRef, useState } from 'react';
 
 const CircleCollision = () => {
@@ -45,44 +45,40 @@ const CircleCollision = () => {
   }, [animationController, circles]);
 
   useEffect(() => {
-    if (!canvasRef.current) return console.error('Canvas element not found');
-
-    
-
-    return () => {};
-  }, []);
-
-  useDatGui((gui) => {
-    gui.add(animationController, 'isAnimating');
-    gui
-      .add(circles.settings, 'speedMin', -10, 10, 0.1)
-      .name('Speed Min')
-      .onFinishChange(circles.populate);
-    gui
-      .add(circles.settings, 'speedMax', -10, 10, 0.1)
-      .name('Speed Max')
-      .onFinishChange(circles.populate);
-    gui
-      .add(circles.settings, 'radiusMin', 1, 60, 1)
-      .name('Size Min')
-      .onFinishChange(circles.populate);
-    gui
-      .add(circles.settings, 'radiusMax', 1, 70, 1)
-      .name('Size Max')
-      .onFinishChange(circles.populate);
-    gui
-      .add(circles.settings, 'massMin', 1, 100, 0.1)
-      .name('Mass Min')
-      .onFinishChange(circles.populate);
-    gui
-      .add(circles.settings, 'massMax', 1, 100, 0.1)
-      .name('Mass Max')
-      .onFinishChange(circles.populate);
-    gui
-      .add(circles.settings, 'circleCount', 1, 60, 1)
-      .name('Count')
-      .onFinishChange(circles.populate);
-  });
+    return new GuiControls().add((gui) => {
+      gui.addFolder('Canvas');
+      gui.add(animationController, 'isAnimating').name('Animate');
+      gui.addFolder('Circles');
+      gui
+        .add(circles.settings, 'speedMin', -10, 10, 0.1)
+        .name('Speed Min')
+        .onFinishChange(circles.populate);
+      gui
+        .add(circles.settings, 'speedMax', -10, 10, 0.1)
+        .name('Speed Max')
+        .onFinishChange(circles.populate);
+      gui
+        .add(circles.settings, 'radiusMin', 1, 60, 1)
+        .name('Size Min')
+        .onFinishChange(circles.populate);
+      gui
+        .add(circles.settings, 'radiusMax', 1, 70, 1)
+        .name('Size Max')
+        .onFinishChange(circles.populate);
+      gui
+        .add(circles.settings, 'massMin', 1, 100, 0.1)
+        .name('Mass Min')
+        .onFinishChange(circles.populate);
+      gui
+        .add(circles.settings, 'massMax', 1, 100, 0.1)
+        .name('Mass Max')
+        .onFinishChange(circles.populate);
+      gui
+        .add(circles.settings, 'circleCount', 1, 60, 1)
+        .name('Count')
+        .onFinishChange(circles.populate);
+    }).dispose;
+  }, [animationController, circles]);
 
   return <canvas id="canvas" ref={canvasRef} />;
 };
