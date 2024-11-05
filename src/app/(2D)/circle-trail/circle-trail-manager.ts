@@ -1,7 +1,7 @@
 import random from 'lodash/random';
-import { AnimationController } from '@/app/(2D)/particles/animation-controller';
+import { AnimationController } from '@/features/animation-controller/animation-controller';
 import { Circle } from '@/features/2D/classes/circle';
-import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
+import { FpsTracker } from '@/features/fps-tracker/fps-tracker';
 import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
 
 export class CircleTrailManager {

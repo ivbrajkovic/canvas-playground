@@ -4,8 +4,6 @@ import { CircleCollision } from '@/app/(2D)/circle-collision/circle-collision';
 import { interpolate } from '@/lib/interpolate';
 
 export class CircleCollisionManager {
-  canvasWidth = 600;
-  canvasHeight = 400;
   circles: CircleCollision[] = [];
   settings = {
     speedMin: -2.0,
@@ -17,18 +15,16 @@ export class CircleCollisionManager {
     circleCount: 40,
   };
 
-  init(canvasWidth: number, canvasHeight: number) {
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.populate();
-  }
-
-  populate = () => {
+  populate = (canvasWidth: number, canvasHeight: number) => {
     this.circles = [];
 
     for (let i = 0; i < this.settings.circleCount; i++) {
       const radius = random(this.settings.radiusMin, this.settings.radiusMax);
-      const { x, y } = this.#placeCircleWithoutOverlap(radius);
+      const { x, y } = this.#placeCircleWithoutOverlap(
+        canvasWidth,
+        canvasHeight,
+        radius,
+      );
 
       let vx = interpolate(
         radius,
@@ -65,7 +61,12 @@ export class CircleCollisionManager {
     }
   };
 
-  #placeCircleWithoutOverlap(radius: number, maxAttempts = 10_000) {
+  #placeCircleWithoutOverlap(
+    canvasWidth: number,
+    canvasHeight: number,
+    radius: number,
+    maxAttempts = 10_000,
+  ) {
     let attempts = 0;
     let x, y, isOverlapping;
 
@@ -76,8 +77,8 @@ export class CircleCollisionManager {
         );
 
       // Generate a new random x and y position
-      x = random(radius, this.canvasWidth - radius);
-      y = random(radius, this.canvasHeight - radius);
+      x = random(radius, canvasWidth - radius);
+      y = random(radius, canvasHeight - radius);
       isOverlapping = false;
 
       // Check if the circle overlaps with any other circle

@@ -1,6 +1,6 @@
-import { AnimationController } from '@/app/(2D)/particles/animation-controller';
+import { AnimationController } from '@/features/animation-controller/animation-controller';
 import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
-import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
+import { FpsTracker } from '@/features/fps-tracker/fps-tracker';
 import { Mouse } from '@/app/(2D)/particles/mouse';
 import { Particle } from '@/app/(2D)/particles/particle';
 
@@ -47,7 +47,8 @@ export class ParticleManager {
 
     this._animationController.onStart = () =>
       this._canvasController.addMouseMoveListener(this._onMouseMove);
-    this._animationController.onStop = () => this._canvasController.removeMouseMoveListener();
+    this._animationController.onStop = () =>
+      this._canvasController.removeMouseMoveListener();
     this._animationController.animation = this._animation;
     this._animationController.isAnimating = true;
   }

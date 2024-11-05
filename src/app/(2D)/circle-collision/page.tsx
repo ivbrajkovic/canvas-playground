@@ -1,35 +1,34 @@
 'use client';
 
-import { CircleCollisionManager } from '@/app/(2D)/circle-collision/circle-collision-manager';
-import { AnimationController } from '@/app/(2D)/particles/animation-controller';
-import { CanvasController } from '@/app/(2D)/particles/canvas-controller-2';
-import { GuiControls } from '@/app/(2D)/particles/dotgui-controller';
-import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
-import { useEffect, useRef, useState } from 'react';
+import { useCanvasController } from '@/features/canvas-controller/use-canvas-controller';
+import { useAnimationController } from '@/app/(2D)/circle-collision/use-animation-controller';
+import { useCircleCollisionManager } from '@/app/(2D)/circle-collision/use-circle-collision-manager';
+import { useFpsTracker } from '@/features/fps-tracker/use-fps-tracker';
+import { useGuiControls } from '@/app/(2D)/circle-collision/use-gui-controls';
+
+import { useEffect, useRef } from 'react';
+import { FpsTracker } from '@/features/fps-tracker/fps-tracker';
 
 const CircleCollision = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [circles] = useState(() => new CircleCollisionManager());
-  const [animationController] = useState(() => new AnimationController());
+
+  const canvasController = useCanvasController(canvasRef);
+  const circleCollisionManager = useCircleCollisionManager(canvasController);
+  const animationController = useAnimationController();
+  useGuiControls(canvasController, animationController, circleCollisionManager);
 
   useEffect(() => {
-    if (!canvasRef.current) return console.error('Canvas element not found');
+    if (!canvasRef.current) return;
+    if (!animationController || !canvasController || !circleCollisionManager) return;
 
-    const canvasController = new CanvasController(canvasRef.current);
     const fpsTracker = new FpsTracker(canvasRef.current.parentElement!);
-
-    circles.init(canvasController.width, canvasController.height);
 
     animationController.start(() => {
       canvasController.draw((context) => {
-        context.clearRect(
-          0,
-          0,
-          canvasController.width,
-          canvasController.height,
-        );
-        circles.circles.forEach((circle) => {
-          circle.update(circles.circles);
+        const { width, height } = canvasController;
+        context.clearRect(0, 0, width, height);
+        circleCollisionManager.circles.forEach((circle) => {
+          circle.update(circleCollisionManager.circles);
           circle.move(context);
           circle.draw(context);
         });
@@ -38,47 +37,10 @@ const CircleCollision = () => {
     });
 
     return () => {
-      fpsTracker.dispose();
       animationController.stop();
-      canvasController.dispose();
+      fpsTracker.dispose();
     };
-  }, [animationController, circles]);
-
-  useEffect(() => {
-    return new GuiControls().add((gui) => {
-      gui.addFolder('Canvas');
-      gui.add(animationController, 'isAnimating').name('Animate');
-      gui.addFolder('Circles');
-      gui
-        .add(circles.settings, 'speedMin', -10, 10, 0.1)
-        .name('Speed Min')
-        .onFinishChange(circles.populate);
-      gui
-        .add(circles.settings, 'speedMax', -10, 10, 0.1)
-        .name('Speed Max')
-        .onFinishChange(circles.populate);
-      gui
-        .add(circles.settings, 'radiusMin', 1, 60, 1)
-        .name('Size Min')
-        .onFinishChange(circles.populate);
-      gui
-        .add(circles.settings, 'radiusMax', 1, 70, 1)
-        .name('Size Max')
-        .onFinishChange(circles.populate);
-      gui
-        .add(circles.settings, 'massMin', 1, 100, 0.1)
-        .name('Mass Min')
-        .onFinishChange(circles.populate);
-      gui
-        .add(circles.settings, 'massMax', 1, 100, 0.1)
-        .name('Mass Max')
-        .onFinishChange(circles.populate);
-      gui
-        .add(circles.settings, 'circleCount', 1, 60, 1)
-        .name('Count')
-        .onFinishChange(circles.populate);
-    }).dispose;
-  }, [animationController, circles]);
+  }, [animationController, canvasController, circleCollisionManager]);
 
   return <canvas id="canvas" ref={canvasRef} />;
 };
