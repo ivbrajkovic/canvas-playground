@@ -1,7 +1,6 @@
 'use client';
 
 import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-trail-manager';
-import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
 import { DotGuiController } from '@/app/(2D)/particles/dotgui-controller';
 import { useEffect, useRef, useState } from 'react';
 
@@ -12,18 +11,10 @@ export default function Page() {
   useEffect(() => {
     if (!canvasRef.current) return console.error('Canvas element not found');
 
-    const canvas = new CanvasController(canvasRef.current);
-    const circles = new CircleTrailManager(canvas.context);
-
-    canvas.onResize = circles.populate;
-    circles.populate();
-    circles.isAnimating = true;
-
+    const circles = new CircleTrailManager(canvasRef.current);
     setCircles(circles);
 
-    return () => {
-      canvas.dispose();
-    };
+    return circles.dispose;
   }, []);
 
   useEffect(() => {

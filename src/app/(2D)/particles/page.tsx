@@ -21,16 +21,13 @@ export default function Particles() {
   useEffect(() => {
     if (!particles) return;
 
-    const mouse = particles.mouse;
-    const animation = particles.animationController;
-
     const datGui = new DotGuiController((gui) => {
       const canvasFolder = gui.addFolder('Canvas');
-      canvasFolder.add(animation, 'isAnimating').name('Animate');
+      canvasFolder.add(particles, 'isAnimating').name('Animate');
       canvasFolder
         .add(particles, 'ghosting', { Off: 1, Low: 0.3, Medium: 0.2, High: 0.1, Full: 0 })
         .name('Ghosting').domElement.style.color = '#000';
-      canvasFolder.add(mouse, 'radius', 0, 500, 1).name('Mouse Radius');
+      canvasFolder.add(particles, 'mouseRadius', 0, 500, 1).name('Mouse Radius');
       canvasFolder.open();
 
       const particlesFolder = gui.addFolder('Particles');

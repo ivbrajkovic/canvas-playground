@@ -2,9 +2,12 @@ import random from 'lodash/random';
 import { AnimationController } from '@/app/(2D)/particles/animation-controller';
 import { Circle } from '@/features/2D/classes/circle';
 import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
+import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
 
 export class CircleTrailManager {
+  private _canvas: HTMLCanvasElement;
   private _context: CanvasRenderingContext2D;
+  private _canvasController: CanvasController;
   private _animationController: AnimationController;
   private _fpsTracker: FpsTracker;
   private _circles: Circle[] = [];
@@ -26,34 +29,18 @@ export class CircleTrailManager {
   // prettier-ignore
   set trailing(value: number) { this._trailing = 1 - value; }
 
-  constructor(
-    context: CanvasRenderingContext2D,
-    animationController: AnimationController = new AnimationController(),
-    fpsTracker = new FpsTracker(context.canvas.parentElement),
-  ) {
-    this._context = context;
-    this._animationController = animationController;
-    this._fpsTracker = fpsTracker;
+  constructor(canvas: HTMLCanvasElement) {
+    this._canvasController = new CanvasController(canvas);
+    this._fpsTracker = new FpsTracker(canvas);
+    this._animationController = new AnimationController();
+    this._canvas = this._canvasController.canvas;
+    this._context = this._canvasController.context;
 
-    animationController.animation = this._animation;
+    this.populate();
+
+    this._animationController.animation = this._animation;
+    this._animationController.isAnimating = true;
   }
-
-  populate = () => {
-    const width = this._context.canvas.width;
-    const height = this._context.canvas.height;
-    const length = this.circleCount;
-
-    this._circles = Array.from({ length }, () => {
-      const radius = random(this.radiusMin, this.radiusMax);
-      const x = random(radius, width - radius);
-      const y = random(radius, height - radius);
-      const vx = random(this.speedMin, this.speedMax, true);
-      const vy = random(this.speedMin, this.speedMax, true);
-      const vector = { x: vx, y: vy };
-      const color = `hsl(${random(360, true)}, 50%, 50%)`;
-      return new Circle(x, y, vector, radius, 1, color, color);
-    });
-  };
 
   private _render = () => {
     const context = this._context;
@@ -75,12 +62,32 @@ export class CircleTrailManager {
     this._fpsTracker.track();
   };
 
-  dispose = () => {
+  public populate = () => {
+    const width = this._canvas.width;
+    const height = this._canvas.height;
+    const length = this.circleCount;
+
+    this._circles = Array.from({ length }, () => {
+      const radius = random(this.radiusMin, this.radiusMax);
+      const x = random(radius, width - radius);
+      const y = random(radius, height - radius);
+      const vx = random(this.speedMin, this.speedMax, true);
+      const vy = random(this.speedMin, this.speedMax, true);
+      const vector = { x: vx, y: vy };
+      const color = `hsl(${random(360, true)}, 50%, 50%)`;
+      return new Circle(x, y, vector, radius, 1, color, color);
+    });
+  };
+
+  public dispose = () => {
     this._fpsTracker.dispose();
     this._animationController.stop();
+    this._canvasController.dispose();
     this._circles = [];
     this._context = null!;
+    this._canvas = null!;
     this._fpsTracker = null!;
+    this._canvasController = null!;
     this._animationController = null!;
   };
 }
