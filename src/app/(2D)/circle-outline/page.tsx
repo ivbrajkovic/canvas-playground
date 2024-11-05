@@ -30,19 +30,14 @@ export default function Page() {
   useEffect(() => {
     if (!circles) return;
 
-    const datGui = new DotGuiController();
-
-    datGui.configureGUI((gui) => {
+    const datGui = new DotGuiController((gui) => {
       const canvasFolder = gui.addFolder('Canvas');
       canvasFolder.add(circles, 'isAnimating').name('Animate');
       canvasFolder.add(circles, 'mouseRadius', 0, 500, 1).name('Mouse Radius');
       canvasFolder.open();
 
       const circle = gui.addFolder('Circles');
-      circle
-        .add(circles, 'circleCount', 0, 1000, 1)
-        .name('Count')
-        .onFinishChange(circles.populate);
+      circle.add(circles, 'circleCount', 0, 1000, 1).name('Count').onFinishChange(circles.populate);
       circle
         .add(circles, 'speedMin', -10, 10, 0.1)
         .name('Speed Min')
@@ -65,7 +60,5 @@ export default function Page() {
     return datGui.dispose;
   }, [circles]);
 
-  return (
-    <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
-  );
+  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
 }

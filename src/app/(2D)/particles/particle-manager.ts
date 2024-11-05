@@ -14,7 +14,7 @@ export class ParticleManager {
   public animationController: AnimationController;
 
   public ghosting = 1;
-  public isConnections = false;
+  public isConnections = true;
   public linkingDistance = 120;
   public particleCount = 200;
   public particleColor = '#ffffff';
@@ -33,8 +33,7 @@ export class ParticleManager {
 
     this.animationController.onStart = () =>
       this.canvasController.addMouseMoveListener(this.onMouseMove);
-    this.animationController.onStop = () =>
-      this.canvasController.removeMouseMoveListener();
+    this.animationController.onStop = () => this.canvasController.removeMouseMoveListener();
 
     this.animationController.animation = this.animate;
     this.animationController.isAnimating = true;
@@ -74,8 +73,7 @@ export class ParticleManager {
 
         if (distanceSquared > connectionDistanceSquared) continue;
 
-        opacityValue =
-          1 - Math.pow(distanceSquared / connectionDistanceSquared, 0.5);
+        opacityValue = 1 - Math.pow(distanceSquared / connectionDistanceSquared, 0.5);
         this.context.save();
         this.context.strokeStyle = this.lineColor;
         this.context.lineWidth = this.lineWidth;
