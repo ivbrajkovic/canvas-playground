@@ -1,10 +1,10 @@
 import { CircleCollisionManager } from '@/app/(2D)/circle-collision/circle-collision-manager';
+import { AnimationController } from '@/app/(2D)/particles/animation-controller';
 import { FpsTracker } from '@/classes/fps-tracker';
-import { AnimationController } from '@/controllers/animation-controller';
 import { MouseController } from '@/controllers/mouse-controller';
 import { CanvasController } from '@/features/2D/classes/canvas-controller';
 import { useDatGui } from '@/hooks/use-dat-gui';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useCircleCollision = () => {
   const [animationController] = useState(() => new AnimationController());
@@ -12,7 +12,6 @@ export const useCircleCollision = () => {
   const [mouseController] = useState(() => new MouseController());
   const [fpsTracker] = useState(() => new FpsTracker());
   const [circles] = useState(() => new CircleCollisionManager());
-  const settingsRef = useRef({ active: true });
 
   useEffect(() => {
     canvasController.init();
@@ -24,7 +23,7 @@ export const useCircleCollision = () => {
       const context = canvasController.context;
       context.clearRect(0, 0, context.canvas.width, context.canvas.height);
       circles.circles.forEach((circle) => {
-        circle.processCircleCollisions(circles.circles);
+        circle.update(circles.circles);
         circle.move(context);
         circle.draw(context);
       });
@@ -43,13 +42,13 @@ export const useCircleCollision = () => {
 
   useDatGui((gui) => {
     const settings = circles.settings;
-    gui.add(settingsRef.current, 'active').onChange(animationController.toggle);
-    gui.add(settings, 'speed_min', -10, 10, 0.1).onFinishChange(circles.populate);
-    gui.add(settings, 'speed_max', -10, 10, 0.1).onFinishChange(circles.populate);
-    gui.add(settings, 'radius_min', 1, 60, 1).onFinishChange(circles.populate);
-    gui.add(settings, 'radius_max', 1, 70, 1).onFinishChange(circles.populate);
-    gui.add(settings, 'mass_min', 1, 100, 0.1).onFinishChange(circles.populate);
-    gui.add(settings, 'mass_max', 1, 100, 0.1).onFinishChange(circles.populate);
-    gui.add(settings, 'circle_count', 1, 60, 1).onFinishChange(circles.populate);
+    gui.add(animationController, 'isAnimating');
+    gui.add(settings, 'speedMin', -10, 10, 0.1).name('Speed Min').onFinishChange(circles.populate);
+    gui.add(settings, 'speedMax', -10, 10, 0.1).name('Speed Max').onFinishChange(circles.populate);
+    gui.add(settings, 'radiusMin', 1, 60, 1).name('Size Min').onFinishChange(circles.populate);
+    gui.add(settings, 'radiusMax', 1, 70, 1).name('Size Max').onFinishChange(circles.populate);
+    gui.add(settings, 'massMin', 1, 100, 0.1).name('Mass Min').onFinishChange(circles.populate);
+    gui.add(settings, 'massMax', 1, 100, 0.1).name('Mass Max').onFinishChange(circles.populate);
+    gui.add(settings, 'circleCount', 1, 60, 1).name('Count').onFinishChange(circles.populate);
   });
 };

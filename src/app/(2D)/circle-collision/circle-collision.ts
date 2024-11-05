@@ -17,7 +17,7 @@ export class CircleCollision extends Circle {
     this.mass = mass;
   }
 
-  processCircleCollisions(circles: CircleCollision[]): void {
+  update(circles: CircleCollision[]): void {
     for (let i = 0; i < circles.length; i++) {
       if (this === circles[i]) continue;
 
