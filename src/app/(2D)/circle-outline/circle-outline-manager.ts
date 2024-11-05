@@ -28,10 +28,11 @@ export class CircleOutlineManager {
   set mouseRadius(value: number) { this._mouse.radius = value; }
 
   constructor(
-    context: CanvasRenderingContext2D,
-    animationController = new AnimationController(),
-    mouse = new Mouse({ radius: 200, maxRadius: 500 }),
-    fpsTracker = new FpsTracker(context.canvas.parentElement),
+    // context: CanvasRenderingContext2D,
+    // animationController = new AnimationController(),
+    // mouse = new Mouse({ radius: 200, maxRadius: 500 }),
+    // fpsTracker = new FpsTracker(context.canvas.parentElement),
+    canvas: HTMLCanvasElement,
   ) {
     this._context = context;
     this._animationController = animationController;
@@ -53,10 +54,7 @@ export class CircleOutlineManager {
   };
 
   private _removeMouseMoveListener = () => {
-    this._context.canvas.removeEventListener(
-      'mousemove',
-      this._mouseMoveListener,
-    );
+    this._context.canvas.removeEventListener('mousemove', this._mouseMoveListener);
   };
 
   private _render = () => {

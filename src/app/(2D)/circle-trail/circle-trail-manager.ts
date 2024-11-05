@@ -43,34 +43,25 @@ export class CircleTrailManager {
   }
 
   private _render = () => {
-    const context = this._context;
     this._circles.forEach((circle) => {
-      circle.move(context);
-      circle.draw(context);
+      circle.move(this._context);
+      circle.draw(this._context);
     });
   };
 
   private _animation = () => {
-    const context = this._context;
-    const canvasWidth = context.canvas.width;
-    const canvasHeight = context.canvas.height;
-
-    context.fillStyle = `hsla(0, 0%, 10%, ${this._trailing})`;
-    context.fillRect(0, 0, canvasWidth, canvasHeight);
+    this._context.fillStyle = `hsla(0, 0%, 10%, ${this._trailing})`;
+    this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
 
     this._render();
     this._fpsTracker.track();
   };
 
   public populate = () => {
-    const width = this._canvas.width;
-    const height = this._canvas.height;
-    const length = this.circleCount;
-
-    this._circles = Array.from({ length }, () => {
+    this._circles = Array.from({ length: this.circleCount }, () => {
       const radius = random(this.radiusMin, this.radiusMax);
-      const x = random(radius, width - radius);
-      const y = random(radius, height - radius);
+      const x = random(radius, this._canvas.width - radius);
+      const y = random(radius, this._canvas.height - radius);
       const vx = random(this.speedMin, this.speedMax, true);
       const vy = random(this.speedMin, this.speedMax, true);
       const vector = { x: vx, y: vy };
