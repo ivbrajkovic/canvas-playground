@@ -1,27 +1,33 @@
 import { GUI } from 'dat.gui';
 
-export class DotGuiController {
-  private gui: Promise<GUI>;
+export class GuiControls {
+  #guiControls: Promise<GUI>;
 
-  constructor(configureGUI: (gui: GUI) => void) {
-    this.gui = import('dat.gui') //
-      .then(async (dat) => {
-        const gui = new dat.GUI();
-        gui.domElement.style.marginTop = '64px';
-        gui.domElement.style.marginRight = '0px';
-        configureGUI(gui);
-        return gui;
-      });
+  // constructor(configureGUI: (gui: GUI) => void) {
+  //   this.guiControls = import('dat.gui') //
+  //     .then(async (dat) => {
+  //       const gui = new dat.GUI();
+  //       gui.domElement.style.marginTop = '64px';
+  //       gui.domElement.style.marginRight = '0px';
+  //       configureGUI(gui);
+  //       return gui;
+  //     });
+  // }
+
+  constructor() {
+    this.#guiControls = import('dat.gui') //
+      .then((dat) => new dat.GUI());
   }
 
-  configureGUI = (configureGUI: (gui: GUI) => void) => {
-    this.gui = this.gui.then((gui) => {
+  add = (configureGUI: (gui: GUI) => void) => {
+    this.#guiControls = this.#guiControls.then((gui) => {
       configureGUI(gui);
       return gui;
     });
+    return this;
   };
 
   dispose = () => {
-    this.gui.then((gui) => gui.destroy());
+    this.#guiControls.then((gui) => gui.destroy());
   };
 }

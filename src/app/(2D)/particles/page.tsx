@@ -1,6 +1,6 @@
 'use client';
 
-import { DotGuiController } from '@/app/(2D)/particles/dotgui-controller';
+import { GuiControls } from '@/app/(2D)/particles/dotgui-controller';
 
 import { ParticleManager } from '@/app/(2D)/particles/particle-manager';
 import { useEffect, useRef, useState } from 'react';
@@ -21,13 +21,21 @@ export default function Particles() {
   useEffect(() => {
     if (!particles) return;
 
-    const datGui = new DotGuiController((gui) => {
+    const datGui = new GuiControls((gui) => {
       const canvasFolder = gui.addFolder('Canvas');
       canvasFolder.add(particles, 'isAnimating').name('Animate');
       canvasFolder
-        .add(particles, 'ghosting', { Off: 1, Low: 0.3, Medium: 0.2, High: 0.1, Full: 0 })
+        .add(particles, 'ghosting', {
+          Off: 1,
+          Low: 0.3,
+          Medium: 0.2,
+          High: 0.1,
+          Full: 0,
+        })
         .name('Ghosting').domElement.style.color = '#000';
-      canvasFolder.add(particles, 'mouseRadius', 0, 500, 1).name('Mouse Radius');
+      canvasFolder
+        .add(particles, 'mouseRadius', 0, 500, 1)
+        .name('Mouse Radius');
       canvasFolder.open();
 
       const particlesFolder = gui.addFolder('Particles');
@@ -36,7 +44,9 @@ export default function Particles() {
         .add(particles, 'particleCount', 0, 500, 1)
         .name('Count')
         .onFinishChange(particles.populate);
-      particlesFolder.add(particles, 'linkingDistance', 0, 500, 1).name('Distance');
+      particlesFolder
+        .add(particles, 'linkingDistance', 0, 500, 1)
+        .name('Distance');
       particlesFolder.open();
 
       const colorFolder = gui.addFolder('Colors');
@@ -47,5 +57,7 @@ export default function Particles() {
     return datGui.dispose;
   }, [particles]);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
+  return (
+    <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
+  );
 }

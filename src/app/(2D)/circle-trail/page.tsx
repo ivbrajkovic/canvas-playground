@@ -1,7 +1,7 @@
 'use client';
 
 import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-trail-manager';
-import { DotGuiController } from '@/app/(2D)/particles/dotgui-controller';
+import { GuiControls } from '@/app/(2D)/particles/dotgui-controller';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Page() {
@@ -20,14 +20,17 @@ export default function Page() {
   useEffect(() => {
     if (!circles) return;
 
-    const datGui = new DotGuiController((gui) => {
+    const datGui = new GuiControls((gui) => {
       const canvasFolder = gui.addFolder('Canvas');
       canvasFolder.add(circles, 'isAnimating').name('Animate');
       canvasFolder.add(circles, 'trailing', 0, 1, 0.01).name('Trail');
       canvasFolder.open();
 
       const circle = gui.addFolder('Circles');
-      circle.add(circles, 'circleCount', 0, 1000, 1).name('Count').onFinishChange(circles.populate);
+      circle
+        .add(circles, 'circleCount', 0, 1000, 1)
+        .name('Count')
+        .onFinishChange(circles.populate);
       circle
         .add(circles, 'speedMin', -10, 10, 0.1)
         .name('Speed Min')
@@ -50,5 +53,7 @@ export default function Page() {
     return datGui.dispose;
   }, [circles]);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
+  return (
+    <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
+  );
 }

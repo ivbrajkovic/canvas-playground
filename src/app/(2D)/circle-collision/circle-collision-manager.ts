@@ -28,7 +28,7 @@ export class CircleCollisionManager {
 
     for (let i = 0; i < this.settings.circleCount; i++) {
       const radius = random(this.settings.radiusMin, this.settings.radiusMax);
-      const { x, y } = this.placeCircleWithoutOverlap(radius);
+      const { x, y } = this.#placeCircleWithoutOverlap(radius);
 
       let vx = interpolate(
         radius,
@@ -59,17 +59,21 @@ export class CircleCollisionManager {
       const vector = { x: vx, y: vy };
       const color = `hsl(${random(360, true)}, 50%, 50%)`;
 
-      this.circles.push(new CircleCollision(x, y, vector, radius, mass, color, color));
+      this.circles.push(
+        new CircleCollision(x, y, vector, radius, mass, color, color),
+      );
     }
   };
 
-  placeCircleWithoutOverlap(radius: number, maxAttempts = 10_000) {
+  #placeCircleWithoutOverlap(radius: number, maxAttempts = 10_000) {
     let attempts = 0;
     let x, y, isOverlapping;
 
     do {
       if (attempts >= maxAttempts)
-        throw new Error('Cannot place circle without overlap after multiple attempts.');
+        throw new Error(
+          'Cannot place circle without overlap after multiple attempts.',
+        );
 
       // Generate a new random x and y position
       x = random(radius, this.canvasWidth - radius);
