@@ -1,7 +1,6 @@
 'use client';
 
 import { CircleOutlineManager } from '@/app/(2D)/circle-outline/circle-outline-manager';
-import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
 import { DotGuiController } from '@/app/(2D)/particles/dotgui-controller';
 import { useEffect, useRef, useState } from 'react';
 
@@ -12,19 +11,10 @@ export default function Page() {
   useEffect(() => {
     if (!canvasRef.current) return console.error('Canvas element not found');
 
-    const canvas = new CanvasController(canvasRef.current);
-    const circles = new CircleOutlineManager(canvas.context);
-
-    canvas.onResize = circles.populate;
-    circles.populate();
-    circles.isAnimating = true;
-
+    const circles = new CircleOutlineManager(canvasRef.current);
     setCircles(circles);
 
-    return () => {
-      circles.dispose();
-      canvas.dispose();
-    };
+    return circles.dispose;
   }, []);
 
   useEffect(() => {
@@ -38,6 +28,9 @@ export default function Page() {
 
       const circle = gui.addFolder('Circles');
       circle.add(circles, 'circleCount', 0, 1000, 1).name('Count').onFinishChange(circles.populate);
+
+      circle.add(circles, 'radiusMin', 0, 100, 1).name('Size Min').onFinishChange(circles.populate);
+      circle.add(circles, 'radiusMax', 0, 100, 1).name('Size Max').onFinishChange(circles.populate);
       circle
         .add(circles, 'speedMin', -10, 10, 0.1)
         .name('Speed Min')
@@ -45,14 +38,6 @@ export default function Page() {
       circle
         .add(circles, 'speedMax', -10, 10, 0.1)
         .name('Speed Max')
-        .onFinishChange(circles.populate);
-      circle
-        .add(circles, 'radiusMin', 0, 100, 1)
-        .name('Radius Min')
-        .onFinishChange(circles.populate);
-      circle
-        .add(circles, 'radiusMax', 0, 100, 1)
-        .name('Radius Max')
         .onFinishChange(circles.populate);
       circle.open();
     });

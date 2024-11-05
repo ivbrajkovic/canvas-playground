@@ -6,12 +6,12 @@ import { Particle } from '@/app/(2D)/particles/particle';
 
 export class ParticleManager {
   private _canvas: HTMLCanvasElement;
-  private _canvasController: CanvasController;
   private _context: CanvasRenderingContext2D;
+  private _canvasController: CanvasController;
   private _animationController: AnimationController;
   private _fpsTracker: FpsTracker;
-  private _particles: Particle[] = [];
   private _mouse: Mouse;
+  private _particles: Particle[] = [];
 
   // prettier-ignore
   get isAnimating() { return this._animationController.isAnimating; }
@@ -19,9 +19,9 @@ export class ParticleManager {
   set isAnimating(value: boolean) { this._animationController.isAnimating = value; }
 
   // prettier-ignore
-  get mouseRadius() { return this._mouse.radius; }
+  get mouseRadius() { return this._mouse.maxRadius; }
   // prettier-ignore
-  set mouseRadius(value: number) { this._mouse.radius = value; }
+  set mouseRadius(value: number) { this._mouse.maxRadius = value; }
 
   public ghosting = 1;
   public isConnections = true;
@@ -39,6 +39,8 @@ export class ParticleManager {
     this._canvas = this._canvasController.canvas;
     this._context = this._canvasController.context;
     this._canvasController.onResize = this.populate;
+
+    this._mouse.radius = 250;
     this._mouse.maxRadius = 250;
 
     this.populate();
@@ -112,8 +114,8 @@ export class ParticleManager {
   };
 
   public dispose = () => {
+    this._fpsTracker.dispose();
     this._animationController.dispose();
     this._canvasController.dispose();
-    this._fpsTracker.dispose();
   };
 }

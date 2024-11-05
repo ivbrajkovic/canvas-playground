@@ -74,11 +74,5 @@ export class CircleTrailManager {
     this._fpsTracker.dispose();
     this._animationController.stop();
     this._canvasController.dispose();
-    this._circles = [];
-    this._context = null!;
-    this._canvas = null!;
-    this._fpsTracker = null!;
-    this._canvasController = null!;
-    this._animationController = null!;
   };
 }

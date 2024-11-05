@@ -3,9 +3,12 @@ import { CircleOutline } from '@/app/(2D)/circle-outline/circle-outline';
 import { AnimationController } from '@/app/(2D)/particles/animation-controller';
 import { FpsTracker } from '@/app/(2D)/particles/fps-tracker';
 import { Mouse } from '@/app/(2D)/particles/mouse';
+import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
 
 export class CircleOutlineManager {
+  private _canvas: HTMLCanvasElement;
   private _context: CanvasRenderingContext2D;
+  private _canvasController: CanvasController;
   private _animationController: AnimationController;
   private _fpsTracker: FpsTracker;
   private _mouse: Mouse;
@@ -27,70 +30,51 @@ export class CircleOutlineManager {
   // prettier-ignore
   set mouseRadius(value: number) { this._mouse.radius = value; }
 
-  constructor(
-    // context: CanvasRenderingContext2D,
-    // animationController = new AnimationController(),
-    // mouse = new Mouse({ radius: 200, maxRadius: 500 }),
-    // fpsTracker = new FpsTracker(context.canvas.parentElement),
-    canvas: HTMLCanvasElement,
-  ) {
-    this._context = context;
-    this._animationController = animationController;
-    this._mouse = mouse;
-    this._fpsTracker = fpsTracker;
+  constructor(canvas: HTMLCanvasElement) {
+    this._canvasController = new CanvasController(canvas);
+    this._fpsTracker = new FpsTracker(canvas);
+    this._animationController = new AnimationController();
+    this._mouse = new Mouse();
+    this._canvas = this._canvasController.canvas;
+    this._context = this._canvasController.context;
 
-    animationController.animation = this._animation;
-    animationController.onStart = this._addMouseMoveListener;
-    animationController.onStop = this._removeMouseMoveListener;
+    this._mouse.radius = 200;
+
+    this.populate();
+
+    this._animationController.onStart = () =>
+      this._canvasController.addMouseMoveListener(this._onMouseMove);
+    this._animationController.onStop = () => this._canvasController.removeMouseMoveListener();
+    this._animationController.animation = this._animation;
+    this._animationController.isAnimating = true;
   }
 
-  private _mouseMoveListener = (event: MouseEvent) => {
-    this._mouse.x = event.offsetX;
-    this._mouse.y = event.offsetY;
-  };
-
-  private _addMouseMoveListener = () => {
-    this._context.canvas.addEventListener('mousemove', this._mouseMoveListener);
-  };
-
-  private _removeMouseMoveListener = () => {
-    this._context.canvas.removeEventListener('mousemove', this._mouseMoveListener);
+  private _onMouseMove = (x: number, y: number) => {
+    this._mouse.x = x;
+    this._mouse.y = y;
   };
 
   private _render = () => {
-    const context = this._context;
-    const mouseX = this._mouse.x;
-    const mouseY = this._mouse.y;
-    const mouseRadius = this._mouse.radius;
-
     this._circles.forEach((particle) => {
-      particle.respondToForces(mouseX, mouseY, mouseRadius);
-      particle.move(context);
-      particle.draw(context);
+      particle.respondToForces(this._mouse.x, this._mouse.y, this._mouse.radius);
+      particle.move(this._context);
+      particle.draw(this._context);
     });
   };
 
   private _animation = () => {
-    const context = this._context;
-    const canvasWidth = context.canvas.width;
-    const canvasHeight = context.canvas.height;
-
-    context.fillStyle = `hsla(0, 0%, 10%, 1)`;
-    context.fillRect(0, 0, canvasWidth, canvasHeight);
+    this._context.fillStyle = `hsla(0, 0%, 10%, 1)`;
+    this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
 
     this._render();
     this._fpsTracker.track();
   };
 
   populate = () => {
-    const width = this._context.canvas.width;
-    const height = this._context.canvas.height;
-    const length = this.circleCount;
-
-    this._circles = Array.from({ length }, () => {
+    this._circles = Array.from({ length: this.circleCount }, () => {
       const radius = random(this.radiusMin, this.radiusMax);
-      const x = random(radius, width - radius);
-      const y = random(radius, height - radius);
+      const x = random(radius, this._canvas.width - radius);
+      const y = random(radius, this._canvas.height - radius);
       const vx = random(this.speedMin, this.speedMax, true);
       const vy = random(this.speedMin, this.speedMax, true);
       const vector = { x: vx, y: vy };
@@ -100,12 +84,8 @@ export class CircleOutlineManager {
   };
 
   dispose = () => {
-    this._animationController.isAnimating = false;
     this._fpsTracker.dispose();
-    this._circles = [];
-    this._context = null!;
-    this._animationController = null!;
-    this._mouse = null!;
-    this._fpsTracker = null!;
+    this._animationController.dispose();
+    this._canvasController.dispose();
   };
 }
