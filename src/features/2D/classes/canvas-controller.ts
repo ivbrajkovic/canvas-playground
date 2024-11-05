@@ -42,9 +42,7 @@ export class CanvasController {
     window.removeEventListener('resize', this.#resizeListener);
   };
 
-  init = (elementId = 'canvas') => {
-    const canvas = document.getElementById(elementId) as HTMLCanvasElement;
-    if (!canvas) throw new Error('Canvas element not found');
+  init = (canvas: HTMLCanvasElement) => {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Canvas 2D rendering context not found');
     this.#canvas = canvas;
