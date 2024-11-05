@@ -18,40 +18,26 @@ export default function Particles() {
   useEffect(() => {
     if (!canvasRef.current) return console.error('Canvas element not found');
 
-    const canvas = new CanvasController(canvasRef.current);
-    const fptTracker = new FpsTracker(canvas.parentElement);
-    const particles = new ParticleManager(canvas.context);
-    const animation = new AnimationController();
-    const mouse = new Mouse({ maxRadius: 250 });
+    const canvasController = new CanvasController(canvasRef.current);
+    const fpsTracker = new FpsTracker(canvasController.parentElement);
+    const animationController = new AnimationController();
+    const mouse = new Mouse();
 
-    const onMouseMove = (x: number, y: number) => {
-      mouse.x = x;
-      mouse.y = y;
-      mouse.increaseRadius(10);
-    };
-    const registerMouseMove = () => (canvas.onMouseMove = onMouseMove);
-    const unregisterMouseMove = () => (canvas.onMouseMove = null);
-    const renderAnimation = () => {
-      particles.animation(mouse);
-      mouse.decreaseRadius(4);
-      fptTracker.track();
-    };
+    const particles = new ParticleManager(
+      canvasController,
+      animationController,
+      fpsTracker,
+      mouse,
+    );
 
-    canvas.onResize = particles.populate;
-    animation.onStart = registerMouseMove;
-    animation.onStop = unregisterMouseMove;
-    animation.animation = renderAnimation;
-    animation.isAnimating = true;
-
-    setAnimation(animation);
+    setAnimation(animationController);
     setParticles(particles);
     setMouse(mouse);
 
     return () => {
-      fptTracker.dispose();
-      animation.dispose();
-      particles.dispose();
-      canvas.dispose();
+      fpsTracker.dispose();
+      animationController.dispose();
+      canvasController.dispose();
     };
   }, []);
 

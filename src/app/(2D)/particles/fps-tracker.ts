@@ -17,12 +17,12 @@ export class FpsTracker {
   private lastFrameTime: number = 0;
 
   constructor(
-    targetEl: HTMLElement | null,
-    private trackerEl: HTMLSpanElement = createSpan(),
+    targetEl: HTMLElement,
+    private spanElement: HTMLSpanElement = createSpan(),
   ) {
     if (!targetEl) throw new Error('Element not found');
     this.targetEl = targetEl;
-    this.targetEl.appendChild(trackerEl);
+    this.targetEl.appendChild(spanElement);
   }
 
   track = () => {
@@ -32,12 +32,12 @@ export class FpsTracker {
 
     const delta = (now - this.lastFrameTime) * 0.001; // Time elapsed in seconds
     this.fps = this.frames / delta; // Average FPS over the elapsed time
-    this.trackerEl.textContent = `FPS: ${~~this.fps}`;
+    this.spanElement.textContent = `FPS: ${~~this.fps}`;
     this.frames = 0;
     this.lastFrameTime = now;
   };
 
   dispose = () => {
-    this.trackerEl?.remove();
+    this.spanElement?.remove();
   };
 }

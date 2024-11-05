@@ -1,11 +1,3 @@
-type MouseProps = {
-  x?: number;
-  y?: number;
-  radius?: number;
-  minRadius?: number;
-  maxRadius?: number;
-};
-
 export class Mouse {
   public x;
   public y;
@@ -13,13 +5,13 @@ export class Mouse {
   public minRadius;
   public maxRadius;
 
-  constructor({
+  constructor(
     x = -1000,
     y = -1000,
     radius = 120,
     minRadius = 0,
     maxRadius = 180,
-  }: MouseProps = {}) {
+  ) {
     this.x = x;
     this.y = y;
     this.radius = radius;

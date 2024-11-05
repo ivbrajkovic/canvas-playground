@@ -10,11 +10,6 @@ export class CanvasController {
 
   onResize?: (width: number, height: number) => void;
 
-  set onMouseMove(value: ((width: number, height: number) => void) | null) {
-    if (value) this._addMouseMoveListener(value);
-    else this._removeMouseMoveListener();
-  }
-
   constructor(canvas: HTMLCanvasElement, isDpiAdjusted = false) {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Canvas 2D rendering context not found');
@@ -29,6 +24,8 @@ export class CanvasController {
     this._resizeObserver.observe(this._canvas);
   }
 
+  // prettier-ignore
+  get canvas() { return this._canvas; }
   // prettier-ignore
   get context() { return this._context; }
   // prettier-ignore
@@ -55,11 +52,13 @@ export class CanvasController {
     // Scale context to normalize drawing operations
     this._context.resetTransform();
     this._context.scale(this._devicePixelRatio, this._devicePixelRatio);
+
+    // Notify resize event
+    this.onResize?.(width, height);
   };
 
   private _resizeListener = debounce(250, (width: number, height: number) => {
     this._resize(width, height);
-    this.onResize?.(width, height);
   });
 
   private _resizeObserverCallback = (entries: ResizeObserverEntry[]) => {
@@ -73,24 +72,24 @@ export class CanvasController {
     });
   };
 
-  private _addMouseMoveListener(callback: (x: number, y: number) => void) {
-    if (this._onMouseMove) this._removeMouseMoveListener();
+  addMouseMoveListener(listener: (x: number, y: number) => void) {
+    if (this._onMouseMove) this.removeMouseMoveListener();
     this._onMouseMove = (event: MouseEvent) => {
       const x = event.offsetX * this._devicePixelRatio;
       const y = event.offsetY * this._devicePixelRatio;
-      callback(x, y);
+      listener(x, y);
     };
     this._canvas.addEventListener('mousemove', this._onMouseMove);
   }
 
-  private _removeMouseMoveListener() {
+  removeMouseMoveListener() {
     if (!this._onMouseMove) return;
     this._canvas.removeEventListener('mousemove', this._onMouseMove);
     this._onMouseMove = null;
   }
 
   dispose = () => {
-    this._removeMouseMoveListener();
+    this.removeMouseMoveListener();
     this._resizeObserver.disconnect();
     this._resizeListener.cancel();
     this._context.reset();
