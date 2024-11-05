@@ -5,8 +5,13 @@ import { Mouse } from '@/app/(2D)/particles/mouse';
 import { Particle } from '@/app/(2D)/particles/particle';
 
 export class ParticleManager {
+  private canvasController: CanvasController;
   private context: CanvasRenderingContext2D;
+  private fpsTracker: FpsTracker;
   private particles: Particle[] = [];
+
+  public mouse: Mouse;
+  public animationController: AnimationController;
 
   public ghosting = 1;
   public isConnections = false;
@@ -16,14 +21,14 @@ export class ParticleManager {
   public lineColor = '#ffffff';
   public lineWidth = 1;
 
-  constructor(
-    private canvasController: CanvasController,
-    private animationController: AnimationController,
-    private fpsTracker: FpsTracker,
-    private mouse: Mouse,
-  ) {
+  constructor(private canvas: HTMLCanvasElement) {
+    this.canvasController = new CanvasController(canvas);
+    this.context = this.canvasController.context;
+    this.animationController = new AnimationController();
+    this.fpsTracker = new FpsTracker(canvas.parentElement!);
+    this.mouse = new Mouse();
+
     this.mouse.maxRadius = 250;
-    this.context = canvasController.context;
     this.canvasController.onResize = this.populate;
 
     this.animationController.onStart = () =>
@@ -86,12 +91,7 @@ export class ParticleManager {
 
   private animate = () => {
     this.context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
-    this.context.fillRect(
-      0,
-      0,
-      this.context.canvas.width,
-      this.context.canvas.height,
-    );
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.render();
     this.mouse.decreaseRadius(4);
     this.fpsTracker.track();
@@ -100,7 +100,13 @@ export class ParticleManager {
   public populate = () => {
     this.particles = Array.from(
       { length: this.particleCount },
-      () => new Particle(this.context.canvas.width, this.context.canvas.height),
+      () => new Particle(this.canvas.width, this.canvas.height),
     );
+  };
+
+  public dispose = () => {
+    this.animationController.dispose();
+    this.canvasController.dispose();
+    this.fpsTracker.dispose();
   };
 }

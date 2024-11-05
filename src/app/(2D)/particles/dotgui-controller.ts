@@ -3,12 +3,13 @@ import { GUI } from 'dat.gui';
 export class DotGuiController {
   private gui: Promise<GUI>;
 
-  constructor() {
+  constructor(configureGUI: (gui: GUI) => void) {
     this.gui = import('dat.gui') //
       .then(async (dat) => {
         const gui = new dat.GUI();
         gui.domElement.style.marginTop = '64px';
         gui.domElement.style.marginRight = '0px';
+        configureGUI(gui);
         return gui;
       });
   }
