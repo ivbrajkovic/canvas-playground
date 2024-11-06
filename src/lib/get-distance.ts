@@ -13,7 +13,7 @@ export type Point2D = {
  * @param y1 - Y coordinate of the first point
  * @param x2 - X coordinate of the second point
  * @param y2 - Y coordinate of the second point
- * @param precise - Optional flag to compute precise distance; defaults to false (returns squared distance)
+ * @param precise - Optional flag to compute precise distance; defaults to true (returns squared distance)
  * @returns The squared distance or precise distance between the two points
  * @example
  * const distanceSquared = getDistanceBetweenCoords(0, 0, 3, 4); // returns 25
@@ -24,7 +24,7 @@ export function getDistanceBetweenCoords(
   y1: number,
   x2: number,
   y2: number,
-  precise: boolean = false,
+  precise: boolean = true,
 ): number {
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -37,7 +37,7 @@ export function getDistanceBetweenCoords(
  * Optionally computes the precise distance using Math.sqrt.
  * @param point1 - The first point coordinates
  * @param point2 - The second point coordinates
- * @param precise - Optional flag to compute precise distance; defaults to false (returns squared distance)
+ * @param precise - Optional flag to compute precise distance; defaults to true (returns squared distance)
  * @returns The squared distance or precise distance between the two points
  * @example
  * const p1 = { x: 0, y: 0 };
@@ -48,7 +48,7 @@ export function getDistanceBetweenCoords(
 export function getDistanceBetweenPoints(
   point1: Point2D,
   point2: Point2D,
-  precise: boolean = false,
+  precise: boolean = true,
 ): number {
   const dx = point2.x - point1.x;
   const dy = point2.y - point1.y;

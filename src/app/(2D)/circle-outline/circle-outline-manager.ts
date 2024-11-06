@@ -6,13 +6,14 @@ import { Mouse } from '@/app/(2D)/particles/mouse';
 import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
 
 export class CircleOutlineManager {
+  private _circles: CircleOutline[] = [];
+
   private _canvas: HTMLCanvasElement;
   private _context: CanvasRenderingContext2D;
   private _canvasController: CanvasController;
   private _animationController: AnimationController;
   private _fpsTracker: FpsTracker;
   private _mouse: Mouse;
-  private _circles: CircleOutline[] = [];
 
   public circleCount = 200;
   public speedMin = -2.0;
