@@ -120,17 +120,10 @@ export class MouseController {
     return this._isMouseDown;
   }
 
-  get mousePosition() {
-    return this._mousePosition;
-  }
-
-  get previousMousePosition() {
-    return this._previousMousePosition;
-  }
-
   get targetElement() {
     return this._targetElement;
   }
+
   set targetElement(value: HTMLElement) {
     this.dispose();
     this._targetElement = value;
@@ -140,6 +133,7 @@ export class MouseController {
   get enableDPI() {
     return this._enableDPI;
   }
+
   set enableDPI(value: boolean) {
     this._enableDPI = value;
   }
@@ -163,6 +157,7 @@ export class MouseController {
   get pixelRatio() {
     return this._pixelRatio;
   }
+
   set pixelRatio(value: number) {
     this._pixelRatio = value;
   }
