@@ -13,5 +13,4 @@ export const createTrailValue = (value: number) => ({
   set normalizedValue(newValue: number) {
     value = 1 - normalizeExponential(newValue, 5);
   },
-  setup() {},
 });
