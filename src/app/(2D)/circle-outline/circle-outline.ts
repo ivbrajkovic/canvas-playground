@@ -1,4 +1,4 @@
-import { Circle, Vec2 } from '@/features/2D/classes/circle';
+import { Circle, Vec2 } from '@/classes/circle';
 import { getDistanceBetweenCoords } from '@/lib/get-distance';
 
 export class CircleOutline extends Circle {

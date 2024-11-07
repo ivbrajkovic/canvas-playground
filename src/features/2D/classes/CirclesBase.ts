@@ -1,6 +1,6 @@
 import random from 'lodash/random';
 
-import { Circle } from '@/features/2D/classes/circle';
+import { Circle } from '@/classes/circle';
 
 const DEFAULT_WIDTH = 600;
 const DEFAULT_HEIGHT = 400;

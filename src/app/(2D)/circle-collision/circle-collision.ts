@@ -1,4 +1,4 @@
-import { Circle, Vec2 } from '@/features/2D/classes/circle';
+import { Circle, Vec2 } from '@/classes/circle';
 import { elasticCollision } from '@/lib/elastic-collision';
 import { getDistanceBetweenCoords } from '@/lib/get-distance';
 

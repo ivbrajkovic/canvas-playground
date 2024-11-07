@@ -41,7 +41,7 @@ export default function Page() {
       mouseRadius.value -= 4;
     });
 
-    const disposeGuiControls = createGuiControls(
+    const guiControls = createGuiControls(
       animationController,
       circleOutlineManager,
       mouseRadius,
@@ -51,8 +51,8 @@ export default function Page() {
       mouseController.dispose();
       animationController.stop();
       fpsTrackerController.dispose();
+      guiControls.dispose();
       canvasController.dispose();
-      disposeGuiControls();
     };
   }, []);
 

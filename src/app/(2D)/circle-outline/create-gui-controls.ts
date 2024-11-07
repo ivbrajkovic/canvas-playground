@@ -49,7 +49,7 @@ export const createGuiControls = (
       return gui;
     });
 
-  return () => {
-    guiControls.then((gui) => gui.destroy());
+  return {
+    dispose: () => guiControls.then((gui) => gui.destroy()),
   };
 };

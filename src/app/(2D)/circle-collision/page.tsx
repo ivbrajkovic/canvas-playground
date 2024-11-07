@@ -28,7 +28,7 @@ const CircleCollision = () => {
       fpsTracker.track();
     });
 
-    const disposeGuiControls = createGuiControls(
+    const guiControls = createGuiControls(
       animationController,
       circleCollisionManager,
     );
@@ -36,7 +36,7 @@ const CircleCollision = () => {
     return () => {
       animationController.stop();
       fpsTracker.dispose();
-      disposeGuiControls();
+      guiControls.dispose();
       canvasController.dispose();
     };
   }, []);
