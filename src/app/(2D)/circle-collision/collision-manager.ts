@@ -1,8 +1,8 @@
 import random from 'lodash/random';
 
 import { CircleCollision } from '@/app/(2D)/circle-collision/circle-collision';
-import { interpolate } from '@/lib/interpolate';
-import { getDistanceBetweenCoords } from '@/lib/get-distance';
+import { interpolate } from '@/utils/interpolate';
+import { getDistanceBetweenCoords } from '@/utils/distance';
 import { findNonOverlappingPosition } from '@/utils/find-radial-position';
 
 export class CircleCollisionManager {

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 
 import { CanvasController } from '@/controllers/canvas-controller';
-import { FpsTrackerController } from '@/utils/create-fps-tracker-controller';
+import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CircleOutlineManager } from '@/app/(2D)/circle-outline/circle-outline-manager';
 import { MouseController } from '@/controllers/mouse-controller';
@@ -17,7 +17,7 @@ export default function Page() {
     const canvasController = CanvasController.of(canvasRef.current);
     const { canvas, context } = canvasController;
 
-    const fpsTrackerController = FpsTrackerController.of(canvas.parentElement!);
+    const fpsTrackerController = FpsTracker.of(canvas.parentElement!);
     const circleOutlineManager = CircleOutlineManager.of(canvas);
     const mouseRadius = BoundedValue.of(250, 100, 500);
 

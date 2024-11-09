@@ -1,29 +1,7 @@
-import { AnimationController } from '@/features/animation-controller/animation-controller';
-import { CanvasController } from '@/app/(2D)/particles/canvas-controller';
-import { FpsTracker } from '@/features/fps-tracker/fps-tracker';
-import { Mouse } from '@/app/(2D)/particles/mouse';
 import { Particle } from '@/app/(2D)/particles/particle';
 
 export class ParticleManager {
-  private _canvas: HTMLCanvasElement;
-  private _context: CanvasRenderingContext2D;
-  private _canvasController: CanvasController;
-  private _animationController: AnimationController;
-  private _fpsTracker: FpsTracker;
-  private _mouse: Mouse;
-  private _particles: Particle[] = [];
-
-  // prettier-ignore
-  get isAnimating() { return this._animationController.isAnimating; }
-  // prettier-ignore
-  set isAnimating(value: boolean) { this._animationController.isAnimating = value; }
-
-  // prettier-ignore
-  get mouseRadius() { return this._mouse.maxRadius; }
-  // prettier-ignore
-  set mouseRadius(value: number) { this._mouse.maxRadius = value; }
-
-  public ghosting = 1;
+  public particles: Particle[] = [];
   public isConnections = true;
   public linkingDistance = 120;
   public particleCount = 200;
@@ -31,92 +9,56 @@ export class ParticleManager {
   public lineColor = '#ffffff';
   public lineWidth = 1;
 
-  constructor(canvas: HTMLCanvasElement) {
-    this._canvasController = new CanvasController(canvas);
-    this._fpsTracker = new FpsTracker(canvas);
-    this._animationController = new AnimationController();
-    this._mouse = new Mouse();
-    this._canvas = this._canvasController.canvas;
-    this._context = this._canvasController.context;
-    this._canvasController.onResize = this.populate;
+  public static of = (canvas: HTMLCanvasElement) => new ParticleManager(canvas);
 
-    this._mouse.radius = 250;
-    this._mouse.maxRadius = 250;
-
+  constructor(private canvas: HTMLCanvasElement) {
     this.populate();
-
-    this._animationController.onStart = () =>
-      this._canvasController.addMouseMoveListener(this._onMouseMove);
-    this._animationController.onStop = () =>
-      this._canvasController.removeMouseMoveListener();
-    this._animationController.animation = this._animation;
-    this._animationController.isAnimating = true;
   }
 
-  private _onMouseMove = (x: number, y: number) => {
-    this._mouse.x = x;
-    this._mouse.y = y;
-    this._mouse.increaseRadius(10);
+  public populate = () => {
+    this.particles = Array.from(
+      { length: this.particleCount },
+      () => new Particle(this.canvas.width, this.canvas.height),
+    );
   };
 
-  private _render = () => {
+  drawParticle = (context: CanvasRenderingContext2D, particle: Particle) => {
+    particle.draw(context, this.particleColor);
+  };
+
+  drawLine = (
+    context: CanvasRenderingContext2D,
+    particle: Particle,
+    index: number,
+  ) => {
     let dx: number,
       dy: number,
       distanceSquared: number,
       connectionDistanceSquared: number,
       opacityValue: number;
 
-    for (let i = 0; i < this._particles.length; i++) {
-      const particleA = this._particles[i];
+    if (!this.isConnections) return;
 
-      particleA.update(this._mouse.x, this._mouse.y, this._mouse.radius);
-      particleA.move(this._context);
-      particleA.draw(this._context, this.particleColor);
+    for (let j = index; j < this.particles.length; j++) {
+      const otherParticle = this.particles[j];
 
-      if (!this.isConnections) continue;
+      dx = particle.x - otherParticle.x;
+      dy = particle.y - otherParticle.y;
+      distanceSquared = dx * dx + dy * dy;
+      connectionDistanceSquared = this.linkingDistance ** 2;
 
-      for (let j = i; j < this._particles.length; j++) {
-        const particleB = this._particles[j];
+      if (distanceSquared > connectionDistanceSquared) continue;
 
-        dx = particleA.x - particleB.x;
-        dy = particleA.y - particleB.y;
-        distanceSquared = dx * dx + dy * dy;
-        connectionDistanceSquared = this.linkingDistance ** 2;
-
-        if (distanceSquared > connectionDistanceSquared) continue;
-
-        opacityValue = 1 - Math.pow(distanceSquared / connectionDistanceSquared, 0.5);
-        this._context.save();
-        this._context.strokeStyle = this.lineColor;
-        this._context.lineWidth = this.lineWidth;
-        this._context.globalAlpha = opacityValue;
-        this._context.beginPath();
-        this._context.moveTo(particleA.x, particleA.y);
-        this._context.lineTo(particleB.x, particleB.y);
-        this._context.stroke();
-        this._context.restore();
-      }
+      opacityValue = 1 - Math.pow(distanceSquared / connectionDistanceSquared, 0.5);
+      context.save();
+      context.strokeStyle = this.lineColor;
+      context.lineWidth = this.lineWidth;
+      context.globalAlpha = opacityValue;
+      context.beginPath();
+      context.moveTo(particle.x, particle.y);
+      context.lineTo(otherParticle.x, otherParticle.y);
+      context.stroke();
+      context.restore();
     }
-  };
-
-  private _animation = () => {
-    this._context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
-    this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
-    this._render();
-    this._mouse.decreaseRadius(4);
-    this._fpsTracker.track();
-  };
-
-  public populate = () => {
-    this._particles = Array.from(
-      { length: this.particleCount },
-      () => new Particle(this._canvas.width, this._canvas.height),
-    );
-  };
-
-  public dispose = () => {
-    this._fpsTracker.dispose();
-    this._animationController.dispose();
-    this._canvasController.dispose();
   };
 }

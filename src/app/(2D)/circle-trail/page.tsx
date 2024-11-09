@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-trail-manager';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
-import { FpsTrackerController } from '@/utils/create-fps-tracker-controller';
+import { FpsTracker } from '@/classes/fps-tracker';
 import { createGuiControls } from '@/app/(2D)/circle-trail/create-gui-controls';
 import { createTrailValue } from '@/app/(2D)/circle-trail/create-trail-value';
 
@@ -16,7 +16,7 @@ export default function Page() {
     const canvasController = CanvasController.of(canvasRef.current);
     const { canvas, context } = canvasController;
 
-    const fpsTracker = FpsTrackerController.of(canvas.parentElement!);
+    const fpsTracker = FpsTracker.of(canvas.parentElement!);
     const circleTrailManager = CircleTrailManager.of(canvas);
     const circleTrail = createTrailValue(0.1);
 

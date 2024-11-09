@@ -1,8 +1,8 @@
 import { createFpsTracker } from '@/utils/create-fps-tracker';
 
-export class FpsTrackerController {
+export class FpsTracker {
   private element: HTMLSpanElement;
-  public static of = (targetEl: HTMLElement) => new FpsTrackerController(targetEl);
+  public static of = (targetEl: HTMLElement) => new FpsTracker(targetEl);
 
   private constructor(targetEl: HTMLElement) {
     const element = document.createElement('span');

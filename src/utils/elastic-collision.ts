@@ -1,4 +1,4 @@
-import { rotate } from '@/lib/rotate';
+import { rotate } from '@/utils/rotate';
 
 /**
  * Represents a particle with position, mass, and velocity.

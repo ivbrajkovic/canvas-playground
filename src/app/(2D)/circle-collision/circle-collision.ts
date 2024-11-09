@@ -1,6 +1,6 @@
 import { Circle, Vec2 } from '@/classes/circle';
-import { elasticCollision } from '@/lib/elastic-collision';
-import { getDistanceBetweenCoords } from '@/lib/get-distance';
+import { getDistanceBetweenCoords } from '@/utils/distance';
+import { elasticCollision } from '@/utils/elastic-collision';
 
 export class CircleCollision extends Circle {
   constructor(

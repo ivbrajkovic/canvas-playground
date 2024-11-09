@@ -1,5 +1,5 @@
 import { Circle, Vec2 } from '@/classes/circle';
-import { getDistanceBetweenCoords } from '@/lib/get-distance';
+import { getDistanceBetweenCoords } from '@/utils/distance';
 
 export class CircleOutline extends Circle {
   constructor(x: number, y: number, vector: Vec2, color: string, radius: number) {

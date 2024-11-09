@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { AnimationController } from '@/controllers/animation-controller';
-import { FpsTrackerController } from '@/utils/create-fps-tracker-controller';
+import { FpsTracker } from '@/classes/fps-tracker';
 import { CircleCollisionManager } from '@/app/(2D)/circle-collision/collision-manager';
 import { createGuiControls } from '@/app/(2D)/circle-collision/create-gui-controls';
 
@@ -15,7 +15,7 @@ const CircleCollision = () => {
     const { canvas, context } = canvasController;
 
     const circleCollisionManager = CircleCollisionManager.of(canvas);
-    const fpsTracker = FpsTrackerController.of(canvas.parentElement!);
+    const fpsTracker = FpsTracker.of(canvas.parentElement!);
 
     const animationController = AnimationController.of(() => {
       context.fillStyle = `hsl(0, 0%, 10%)`;
