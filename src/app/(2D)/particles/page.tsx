@@ -24,9 +24,10 @@ export default function Particles() {
     const mouseController = MouseController.of(canvas, {
       onMouseMove: () => (mouseRadius.value += 10),
     });
+    const ghosting = { value: 1 };
 
     const animationController = AnimationController.of(() => {
-      context.fillStyle = `hsl(0, 0%, 10%)`;
+      context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
       context.fillRect(0, 0, canvas.width, canvas.height);
       particleManager.particles.forEach((particle, index) => {
         particle.move(context);
@@ -42,6 +43,7 @@ export default function Particles() {
       animationController,
       particleManager,
       mouseRadius,
+      ghosting,
     );
 
     return () => {
@@ -52,45 +54,6 @@ export default function Particles() {
       canvasController.dispose();
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (!particles) return;
-
-  //   const datGui = new GuiControls((gui) => {
-  //     const canvasFolder = gui.addFolder('Canvas');
-  //     canvasFolder.add(particles, 'isAnimating').name('Animate');
-  //     canvasFolder
-  //       .add(particles, 'ghosting', {
-  //         Off: 1,
-  //         Low: 0.3,
-  //         Medium: 0.2,
-  //         High: 0.1,
-  //         Full: 0,
-  //       })
-  //       .name('Ghosting').domElement.style.color = '#000';
-  //     canvasFolder
-  //       .add(particles, 'mouseRadius', 0, 500, 1)
-  //       .name('Mouse Radius');
-  //     canvasFolder.open();
-
-  //     const particlesFolder = gui.addFolder('Particles');
-  //     particlesFolder.add(particles, 'isConnections').name('Connect');
-  //     particlesFolder
-  //       .add(particles, 'particleCount', 0, 500, 1)
-  //       .name('Count')
-  //       .onFinishChange(particles.populate);
-  //     particlesFolder
-  //       .add(particles, 'linkingDistance', 0, 500, 1)
-  //       .name('Distance');
-  //     particlesFolder.open();
-
-  //     const colorFolder = gui.addFolder('Colors');
-  //     colorFolder.addColor(particles, 'particleColor').name('Particle');
-  //     colorFolder.addColor(particles, 'lineColor').name('Connection');
-  //   });
-
-  //   return datGui.dispose;
-  // }, [particles]);
 
   return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
 }

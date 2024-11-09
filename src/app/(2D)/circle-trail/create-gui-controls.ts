@@ -1,11 +1,10 @@
 import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-trail-manager';
-import { createTrailValue } from '@/app/(2D)/circle-trail/create-trail-value';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
   animationController: AnimationController,
   circleTrailManager: CircleTrailManager,
-  circleTrail: ReturnType<typeof createTrailValue>,
+  circleTrail: { value: number },
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -17,7 +16,14 @@ export const createGuiControls = (
     .then((gui) => {
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
-      gui.add(circleTrail, 'normalizedValue', 0, 1).name('Circle Trail');
+      gui
+        .add(circleTrail, 'value', {
+          Off: 1,
+          Low: 0.2,
+          Medium: 0.1,
+          High: 0.04,
+        })
+        .name('Trail').domElement.style.color = 'black';
 
       gui.addFolder('Circles');
       gui

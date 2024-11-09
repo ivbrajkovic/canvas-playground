@@ -6,8 +6,9 @@ export const links: SidebarData[] = [
     projects: [
       { title: 'Particles', url: '/particles' },
       { title: 'Circle Trail', url: '/circle-trail' },
+      { title: 'Circle Outline', url: '/circle-outline' },
       { title: 'Circle Collision', url: '/circle-collision' },
-      { title: 'Circle Outline Effect', url: '/circle-outline' },
+      { title: 'Waves', url: '/waves' },
     ],
   },
   {

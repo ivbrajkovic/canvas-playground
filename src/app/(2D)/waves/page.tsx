@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 
-import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-trail-manager';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { FpsTracker } from '@/classes/fps-tracker';
-import { createGuiControls } from '@/app/(2D)/circle-trail/create-gui-controls';
+import { Waves } from '@/app/(2D)/waves/waves';
+import { createGuiControls } from '@/app/(2D)/waves/create-gui-controls';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -16,24 +16,17 @@ export default function Page() {
     const { canvas, context } = canvasController;
 
     const fpsTracker = FpsTracker.of(canvas.parentElement!);
-    const circleTrailManager = CircleTrailManager.of(canvas);
-    const circleTrail = { value: 0.1 };
+    const waves = Waves.of(canvas.height / 2);
+    const ghosting = { value: 0.06 };
 
     const animationController = AnimationController.of(() => {
-      context.fillStyle = `hsla(0, 0%, 0%, ${circleTrail.value})`;
+      context.fillStyle = `hsla(0, 0%, 0%, ${ghosting.value})`;
       context.fillRect(0, 0, canvas.width, canvas.height);
-      circleTrailManager.circles.forEach((circle) => {
-        circle.move(context);
-        circle.draw(context);
-      });
+      waves.draw(context);
       fpsTracker.track();
     });
 
-    const guiControls = createGuiControls(
-      animationController,
-      circleTrailManager,
-      circleTrail,
-    );
+    const guiControls = createGuiControls(animationController, waves, ghosting);
 
     return () => {
       animationController.stop();
@@ -43,10 +36,5 @@ export default function Page() {
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-full bg-black"
-    />
-  );
+  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
 }

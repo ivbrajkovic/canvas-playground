@@ -6,6 +6,7 @@ export const createGuiControls = (
   animationController: AnimationController,
   particleManager: ParticleManager,
   mouseRadius: BoundedValue,
+  ghosting: { value: number },
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -17,6 +18,14 @@ export const createGuiControls = (
     .then((gui) => {
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
+      gui
+        .add(ghosting, 'value', {
+          Off: 1,
+          Low: 0.2,
+          Medium: 0.1,
+          High: 0.04,
+        })
+        .name('Ghosting').domElement.style.color = 'black';
 
       gui.addFolder('Mouse');
       gui.add(mouseRadius, 'min', 0, 500).name('Radius min');
