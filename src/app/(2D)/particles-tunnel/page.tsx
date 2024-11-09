@@ -1,13 +1,12 @@
 'use client';
+import { useEffect, useRef } from 'react';
 
-import { createGuiControls } from '@/app/(2D)/particles/create-gui-controls';
-import { ParticleManager } from '@/app/(2D)/particles/particle-manager';
-import { BoundedValue } from '@/classes/bounded-value';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { MouseController } from '@/controllers/mouse-controller';
 import { FpsTracker } from '@/classes/fps-tracker';
-import { useEffect, useRef } from 'react';
+import { ParticleTunnelManager } from '@/app/(2D)/particles-tunnel/particles-tunnel-manager';
+import { createGuiControls } from '@/app/(2D)/particles-tunnel/create-gui-controls';
 
 export default function Particles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,31 +16,36 @@ export default function Particles() {
     const { canvas, context } = canvasController;
 
     const fpsTrackerController = FpsTracker.of(canvas.parentElement!);
-    const particleManager = ParticleManager.of(canvas);
+    const particleTunnelManager = ParticleTunnelManager.of(canvas);
 
-    const mouseRadius = BoundedValue.of(250, 0, 250);
+    let isMouseDown = false;
     const mouseController = MouseController.of(canvas, {
-      onMouseMove: () => (mouseRadius.value += 10),
+      onMouseDown: () => (isMouseDown = true),
+      onMouseUp: () => (isMouseDown = false),
     });
     const ghosting = { value: 1 };
 
-    const animationController = AnimationController.of(() => {
+    let lastTime = 0;
+
+    const animationController = AnimationController.of((time) => {
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
       context.fillRect(0, 0, canvas.width, canvas.height);
-      particleManager.particles.forEach((particle, index) => {
-        particle.move(context);
-        particle.update(mouseController.x, mouseController.y, mouseRadius.value);
-        particleManager.drawParticle(context, particle);
-        particleManager.drawLine(context, particle, index);
-      });
+
+      particleTunnelManager.interval.value += isMouseDown ? -2 : 6;
+
+      const deltaTime = time - lastTime;
+      if (deltaTime > particleTunnelManager.interval.value) {
+        particleTunnelManager.generateRing(mouseController.x, mouseController.y);
+        lastTime = time;
+      }
+      particleTunnelManager.changeHue();
+      particleTunnelManager.drawParticles(context);
       fpsTrackerController.track();
-      mouseRadius.value -= 4;
     });
 
     const guiControls = createGuiControls(
       animationController,
-      particleManager,
-      mouseRadius,
+      particleTunnelManager,
       ghosting,
     );
 

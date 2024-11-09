@@ -5,6 +5,7 @@ export const links: SidebarData[] = [
     name: '2D Projects',
     projects: [
       { title: 'Particles', url: '/particles' },
+      { title: 'Particles Tunnel', url: '/particles-tunnel' },
       { title: 'Circle Trail', url: '/circle-trail' },
       { title: 'Circle Outline', url: '/circle-outline' },
       { title: 'Circle Collision', url: '/circle-collision' },
@@ -14,8 +15,8 @@ export const links: SidebarData[] = [
   {
     name: '3D Projects',
     projects: [
-      { title: 'Holidays', url: '/holidays' },
-      { title: 'Birthdays', url: '/birthdays' },
+      { title: 'Foo', url: '/foo' },
+      { title: 'Bar', url: '/bar' },
     ],
   },
 ];
