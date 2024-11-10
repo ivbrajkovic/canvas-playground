@@ -15,6 +15,14 @@ export const createGuiControls = (
     .then((gui) => {
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
+      gui
+        .add(animationController, 'maxFps', {
+          'No Limit': null,
+          '60 FPS': 60,
+          '30 FPS': 30,
+          '20 FPS': 20,
+        })
+        .name('FPS').domElement.style.color = 'black';
 
       gui.addFolder('Circles');
       gui

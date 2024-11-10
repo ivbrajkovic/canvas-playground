@@ -1,12 +1,23 @@
 type FrameCallback = (time: number) => void;
 
 export class AnimationController {
+  private maxDeltaTimeMs: number | null = null; // 0.016 - Maximum delta time of ~16ms (60 FPS)
   private requestId: number | null = null;
+  private lastTime = 0;
 
-  static of = (callback: FrameCallback, immediate?: boolean) =>
-    new AnimationController(callback, immediate);
+  static of = (
+    callback: FrameCallback,
+    options: { immediate?: boolean; maxFps?: number } = {},
+  ) => new AnimationController(callback, options);
 
-  private constructor(private callback: FrameCallback, immediate = true) {
+  private constructor(
+    private callback: FrameCallback,
+    {
+      immediate = true,
+      maxFps = null,
+    }: { immediate?: boolean; maxFps?: number | null },
+  ) {
+    if (maxFps) this.maxDeltaTimeMs = 1000 / maxFps;
     if (immediate) this.start();
   }
 
@@ -19,8 +30,22 @@ export class AnimationController {
     else this.stop();
   }
 
+  set maxFps(value: string | number | null) {
+    const newValue = Number.parseInt(value as string, 10);
+    this.maxDeltaTimeMs = !Number.isNaN(newValue) ? 1000 / newValue : null;
+  }
+
+  get maxFps() {
+    return this.maxDeltaTimeMs ? Math.round(1000 / this.maxDeltaTimeMs) : null;
+  }
+
   private loop = (time: number) => {
-    this.callback(time);
+    if (this.maxDeltaTimeMs === null) {
+      this.callback(time);
+    } else if (time - this.lastTime > this.maxDeltaTimeMs) {
+      this.lastTime = time;
+      this.callback(time);
+    }
     this.requestId = requestAnimationFrame(this.loop);
   };
 

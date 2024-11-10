@@ -26,6 +26,14 @@ export const createGuiControls = (
           High: 0.04,
         })
         .name('Ghosting').domElement.style.color = 'black';
+      gui
+        .add(animationController, 'maxFps', {
+          'No Limit': null,
+          '60 FPS': 60,
+          '30 FPS': 30,
+          '20 FPS': 20,
+        })
+        .name('FPS').domElement.style.color = 'black';
 
       gui.addFolder('Mouse');
       gui.add(mouseRadius, 'min', 0, 500).name('Radius min');
