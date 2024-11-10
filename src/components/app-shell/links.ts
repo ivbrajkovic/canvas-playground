@@ -6,10 +6,12 @@ export const links: SidebarData[] = [
     projects: [
       { title: 'Particles', url: '/particles' },
       { title: 'Particles Tunnel', url: '/particles-tunnel' },
+      { title: 'Particles Rotating', url: '/particles-rotating' },
       { title: 'Circle Trail', url: '/circle-trail' },
       { title: 'Circle Outline', url: '/circle-outline' },
       { title: 'Circle Collision', url: '/circle-collision' },
       { title: 'Waves', url: '/waves' },
+      { title: 'Fireworks', url: '/fireworks' },
     ],
   },
   {

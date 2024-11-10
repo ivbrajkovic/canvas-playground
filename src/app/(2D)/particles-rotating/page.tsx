@@ -5,8 +5,8 @@ import { useEffect, useRef } from 'react';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { FpsTracker } from '@/classes/fps-tracker';
-import { Waves } from '@/app/(2D)/waves/waves';
-import { createGuiControls } from '@/app/(2D)/waves/create-gui-controls';
+import { createGuiControls } from '@/app/(2D)/particles-rotating/create-gui-controls';
+import { ParticleManager } from '@/app/(2D)/particles-rotating/particle-manager';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -15,18 +15,24 @@ export default function Page() {
     const canvasController = CanvasController.of(canvasRef.current);
     const { canvas, context } = canvasController;
 
+    const particleManager = ParticleManager.of(canvasController.canvas);
     const fpsTracker = FpsTracker.of(canvas.parentElement!);
-    const waves = Waves.of(canvas.height / 2);
-    const ghosting = { value: 0.06 };
+
+    canvasController.onResize = particleManager.init;
+    const ghosting = { value: 1 };
 
     const animationController = AnimationController.of(() => {
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
       context.fillRect(0, 0, canvas.width, canvas.height);
-      waves.draw(context);
+      particleManager.onTimer();
       fpsTracker.track();
     });
 
-    const guiControls = createGuiControls(animationController, waves, ghosting);
+    const guiControls = createGuiControls(
+      animationController,
+      particleManager,
+      ghosting,
+    );
 
     return () => {
       animationController.stop();

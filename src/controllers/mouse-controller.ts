@@ -36,6 +36,13 @@ type MouseEventHandlers = {
    * @param delta - The change in position since the last mouse move event.
    */
   onMouseMove?: (position: MousePosition, delta: MouseDelta) => void;
+
+  /**
+   * Handler for the mouse scroll event.
+   * @param position - The position of the mouse when the scroll event occurs.
+   * @param delta - The scroll delta value (positive for scroll up, negative for scroll down).
+   */
+  onScroll?: (position: MousePosition, delta: number) => void;
 };
 
 export class MouseController {
@@ -72,6 +79,7 @@ export class MouseController {
     this._targetElement.addEventListener('mousedown', this._onMouseDown);
     this._targetElement.addEventListener('mouseup', this._onMouseUp);
     this._targetElement.addEventListener('mousemove', this._onMouseMove);
+    this._targetElement.addEventListener('wheel', this._onWheel);
   }
 
   private _onMouseDown = (event: MouseEvent) => {
@@ -89,6 +97,11 @@ export class MouseController {
   private _onMouseMove = (event: MouseEvent) => {
     this._updateMousePosition(event);
     this._handlers.onMouseMove?.(this._mousePosition, this._getMouseDelta());
+  };
+
+  private _onWheel = (event: WheelEvent) => {
+    this._updateMousePosition(event);
+    this._handlers.onScroll?.(this._mousePosition, event.deltaY);
   };
 
   private _updateMousePosition(event: MouseEvent) {
@@ -114,6 +127,7 @@ export class MouseController {
     this._targetElement.removeEventListener('mousedown', this._onMouseDown);
     this._targetElement.removeEventListener('mouseup', this._onMouseUp);
     this._targetElement.removeEventListener('mousemove', this._onMouseMove);
+    this._targetElement.removeEventListener('wheel', this._onWheel);
   }
 
   get isMouseDown() {
