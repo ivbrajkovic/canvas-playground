@@ -1,7 +1,14 @@
 import { Particle } from '@/app/(2D)/particles-rotating/particle';
+import { CanvasController } from '@/controllers/canvas-controller';
+
+type Settings = {
+  sphereRadius?: number;
+  radius_sp?: number;
+};
 
 export class ParticleManager {
-  context: CanvasRenderingContext2D;
+  private _context: CanvasRenderingContext2D;
+  private _canvasController: CanvasController;
 
   sphereRadius = 280;
   radius_sp = 1.5;
@@ -66,17 +73,17 @@ export class ParticleManager {
   y0 = 1;
   z0 = 1;
 
-  static of = (canvas: HTMLCanvasElement) => new ParticleManager(canvas);
+  static of = (canvasController: CanvasController, settings: Settings = {}) =>
+    new ParticleManager(canvasController, settings);
 
-  constructor(private canvas: HTMLCanvasElement) {
-    const context = canvas.getContext('2d');
-    if (!context) throw new Error('Failed to get 2d context');
-
-    this.context = context;
+  constructor(canvasController: CanvasController, settings: Settings = {}) {
+    Object.assign(this, settings);
+    this._canvasController = canvasController;
+    this._context = canvasController.context;
     this.rgbString = 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',';
 
-    this.projCenterX = this.canvas.width / 2;
-    this.projCenterY = this.canvas.height / 2;
+    this.projCenterX = canvasController.width / 2;
+    this.projCenterY = canvasController.height / 2;
 
     this.particleList = {
       first: null,
@@ -103,8 +110,8 @@ export class ParticleManager {
   }
 
   init = () => {
-    this.projCenterX = this.canvas.width / 2;
-    this.projCenterY = this.canvas.height / 2;
+    this.projCenterX = this._canvasController.width / 2;
+    this.projCenterY = this._canvasController.height / 2;
   };
 
   onTimer = () => {
@@ -217,10 +224,10 @@ export class ParticleManager {
 
       //see if the particle is still within the viewable range.
       if (
-        this.particle.projX > this.canvas.width ||
+        this.particle.projX > this._canvasController.width ||
         this.particle.projX < 0 ||
         this.particle.projY < 0 ||
-        this.particle.projY > this.canvas.height ||
+        this.particle.projY > this._canvasController.height ||
         this.rotZ > this.zMax
       ) {
         this.outsideTest = true;
@@ -242,7 +249,7 @@ export class ParticleManager {
 
         //draw
         this.particle.draw(
-          this.context,
+          this._context,
           this.rgbString,
           this.depthAlphaFactor,
           this.particleRadius,

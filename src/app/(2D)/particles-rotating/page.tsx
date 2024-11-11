@@ -7,23 +7,30 @@ import { CanvasController } from '@/controllers/canvas-controller';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { createGuiControls } from '@/app/(2D)/particles-rotating/create-gui-controls';
 import { ParticleManager } from '@/app/(2D)/particles-rotating/particle-manager';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    const canvasController = CanvasController.of(canvasRef.current);
-    const { _canvas: canvas, _context: context } = canvasController;
+    if (isMobile === undefined) return;
 
-    const particleManager = ParticleManager.of(canvasController._canvas);
-    const fpsTracker = FpsTracker.of(canvas.parentElement!);
+    const canvasController = CanvasController.of(canvasRef.current);
+    const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
+
+    const particleManager = ParticleManager.of(canvasController, {
+      sphereRadius: isMobile ? 200 : 280,
+      radius_sp: isMobile ? 1.2 : 1.5,
+    });
 
     canvasController.onResize = particleManager.init;
     const ghosting = { value: 1 };
 
     const animationController = AnimationController.of(() => {
+      const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
-      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillRect(0, 0, width, height);
       particleManager.onTimer();
       fpsTracker.track();
     });
@@ -32,6 +39,7 @@ export default function Page() {
       animationController,
       particleManager,
       ghosting,
+      isMobile,
     );
 
     return () => {
@@ -40,7 +48,7 @@ export default function Page() {
       guiControls.dispose();
       canvasController.dispose();
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <canvas
