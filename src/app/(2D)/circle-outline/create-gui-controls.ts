@@ -6,6 +6,7 @@ export const createGuiControls = (
   animationController: AnimationController,
   circleOutlineManager: CircleOutlineManager,
   mouseRadius: BoundedValue,
+  isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -54,6 +55,10 @@ export const createGuiControls = (
         .name('Speed Max')
         .onFinishChange(circleOutlineManager.populate);
 
+      return gui;
+    })
+    .then((gui) => {
+      if (isMobile) gui.close();
       return gui;
     });
 
