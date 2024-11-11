@@ -2,11 +2,13 @@ import random from 'lodash/random';
 
 import { CircleCollision } from '@/app/(2D)/circle-collision/circle-collision';
 import { interpolate } from '@/utils/interpolate';
-import { getDistanceBetweenCoords } from '@/utils/distance';
-import { findNonOverlappingPosition } from '@/utils/find-radial-position';
+import { findNonOverlappingPosition as _findNonOverlappingPosition } from '@/utils/find-radial-position';
+import { CanvasController } from '@/controllers/canvas-controller';
 
 export class CircleCollisionManager {
-  public circles: CircleCollision[] = [];
+  private _canvasController: CanvasController;
+  private _circles: CircleCollision[] = [];
+
   public speedMin = -2.0;
   public speedMax = 2.0;
   public radiusMin = 10;
@@ -15,26 +17,29 @@ export class CircleCollisionManager {
   public massMax = 50;
   public circleCount = 40;
 
-  public static of = (canvas: HTMLCanvasElement) =>
-    new CircleCollisionManager(canvas);
+  public static of = (
+    canvasController: CanvasController,
+    settings: { isMobile?: boolean } = {},
+  ) => new CircleCollisionManager(canvasController, settings);
 
-  private constructor(private canvas: HTMLCanvasElement) {
+  private constructor(
+    canvasController: CanvasController,
+    { isMobile = false }: { isMobile?: boolean },
+  ) {
+    this._canvasController = canvasController;
+    if (isMobile) {
+      this.circleCount = 20;
+      this.radiusMax = 40;
+    }
     this.populate();
   }
 
-  private findNonOverlappingPosition = (
+  private _findNonOverlappingPosition = (
     width: number,
     height: number,
     radius: number,
   ) => {
-    return findNonOverlappingPosition(
-      width,
-      height,
-      radius,
-      this.circles,
-      getDistanceBetweenCoords,
-      random,
-    );
+    return _findNonOverlappingPosition(width, height, radius, this._circles);
   };
 
   private calculateVelocity(radius: number) {
@@ -48,7 +53,7 @@ export class CircleCollisionManager {
     return random(0, 1, true) < 0.5 ? -velocity : velocity;
   }
 
-  private calculateMass = (radius: number) => {
+  private _calculateMass = (radius: number) => {
     return interpolate(
       radius,
       this.radiusMin,
@@ -58,19 +63,33 @@ export class CircleCollisionManager {
     );
   };
 
-  populate = () => {
-    const { width, height } = this.canvas;
-    this.circles = Array.from({ length: this.circleCount }, () => {
+  public populate = () => {
+    const { width, height } = this._canvasController;
+    this._circles.length = 0;
+
+    Array.from({ length: this.circleCount }).forEach(() => {
       const radius = random(this.radiusMin, this.radiusMax);
-      const { x, y } = this.findNonOverlappingPosition(width, height, radius);
+      const { x, y } = this._findNonOverlappingPosition(width, height, radius);
       const vector = {
         x: this.calculateVelocity(radius),
         y: this.calculateVelocity(radius),
       };
-      const mass = this.calculateMass(radius);
+      const mass = this._calculateMass(radius);
       const color = `hsl(${random(360, true)}, 50%, 50%)`;
-      return new CircleCollision(x, y, vector, radius, 1, color, color, mass);
+      this._circles.push(
+        new CircleCollision(x, y, vector, radius, 1, color, color, mass),
+      );
     });
+
     return this;
+  };
+
+  public animate = () => {
+    const { width, height, context } = this._canvasController;
+    this._circles.forEach((circle) => {
+      circle.update(this._circles);
+      circle.move(width, height);
+      circle.draw(context);
+    });
   };
 }

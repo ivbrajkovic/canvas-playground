@@ -4,6 +4,7 @@ import { AnimationController } from '@/controllers/animation-controller';
 export const createGuiControls = (
   animationController: AnimationController,
   circleCollisionManager: CircleCollisionManager,
+  isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -57,6 +58,10 @@ export const createGuiControls = (
         .name('Speed Max')
         .onFinishChange(circleCollisionManager.populate);
 
+      return gui;
+    })
+    .then((gui) => {
+      if (isMobile) gui.close();
       return gui;
     });
 

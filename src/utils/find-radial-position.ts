@@ -1,32 +1,13 @@
+import random from 'lodash/random';
+
+import { getDistanceBetweenCoords } from '@/utils/distance';
+
 const DEFAULT_MAX_ATTEMPTS = 10_000;
 
 type RadialPoint = {
   x: number;
   y: number;
   radius: number;
-};
-
-/**
- * Determines if a point with given coordinates and radius overlaps with another radial point.
- *
- * @template T - Type extending RadialPoint interface
- * @param x - X coordinate of the first point
- * @param y - Y coordinate of the first point
- * @param radius - Radius of the first point
- * @param item - Second radial point to check overlap with
- * @param distanceFunc - Function to calculate distance between two points
- * @returns Boolean indicating whether the points overlap
- */
-const isOverlappingFunc = <T extends RadialPoint>(
-  x: number,
-  y: number,
-  radius: number,
-  item: T,
-  distanceFunc: (x1: number, y1: number, x2: number, y2: number) => number,
-): boolean => {
-  const distance = distanceFunc(x, y, item.x, item.y);
-  const minDistance = radius + item.radius;
-  return distance < minDistance;
 };
 
 /**
@@ -50,18 +31,17 @@ export const findNonOverlappingPosition = <T extends RadialPoint>(
   height: number,
   radius: number,
   items: T[],
-  distanceFunc: (x1: number, y1: number, x2: number, y2: number) => number,
-  randomFunc: (min: number, max: number) => number,
   maxAttempts = DEFAULT_MAX_ATTEMPTS,
 ): { x: number; y: number } => {
   const initialAttempts = maxAttempts;
 
   while (--maxAttempts) {
-    const x = randomFunc(radius, width - radius);
-    const y = randomFunc(radius, height - radius);
+    const x = random(radius, width - radius);
+    const y = random(radius, height - radius);
 
     const isOverlapping = items.some((item) => {
-      isOverlappingFunc(x, y, radius, item, distanceFunc);
+      const distance = getDistanceBetweenCoords(x, y, item.x, item.y);
+      return distance < radius + item.radius;
     });
     if (!isOverlapping) return { x, y };
   }
