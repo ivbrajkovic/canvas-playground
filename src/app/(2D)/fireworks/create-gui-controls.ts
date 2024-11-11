@@ -5,6 +5,7 @@ export const createGuiControls = (
   animationController: AnimationController,
   particleManager: ParticleManager,
   ghosting: { value: number },
+  isClosed: boolean,
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -40,6 +41,10 @@ export const createGuiControls = (
       gui.add(particleManager, 'friction', 0.01, 0.05).name('Friction');
       gui.add(particleManager, 'alphaDecay', 0.001, 0.01).name('Alpha Decay');
 
+      return gui;
+    })
+    .then((gui) => {
+      if (isClosed) gui.close();
       return gui;
     });
 

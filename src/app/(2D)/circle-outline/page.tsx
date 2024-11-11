@@ -15,7 +15,7 @@ export default function Page() {
 
   useEffect(() => {
     const canvasController = CanvasController.of(canvasRef.current);
-    const { canvas, context } = canvasController;
+    const { _canvas: canvas, _context: context } = canvasController;
 
     const fpsTrackerController = FpsTracker.of(canvas.parentElement!);
     const circleOutlineManager = CircleOutlineManager.of(canvas);

@@ -45,7 +45,7 @@ export class ParticleManager {
 
   drawParticles = (context: CanvasRenderingContext2D) => {
     this.particles.forEach((particle) => {
-      particle.update(context);
+      particle.update();
       particle.draw(context);
     });
   };

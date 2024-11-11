@@ -27,8 +27,7 @@ export class Particle {
     context.restore();
   }
 
-  update(context: CanvasRenderingContext2D) {
-    this.draw(context);
+  update() {
     this.x += this.vx;
     this.vx *= this.friction;
 

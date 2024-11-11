@@ -8,12 +8,14 @@ import { FpsTracker } from '@/classes/fps-tracker';
 import { ParticleManager } from '@/app/(2D)/fireworks/particle-manager';
 import { createGuiControls } from '@/app/(2D)/fireworks/create-gui-controls';
 import { MouseController } from '@/controllers/mouse-controller';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    const canvasController = CanvasController.of(canvasRef.current);
+    const canvasController = CanvasController.of(canvasRef.current, false);
     const { canvas, context } = canvasController;
 
     const particleManager = new ParticleManager();
@@ -37,6 +39,7 @@ export default function Page() {
       animationController,
       particleManager,
       ghosting,
+      isMobile,
     );
 
     return () => {
@@ -46,7 +49,7 @@ export default function Page() {
       guiControls.dispose();
       canvasController.dispose();
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <canvas

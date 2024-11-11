@@ -13,7 +13,7 @@ export default function Particles() {
 
   useEffect(() => {
     const canvasController = CanvasController.of(canvasRef.current);
-    const { canvas, context } = canvasController;
+    const { _canvas: canvas, _context: context } = canvasController;
 
     const fpsTrackerController = FpsTracker.of(canvas.parentElement!);
     const particleTunnelManager = ParticleTunnelManager.of(canvas);

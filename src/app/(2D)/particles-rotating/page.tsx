@@ -13,9 +13,9 @@ export default function Page() {
 
   useEffect(() => {
     const canvasController = CanvasController.of(canvasRef.current);
-    const { canvas, context } = canvasController;
+    const { _canvas: canvas, _context: context } = canvasController;
 
-    const particleManager = ParticleManager.of(canvasController.canvas);
+    const particleManager = ParticleManager.of(canvasController._canvas);
     const fpsTracker = FpsTracker.of(canvas.parentElement!);
 
     canvasController.onResize = particleManager.init;

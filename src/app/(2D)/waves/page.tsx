@@ -13,7 +13,7 @@ export default function Page() {
 
   useEffect(() => {
     const canvasController = CanvasController.of(canvasRef.current);
-    const { canvas, context } = canvasController;
+    const { _canvas: canvas, _context: context } = canvasController;
 
     const fpsTracker = FpsTracker.of(canvas.parentElement!);
     const waves = Waves.of(canvas.height / 2);
