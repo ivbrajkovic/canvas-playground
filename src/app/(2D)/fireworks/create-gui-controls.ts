@@ -5,7 +5,7 @@ export const createGuiControls = (
   animationController: AnimationController,
   particleManager: ParticleManager,
   ghosting: { value: number },
-  isClosed: boolean,
+  isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -44,7 +44,7 @@ export const createGuiControls = (
       return gui;
     })
     .then((gui) => {
-      if (isClosed) gui.close();
+      if (isMobile) gui.close();
       return gui;
     });
 

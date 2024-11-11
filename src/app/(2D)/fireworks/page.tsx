@@ -15,23 +15,24 @@ export default function Page() {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const canvasController = CanvasController.of(canvasRef.current, false);
-    const { canvas, context } = canvasController;
+    if (isMobile === undefined) return;
+
+    const canvasController = CanvasController.of(canvasRef.current);
+    const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
 
     const particleManager = new ParticleManager();
-    const mouseController = MouseController.of(canvas, {
+    const mouseController = MouseController.of(canvasController.canvas, {
       onMouseDown: ({ x, y }) => {
         particleManager.createParticles(x, y);
       },
     });
-    const fpsTracker = FpsTracker.of(canvas.parentElement!);
     const ghosting = { value: 0.1 };
 
     const animationController = AnimationController.of(() => {
+      const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      particleManager.filterParticles();
-      particleManager.drawParticles(context);
+      context.fillRect(0, 0, width, height);
+      particleManager.animate(context);
       fpsTracker.track();
     });
 

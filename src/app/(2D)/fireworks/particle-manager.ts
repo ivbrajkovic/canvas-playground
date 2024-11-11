@@ -39,11 +39,12 @@ export class ParticleManager {
     }
   };
 
-  filterParticles = () => {
+  private _filterParticles = () => {
     this.particles = this.particles.filter((particle) => particle.alpha >= 0.1);
   };
 
-  drawParticles = (context: CanvasRenderingContext2D) => {
+  public animate = (context: CanvasRenderingContext2D) => {
+    this._filterParticles();
     this.particles.forEach((particle) => {
       particle.update();
       particle.draw(context);
