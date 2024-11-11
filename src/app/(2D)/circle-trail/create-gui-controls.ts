@@ -5,6 +5,7 @@ export const createGuiControls = (
   animationController: AnimationController,
   circleTrailManager: CircleTrailManager,
   circleTrail: { value: number },
+  isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -57,6 +58,10 @@ export const createGuiControls = (
         .name('Speed Max')
         .onFinishChange(circleTrailManager.populate);
 
+      return gui;
+    })
+    .then((gui) => {
+      if (isMobile) gui.close();
       return gui;
     });
 
