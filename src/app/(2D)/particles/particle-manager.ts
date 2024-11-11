@@ -1,6 +1,17 @@
 import { Particle } from '@/app/(2D)/particles/particle';
+import { CanvasController } from '@/controllers/canvas-controller';
+
+type Settings = {
+  particleCount?: number;
+  linkingDistance?: number;
+  particleColor?: string;
+  lineColor?: string;
+  lineWidth?: number;
+};
 
 export class ParticleManager {
+  private _canvasController: CanvasController;
+
   public particles: Particle[] = [];
   public isConnections = true;
   public linkingDistance = 120;
@@ -9,16 +20,20 @@ export class ParticleManager {
   public lineColor = '#ffffff';
   public lineWidth = 1;
 
-  public static of = (canvas: HTMLCanvasElement) => new ParticleManager(canvas);
+  public static of = (canvasController: CanvasController, settings: Settings) =>
+    new ParticleManager(canvasController, settings);
 
-  constructor(private canvas: HTMLCanvasElement) {
+  constructor(canvasController: CanvasController, settings: Settings) {
+    this._canvasController = canvasController;
+    Object.assign(this, settings);
     this.populate();
   }
 
   public populate = () => {
+    const { width, height } = this._canvasController;
     this.particles = Array.from(
       { length: this.particleCount },
-      () => new Particle(this.canvas.width, this.canvas.height),
+      () => new Particle(width, height),
     );
   };
 

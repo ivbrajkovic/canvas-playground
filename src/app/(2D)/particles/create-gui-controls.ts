@@ -7,6 +7,7 @@ export const createGuiControls = (
   particleManager: ParticleManager,
   mouseRadius: BoundedValue,
   ghosting: { value: number },
+  isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -51,6 +52,10 @@ export const createGuiControls = (
       colorFolder.addColor(particleManager, 'lineColor').name('Link');
       colorFolder.addColor(particleManager, 'particleColor').name('Particle');
 
+      return gui;
+    })
+    .then((gui) => {
+      if (isMobile) gui.close();
       return gui;
     });
 

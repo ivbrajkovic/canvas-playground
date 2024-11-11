@@ -8,33 +8,41 @@ import { CanvasController } from '@/controllers/canvas-controller';
 import { MouseController } from '@/controllers/mouse-controller';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { useEffect, useRef } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Particles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    const canvasController = CanvasController.of(canvasRef.current);
-    const { _canvas: canvas, _context: context } = canvasController;
+    if (isMobile === undefined) return;
 
-    const fpsTrackerController = FpsTracker.of(canvas.parentElement!);
-    const particleManager = ParticleManager.of(canvas);
+    const canvasController = CanvasController.of(canvasRef.current);
+    const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
+
+    const particleManager = ParticleManager.of(canvasController, {
+      particleCount: isMobile ? 80 : 200,
+      linkingDistance: isMobile ? 80 : 120,
+    });
 
     const mouseRadius = BoundedValue.of(250, 0, 250);
-    const mouseController = MouseController.of(canvas, {
+    const mouseController = MouseController.of(canvasController.canvas, {
       onMouseMove: () => (mouseRadius.value += 10),
+      onMouseDown: () => (mouseRadius.value = 250),
     });
     const ghosting = { value: 1 };
 
     const animationController = AnimationController.of(() => {
+      const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
-      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillRect(0, 0, width, height);
       particleManager.particles.forEach((particle, index) => {
-        particle.move(context);
+        particle.move(width, height);
         particle.update(mouseController.x, mouseController.y, mouseRadius.value);
         particleManager.drawParticle(context, particle);
         particleManager.drawLine(context, particle, index);
       });
-      fpsTrackerController.track();
+      fpsTracker.track();
       mouseRadius.value -= 4;
     });
 
@@ -43,16 +51,17 @@ export default function Particles() {
       particleManager,
       mouseRadius,
       ghosting,
+      isMobile,
     );
 
     return () => {
       mouseController.dispose();
       animationController.stop();
-      fpsTrackerController.dispose();
+      fpsTracker.dispose();
       guiControls.dispose();
       canvasController.dispose();
     };
-  }, []);
+  }, [isMobile]);
 
   return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
 }
