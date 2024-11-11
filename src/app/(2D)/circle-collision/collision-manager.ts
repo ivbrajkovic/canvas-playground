@@ -5,6 +5,16 @@ import { interpolate } from '@/utils/interpolate';
 import { findNonOverlappingPosition as _findNonOverlappingPosition } from '@/utils/find-radial-position';
 import { CanvasController } from '@/controllers/canvas-controller';
 
+type Settings = {
+  speedMin?: number;
+  speedMax?: number;
+  radiusMin?: number;
+  radiusMax?: number;
+  massMin?: number;
+  massMax?: number;
+  circleCount?: number;
+};
+
 export class CircleCollisionManager {
   private _canvasController: CanvasController;
   private _circles: CircleCollision[] = [];
@@ -17,20 +27,12 @@ export class CircleCollisionManager {
   public massMax = 50;
   public circleCount = 40;
 
-  public static of = (
-    canvasController: CanvasController,
-    settings: { isMobile?: boolean } = {},
-  ) => new CircleCollisionManager(canvasController, settings);
+  public static of = (canvasController: CanvasController, settings: Settings) =>
+    new CircleCollisionManager(canvasController, settings);
 
-  private constructor(
-    canvasController: CanvasController,
-    { isMobile = false }: { isMobile?: boolean },
-  ) {
+  constructor(canvasController: CanvasController, settings: Settings) {
     this._canvasController = canvasController;
-    if (isMobile) {
-      this.circleCount = 20;
-      this.radiusMax = 40;
-    }
+    Object.assign(this, settings);
     this.populate();
   }
 

@@ -18,10 +18,10 @@ const CircleCollision = () => {
     const canvasController = CanvasController.of(canvasRef.current, true);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
 
-    const circleCollisionManager = CircleCollisionManager.of(
-      canvasController, //
-      { isMobile },
-    );
+    const circleCollisionManager = CircleCollisionManager.of(canvasController, {
+      circleCount: isMobile ? 20 : 40,
+      radiusMax: isMobile ? 40 : 50,
+    });
 
     canvasController.onResize = circleCollisionManager.populate;
 
