@@ -5,6 +5,7 @@ export const createGuiControls = (
   animationController: AnimationController,
   particleTunnelManager: ParticleTunnelManager,
   ghosting: { value: number },
+  isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -40,6 +41,10 @@ export const createGuiControls = (
       gui.add(particleTunnelManager, 'radius', 1, 100, 1).name('Radius');
       gui.add(particleTunnelManager, 'speed', 1, 20, 1).name('Speed');
 
+      return gui;
+    })
+    .then((gui) => {
+      if (isMobile) gui.close();
       return gui;
     });
 

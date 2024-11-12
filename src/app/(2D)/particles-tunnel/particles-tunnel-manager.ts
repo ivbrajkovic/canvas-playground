@@ -14,8 +14,8 @@ export class ParticleTunnelManager {
   private radian = (Math.PI * 2) / this.count;
   private particles: Particle[] = [];
 
-  static of = (canvas: HTMLCanvasElement) => new ParticleTunnelManager(canvas);
-  constructor(private canvas: HTMLCanvasElement) {}
+  static of = () => new ParticleTunnelManager();
+  constructor() {}
 
   changeHue = () => {
     if (!this.isAnimateColor) return;
