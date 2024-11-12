@@ -8,6 +8,7 @@ export class FpsTracker {
     const element = document.createElement('span');
     element.style.position = 'absolute';
     element.style.top = '0';
+    element.style.left = '0';
     element.style.backgroundColor = 'black';
     element.style.padding = '8px 16px';
     element.style.borderRadius = '4px';

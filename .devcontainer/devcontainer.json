@@ -65,6 +65,6 @@
   "postCreateCommand": "sudo chown -R node:node .pnpm-store && pnpm config set store-dir .pnpm-store && pnpm install",
 
   // Set container name
-  "runArgs": ["--name", "canvas-playground", "-p", "3000:3000"] // expose port 3000 on local network
-  // "runArgs": ["--name", "canvas-playground"]
+  // "runArgs": ["--name", "canvas-playground", "-p", "3000:3000"] // expose port 3000 on local network
+  "runArgs": ["--name", "canvas-playground"]
 }

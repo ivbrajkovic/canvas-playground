@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 
+import { createGuiControls } from '@/app/(2D)/waves/create-gui-controls';
+import { Waves } from '@/app/(2D)/waves/waves';
+import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
-import { FpsTracker } from '@/classes/fps-tracker';
-import { Waves } from '@/app/(2D)/waves/waves';
-import { createGuiControls } from '@/app/(2D)/waves/create-gui-controls';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -38,7 +38,7 @@ export default function Page() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-full bg-[hsla(0,0%,10%,1)]"
+      className="absolute left-0 top-0 size-full bg-[hsla(0,0%,10%,1)]"
     />
   );
 }

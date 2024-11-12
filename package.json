@@ -31,6 +31,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@types/dat.gui": "^0.7.13",
     "@types/lodash": "^4.17.13",
     "@types/node": "^20",
@@ -38,7 +39,10 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "15.0.2",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-tailwindcss": "^3.17.5",
     "postcss": "^8",
+    "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },

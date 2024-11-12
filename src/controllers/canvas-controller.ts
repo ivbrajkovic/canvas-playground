@@ -22,7 +22,8 @@ export class CanvasController {
     this._canvas = canvas;
     this._context = context;
     this._enableDPI = enableDPI;
-    this._pixelRatio = window.devicePixelRatio || 1;
+    // this._pixelRatio = window.devicePixelRatio || 1;
+    this._pixelRatio = 1;
 
     const scaleFactor = this._enableDPI ? this._pixelRatio : 1;
     const clientWidth = this._canvas.clientWidth * scaleFactor;

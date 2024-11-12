@@ -12,6 +12,7 @@ export const links: SidebarData[] = [
       { title: 'Circle Collision', url: '/circle-collision' },
       { title: 'Waves', url: '/waves' },
       { title: 'Fireworks', url: '/fireworks' },
+      { title: 'Pac-Man', url: '/pacman' },
     ],
   },
   {
