@@ -13,15 +13,14 @@ export default function Page() {
 
   useEffect(() => {
     const canvasController = CanvasController.of(canvasRef.current);
-    const { _canvas: canvas, _context: context } = canvasController;
-
-    const fpsTracker = FpsTracker.of(canvas.parentElement!);
-    const waves = Waves.of(canvas.height / 2);
+    const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
+    const waves = Waves.of(canvasController.height / 2);
     const ghosting = { value: 0.06 };
 
     const animationController = AnimationController.of(() => {
+      const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
-      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillRect(0, 0, width, height);
       waves.draw(context);
       fpsTracker.track();
     });
