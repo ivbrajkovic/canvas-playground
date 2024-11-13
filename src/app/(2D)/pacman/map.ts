@@ -58,4 +58,17 @@ const level3 = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-export const map = [level1, level2, level3];
+// export const map = [level1, level2, level3];
+
+const testLevel1 = [
+  [1, 1, 1, 1],
+  [1, 4, 0, 1],
+  [1, 1, 1, 1],
+];
+const testLevel2 = [
+  [1, 1, 1, 1],
+  [1, 4, 6, 1],
+  [1, 1, 1, 1],
+];
+
+export const map = [testLevel2];

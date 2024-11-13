@@ -25,6 +25,8 @@ type GameProps = {
 };
 
 export class Game {
+  private _isGameOver = false;
+  private _isGameWin = false;
   private _currentMapIndex = STARTING_LEVEL;
   private _wallMap: WallMap;
   private _score: number;
@@ -45,6 +47,14 @@ export class Game {
   public onGameWin?: () => void;
   public onGameReset?: () => void;
   public onMapChange?: (width: number, height: number) => void;
+
+  get isGameOver() {
+    return this._isGameOver;
+  }
+
+  get IsGameWin() {
+    return this._isGameWin;
+  }
 
   constructor({
     wallSize: rectSize,
@@ -99,6 +109,7 @@ export class Game {
     if (this._pacmanLife > 0) {
       this._pacman.reset();
     } else {
+      this._isGameOver = true;
       this._gameOverSound.play();
       this.onGameOver?.();
     }
@@ -120,6 +131,7 @@ export class Game {
   private _onEatAllPellets = () => {
     const isLastLevel = this._currentMapIndex === this._maps.length - 1;
     if (isLastLevel) {
+      this._isGameWin = true;
       this._gameWinSound.play();
       this.onGameWin?.();
     } else {
@@ -142,6 +154,8 @@ export class Game {
   };
 
   public resetGameState = () => {
+    this._isGameOver = false;
+    this._isGameWin = false;
     this._pacmanLife = this._originalPacmanLife;
     this._score = 0;
     this._initMap();
