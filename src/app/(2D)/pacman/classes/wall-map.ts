@@ -1,3 +1,4 @@
+import { Portal } from '@/app/(2D)/pacman/classes/portal';
 import { Direction, MapObject } from '@/app/(2D)/pacman/utils/enum';
 
 import { Ghost } from './ghost';
@@ -6,12 +7,22 @@ import { Pellet } from './pellet';
 import { PowerPellet } from './power-pellet';
 import { Wall } from './wall';
 
+type PlayerPosition = {
+  type: MapObject.Pacman | MapObject;
+  x: number;
+  y: number;
+};
+
 export class WallMap {
   private _mapWidth = 0;
   private _mapHeight = 0;
   private _halfWallSize = 0;
   private _map: number[][] = [];
   private _mapArray: (Wall | Pellet)[] = [];
+  private _playerPositions: PlayerPosition[] = [];
+
+  private _portalTemp: Portal | null = null;
+  private _portalMap: Map<`${number}:${number}`, Portal> = new Map();
 
   public pelletCount = 0;
   public onEatAllPellets?: () => void;
@@ -24,17 +35,23 @@ export class WallMap {
     return this._mapHeight;
   }
 
-  private playerPositions: {
-    type: MapObject.Pacman | MapObject.Ghost;
-    x: number;
-    y: number;
-  }[] = [];
-
   constructor(public wallSize: number) {
     this._halfWallSize = wallSize / 2;
   }
 
-  isWall = (x: number, y: number, direction: Direction | null) => {
+  isPortalAtPosition = (x: number, y: number) => {
+    const column = x / this.wallSize;
+    const row = y / this.wallSize;
+    return this._portalMap.has(`${row}:${column}`);
+  };
+
+  getPortalFromPosition = (x: number, y: number) => {
+    const column = x / this.wallSize;
+    const row = y / this.wallSize;
+    return this._portalMap.get(`${row}:${column}`);
+  };
+
+  isWallAtPosition = (x: number, y: number, direction: Direction | null) => {
     if (
       direction === null ||
       !Number.isInteger(x / this.wallSize) ||
@@ -73,15 +90,17 @@ export class WallMap {
         break;
     }
 
-    return this._map[row][column] === 1;
+    return this._map[row][column] === MapObject.Wall;
   };
 
   public mapInit = (map: number[][]) => {
     this._map = map.map((row) => row.slice());
     this._mapArray = [];
-    this.playerPositions = [];
+    this._playerPositions = [];
     this._mapWidth = this.wallSize * map[0].length;
     this._mapHeight = this.wallSize * map.length;
+    this._portalTemp = null;
+    this._portalMap.clear();
 
     map.forEach((row, rowIndex) => {
       row.forEach((column, columnIndex) => {
@@ -108,6 +127,31 @@ export class WallMap {
             );
             break;
 
+          case MapObject.Portal: {
+            const portal = new Portal(
+              this.wallSize * columnIndex,
+              this.wallSize * rowIndex,
+              this.wallSize,
+              this.wallSize,
+              { x: 0, y: 0 },
+            );
+
+            if (this._portalTemp === null) {
+              this._portalTemp = portal;
+            } else {
+              this._portalTemp.outCoordinates = { x: portal.x, y: portal.y };
+              portal.outCoordinates = {
+                x: this._portalTemp.x,
+                y: this._portalTemp.y,
+              };
+              this._portalTemp = null;
+            }
+
+            this._portalMap.set(`${rowIndex}:${columnIndex}`, portal);
+            this._mapArray.push(portal);
+            break;
+          }
+
           case MapObject.Ghost:
             {
               // Add pellet under the ghost
@@ -133,7 +177,7 @@ export class WallMap {
                 );
               }
 
-              this.playerPositions.push({
+              this._playerPositions.push({
                 type: MapObject.Ghost,
                 x: this.wallSize * columnIndex,
                 y: this.wallSize * rowIndex,
@@ -142,7 +186,7 @@ export class WallMap {
             break;
 
           case MapObject.Pacman:
-            this.playerPositions.push({
+            this._playerPositions.push({
               type: MapObject.Pacman,
               x: this.wallSize * columnIndex,
               y: this.wallSize * rowIndex,
@@ -158,7 +202,7 @@ export class WallMap {
   };
 
   public getPacman = (velocity: number) => {
-    const pacmanPosition = this.playerPositions.find(
+    const pacmanPosition = this._playerPositions.find(
       ({ type }) => type === MapObject.Pacman,
     );
     if (!pacmanPosition) throw new Error('Pacman not found');
@@ -173,7 +217,7 @@ export class WallMap {
   };
 
   public getGhosts = (velocity: number) =>
-    this.playerPositions
+    this._playerPositions
       .filter(({ type }) => type === MapObject.Ghost)
       .map(({ x, y }) => new Ghost(x, y, this.wallSize, velocity, 'red', this));
 
@@ -207,5 +251,12 @@ export class WallMap {
     if (this.pelletCount === 0) this.onEatAllPellets?.();
 
     return pelletType;
+  };
+
+  public dispose = () => {
+    this._mapArray = [];
+    this._playerPositions = [];
+    this._portalTemp = null;
+    this._portalMap.clear();
   };
 }

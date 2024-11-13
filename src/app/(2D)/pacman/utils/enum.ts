@@ -5,6 +5,7 @@ export enum MapObject {
   Empty = 5,
   Ghost = 6,
   PowerPellet = 7,
+  Portal = 8,
 }
 
 export enum Direction {

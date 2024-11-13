@@ -80,10 +80,10 @@ export class Ghost extends Player {
       this._direction !== this._nextDirection &&
       Number.isInteger(this.x / this.wallMap.wallSize) &&
       Number.isInteger(this.y / this.wallMap.wallSize) &&
-      !this.wallMap.isWall(this.x, this.y, this._nextDirection)
+      !this.wallMap.isWallAtPosition(this.x, this.y, this._nextDirection)
     ) {
       this._direction = this._nextDirection;
-    } else if (this.wallMap.isWall(this.x, this.y, this._direction)) {
+    } else if (this.wallMap.isWallAtPosition(this.x, this.y, this._direction)) {
       this._nextDirection = getRandomDirection();
       this._resetDirectionChangeTimer();
       return;
@@ -123,5 +123,14 @@ export class Ghost extends Player {
   remove = () => {
     this._isVisible = false;
     this._timers.forEach((timer) => clearTimeout(timer));
+  };
+
+  public dispose = () => {
+    this.remove();
+    this.wallMap = null!;
+    this._normalGhost = null!;
+    this._scaredGhost = null!;
+    this._scaredGhost2 = null!;
+    this._currentImage = null!;
   };
 }

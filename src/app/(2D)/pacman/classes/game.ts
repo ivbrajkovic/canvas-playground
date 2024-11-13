@@ -175,7 +175,8 @@ export class Game {
   };
 
   public dispose = () => {
-    this._pacman.removeKeyDownListener();
-    this._ghosts.forEach((ghost) => ghost.remove());
+    this._pacman.dispose();
+    this._ghosts.forEach((ghost) => ghost.dispose());
+    this._wallMap.dispose();
   };
 }

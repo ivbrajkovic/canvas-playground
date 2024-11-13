@@ -82,14 +82,20 @@ export class Pacman extends Player {
   };
 
   private _updatePosition = () => {
+    if (this._wallMap.isPortalAtPosition(this.x, this.y)) {
+      const portal = this._wallMap.getPortalFromPosition(this.x, this.y)!;
+      this.x = portal.outCoordinates.x;
+      this.y = portal.outCoordinates.y;
+    }
+
     if (
       this._direction !== this._nextDirection &&
       Number.isInteger(this.x / this._wallMap.wallSize) &&
       Number.isInteger(this.y / this._wallMap.wallSize) &&
-      !this._wallMap.isWall(this.x, this.y, this._nextDirection)
+      !this._wallMap.isWallAtPosition(this.x, this.y, this._nextDirection)
     ) {
       this._direction = this._nextDirection;
-    } else if (this._wallMap.isWall(this.x, this.y, this._direction)) {
+    } else if (this._wallMap.isWallAtPosition(this.x, this.y, this._direction)) {
       return;
     }
 
@@ -192,5 +198,10 @@ export class Pacman extends Player {
       clearInterval(interval);
       this._color = colors[0];
     }, KILLED_TIMEOUT);
+  };
+
+  public dispose = () => {
+    this.removeKeyDownListener();
+    this._wallMap = null!;
   };
 }
