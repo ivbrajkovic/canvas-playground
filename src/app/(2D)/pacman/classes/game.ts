@@ -6,12 +6,12 @@ const eatGhostSound = '/sounds/eat_ghost.wav';
 const gameOverSound = '/sounds/gameOver.wav';
 const gameWinSound = '/sounds/gameWin.wav';
 
-const STARTING_LEVEL = 0;
-
 type GameProps = {
   wallSize: number;
   velocity: number;
   map: number[][][];
+  score: number;
+  level: number;
   pacmanLife: number;
   handlers?: {
     onGameWin?: () => void;
@@ -27,7 +27,7 @@ type GameProps = {
 export class Game {
   private _isGameOver = false;
   private _isGameWin = false;
-  private _currentMapIndex = STARTING_LEVEL;
+  private _currentLevel: number;
   private _wallMap: WallMap;
   private _score: number;
   private _pacman!: Pacman;
@@ -47,6 +47,7 @@ export class Game {
   public onGameWin?: () => void;
   public onGameReset?: () => void;
   public onMapChange?: (width: number, height: number) => void;
+  public onEatGhost?: () => void;
 
   get isGameOver() {
     return this._isGameOver;
@@ -60,11 +61,14 @@ export class Game {
     wallSize: rectSize,
     velocity,
     map,
+    score,
+    level,
     pacmanLife,
     handlers,
   }: GameProps) {
-    this._score = 0;
     this._maps = map;
+    this._score = score;
+    this._currentLevel = level;
     this._velocity = velocity;
     this._pacmanLife = pacmanLife;
     this._originalPacmanLife = pacmanLife;
@@ -86,17 +90,22 @@ export class Game {
   }
 
   private _initMap() {
-    this._wallMap.mapInit(this._maps[this._currentMapIndex]);
+    this._wallMap.mapInit(this._maps[this._currentLevel]);
     this._wallMap.onEatAllPellets = this._onEatAllPellets;
     this.onMapChange?.(this._wallMap.width, this._wallMap.height);
   }
+
+  private _changeScore = (value: number) => {
+    this._score += value;
+    this.onScoreChange?.(this._score);
+  };
 
   private _initPlayers() {
     this._pacman = this._wallMap.getPacman(this._velocity);
     this._ghosts = this._wallMap.getGhosts(this._velocity);
     this._pacman.onStartMove = () => this._ghosts.forEach((g) => g.startMoving());
     this._pacman.onEatPowerPellet = () => this._ghosts.forEach((g) => g.setScared());
-    this._pacman.onEatPellet = () => this.onScoreChange?.(++this._score);
+    this._pacman.onEatPellet = () => this._changeScore(1);
     this._pacman.startKeyDownListener();
   }
 
@@ -119,6 +128,7 @@ export class Game {
     this._ghosts[ghostIndex].remove();
     this._ghosts.splice(ghostIndex, 1);
     this._eatGhostSound.play();
+    this._changeScore(10);
   }
 
   private _pacmanGhostCollision() {
@@ -129,7 +139,7 @@ export class Game {
   }
 
   private _onEatAllPellets = () => {
-    const isLastLevel = this._currentMapIndex === this._maps.length - 1;
+    const isLastLevel = this._currentLevel === this._maps.length - 1;
     if (isLastLevel) {
       this._isGameWin = true;
       this._gameWinSound.play();
@@ -147,10 +157,10 @@ export class Game {
   };
 
   public nextLevel = () => {
-    this._currentMapIndex++;
+    this._currentLevel++;
     this._initMap();
     this._initPlayers();
-    this.onLevelChange?.(this._currentMapIndex);
+    this.onLevelChange?.(this._currentLevel);
   };
 
   public resetGameState = () => {
