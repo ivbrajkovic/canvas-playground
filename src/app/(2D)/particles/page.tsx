@@ -1,13 +1,14 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 import { createGuiControls } from '@/app/(2D)/particles/create-gui-controls';
 import { ParticleManager } from '@/app/(2D)/particles/particle-manager';
 import { BoundedValue } from '@/classes/bounded-value';
+import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { MouseController } from '@/controllers/mouse-controller';
-import { FpsTracker } from '@/classes/fps-tracker';
-import { useEffect, useRef } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Particles() {
@@ -24,6 +25,8 @@ export default function Particles() {
       particleCount: isMobile ? 80 : 200,
       linkingDistance: isMobile ? 80 : 120,
     });
+
+    canvasController.onResize = particleManager.populate;
 
     const mouseRadius = BoundedValue.of(250, 0, 250);
     const mouseController = MouseController.of(canvasController.canvas, {
@@ -63,5 +66,5 @@ export default function Particles() {
     };
   }, [isMobile]);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
+  return <canvas ref={canvasRef} className="absolute left-0 top-0 size-full" />;
 }
