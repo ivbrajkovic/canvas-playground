@@ -5,6 +5,18 @@
 // 6 - ghost
 // 7 - power pellet
 
+const _testLevel1 = [
+  [1, 1, 1, 1],
+  [1, 4, 0, 1],
+  [1, 1, 1, 1],
+];
+
+const _testLevel2 = [
+  [1, 1, 1, 1],
+  [1, 4, 6, 1],
+  [1, 1, 1, 1],
+];
+
 const level1 = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 6, 1],
@@ -58,17 +70,4 @@ const level3 = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-// export const map = [level1, level2, level3];
-
-const testLevel1 = [
-  [1, 1, 1, 1],
-  [1, 4, 0, 1],
-  [1, 1, 1, 1],
-];
-const testLevel2 = [
-  [1, 1, 1, 1],
-  [1, 4, 6, 1],
-  [1, 1, 1, 1],
-];
-
-export const map = [testLevel2];
+export const map = [level1, level2, level3];
