@@ -31,6 +31,7 @@ export class Pacman extends Player {
   private _radius: number;
   private _color = colors[0];
   private _isResetting = false;
+  private _isTeleporting = false;
 
   onStartMove?: () => void;
   onEatPellet?: () => void;
@@ -82,10 +83,11 @@ export class Pacman extends Player {
   };
 
   private _updatePosition = () => {
-    if (this._wallMap.isPortalAtPosition(this.x, this.y)) {
+    if (!this._isTeleporting && this._wallMap.isPortalAtPosition(this.x, this.y)) {
       const portal = this._wallMap.getPortalFromPosition(this.x, this.y)!;
       this.x = portal.outCoordinates.x;
       this.y = portal.outCoordinates.y;
+      this._isTeleporting = true;
     }
 
     if (
@@ -120,6 +122,8 @@ export class Pacman extends Player {
         this._rotation = Rotation.Right;
         break;
     }
+
+    this._isTeleporting = false;
   };
 
   private _updateMouthMovement = () => {

@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Game } from '@/app/(2D)/pacman/classes/game';
 import { createGuiControls } from '@/app/(2D)/pacman/create-gui-controls';
 import { map } from '@/app/(2D)/pacman/map';
-import { generateRandomMap } from '@/app/(2D)/pacman/utils/generateRandomMap';
 import { FpsTracker } from '@/classes/fps-tracker';
 import {
   AlertDialog,
@@ -20,7 +19,7 @@ import { AnimationController } from '@/controllers/animation-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { resizeCanvas } from '@/utils/resize-canvas';
 
-const DEFAULT_LIFE = 1;
+const DEFAULT_LIFE = 3;
 const DEFAULT_SCORE = 0;
 const DEFAULT_LEVEL = 0;
 

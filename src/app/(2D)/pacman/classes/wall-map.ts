@@ -18,7 +18,7 @@ export class WallMap {
   private _mapHeight = 0;
   private _halfWallSize = 0;
   private _map: number[][] = [];
-  private _mapArray: (Wall | Pellet)[] = [];
+  private _mapArray: (Wall | Pellet | Portal)[] = [];
   private _playerPositions: PlayerPosition[] = [];
 
   private _portalTemp: Portal | null = null;
