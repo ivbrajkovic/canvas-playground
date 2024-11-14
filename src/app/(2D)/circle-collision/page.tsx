@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { CanvasController } from '@/controllers/canvas-controller';
-import { AnimationController } from '@/controllers/animation-controller';
-import { FpsTracker } from '@/classes/fps-tracker';
+
 import { CircleCollisionManager } from '@/app/(2D)/circle-collision/collision-manager';
 import { createGuiControls } from '@/app/(2D)/circle-collision/create-gui-controls';
+import { FpsTracker } from '@/classes/fps-tracker';
+import { AnimationController } from '@/controllers/animation-controller';
+import { CanvasController } from '@/controllers/canvas-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const CircleCollision = () => {
@@ -15,7 +16,7 @@ const CircleCollision = () => {
   useEffect(() => {
     if (isMobile === undefined) return;
 
-    const canvasController = CanvasController.of(canvasRef.current, true);
+    const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
 
     const circleCollisionManager = CircleCollisionManager.of(canvasController, {

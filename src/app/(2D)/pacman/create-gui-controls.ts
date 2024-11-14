@@ -25,6 +25,9 @@ export const createGuiControls = (
         })
         .name('FPS').domElement.style.color = 'black';
 
+      gui.addFolder('Game');
+      gui.add(game, 'nextLevel').name('Next Level');
+
       return gui;
     })
     .then((gui) => {
