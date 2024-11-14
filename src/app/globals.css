@@ -91,7 +91,10 @@ body {
   @apply absolute top-0 left-0 w-full h-full;
 }
 
-.cr.color input,
-.cr.number input {
+.cr.color input {
   @apply bg-primary text-primary-foreground !m-0 !p-0 text-center;
+}
+.cr.string input,
+.cr.number input {
+  @apply bg-primary text-primary-foreground !m-0 !p-0 !pl-2;
 }

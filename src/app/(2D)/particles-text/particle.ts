@@ -1,6 +1,6 @@
 const MAX_SIZE = 3;
 const MAX_DENSITY = 30;
-const DEFAULT_COLOR = 'rgba(255,255,255)';
+const DEFAULT_COLOR = 'rgba(255,255,255,1)';
 
 export class Particle {
   public x: number;
@@ -20,8 +20,8 @@ export class Particle {
     this.density = Math.random() * MAX_DENSITY + 1;
   }
 
-  draw = (context: CanvasRenderingContext2D, color: string) => {
-    context.fillStyle = color || DEFAULT_COLOR;
+  draw = (context: CanvasRenderingContext2D, color = DEFAULT_COLOR) => {
+    context.fillStyle = color;
     context.beginPath();
     context.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     context.closePath();

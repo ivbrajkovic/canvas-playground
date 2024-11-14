@@ -3,8 +3,7 @@ import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
   animationController: AnimationController,
-  waves: ParticleText,
-  particlesText: { value: number },
+  particleText: ParticleText,
   isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
@@ -17,16 +16,27 @@ export const createGuiControls = (
     .then((gui) => {
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
-      gui
-        .add(particlesText, 'value', {
-          Off: 1,
-          Low: 0.1,
-          Medium: 0.06,
-          High: 0.04,
-        })
-        .name('Ghosting').domElement.style.color = 'black';
 
       gui.addFolder('Text');
+      gui.add(particleText, 'text').name('Text').onFinishChange(particleText.init);
+      gui
+        .add(particleText, 'fontSize', 1, 100, 1)
+        .name('Size')
+        .onFinishChange(particleText.init);
+      gui
+        .add(particleText, 'positionOffset', 1, 50, 1)
+        .name('Scale')
+        .onFinishChange(particleText.init);
+
+      const link = gui.addFolder('Link');
+      link.add(particleText, 'isConnections').name('Show');
+      link.add(particleText, 'linkingDistance', 1, 100, 1).name('Distance');
+      link.close();
+
+      const colors = gui.addFolder('Colors');
+      colors.addColor(particleText, 'lineColor').name('Link');
+      colors.addColor(particleText, 'particleColor').name('Particle');
+      colors.close();
 
       return gui;
     })
