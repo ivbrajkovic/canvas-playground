@@ -157,7 +157,8 @@ export class Game {
   };
 
   public nextLevel = () => {
-    this._currentLevel++;
+    if (this._currentLevel === this._maps.length - 1) this._currentLevel = 0;
+    else this._currentLevel++;
     this._initMap();
     this._initPlayers();
     this.onLevelChange?.(this._currentLevel);
