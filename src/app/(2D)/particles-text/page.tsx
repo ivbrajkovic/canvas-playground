@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
-import { createGuiControls } from '@/app/(2D)/waves/create-gui-controls';
-import { Waves } from '@/app/(2D)/waves/waves';
+import { createGuiControls } from '@/app/(2D)/particles-text/create-gui-controls';
+import { ParticlesText } from '@/app/(2D)/particles-text/paticles-text';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
@@ -18,20 +18,21 @@ export default function Page() {
 
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
-    const waves = Waves.of(canvasController.height / 2);
     const ghosting = { value: 0.06 };
+
+    const particlesText = ParticlesText.of(canvasController.canvas, 'Hello, World!');
 
     const animationController = AnimationController.of(() => {
       const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
       context.fillRect(0, 0, width, height);
-      waves.draw(context);
+      particlesText.animate(context);
       fpsTracker.track();
     });
 
     const guiControls = createGuiControls(
       animationController,
-      waves,
+      particlesText,
       ghosting,
       isMobile,
     );

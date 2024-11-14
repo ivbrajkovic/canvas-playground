@@ -114,15 +114,19 @@ export default function Particles() {
       <AlertDialog open={isDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {gameRef.current?.isGameOver ? 'Game Over!' : 'Victory!'}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your account
-              and remove your data from our servers. Game{' '}
-              {gameRef.current?.isGameOver ? 'over' : 'win'}
+              {gameRef.current?.isGameOver
+                ? 'Game Over! Better luck next time. Want to try again?'
+                : "Congratulations! You've won the game. Ready for another round?"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={handleResume}> Continue</AlertDialogAction>
+            <AlertDialogAction onClick={handleResume}>
+              {gameRef.current?.isGameOver ? 'Try Again' : 'Restart'}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

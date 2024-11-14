@@ -1,10 +1,10 @@
-import { Waves } from '@/app/(2D)/waves/waves';
+import { ParticlesText } from '@/app/(2D)/particles-text/paticles-text';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
   animationController: AnimationController,
-  waves: Waves,
-  ghosting: { value: number },
+  waves: ParticlesText,
+  particlesText: { value: number },
   isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
@@ -18,7 +18,7 @@ export const createGuiControls = (
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
       gui
-        .add(ghosting, 'value', {
+        .add(particlesText, 'value', {
           Off: 1,
           Low: 0.1,
           Medium: 0.06,
@@ -26,15 +26,7 @@ export const createGuiControls = (
         })
         .name('Ghosting').domElement.style.color = 'black';
 
-      gui.addFolder('Waves');
-      gui.add(waves, 'isAnimateColor').name('Color');
-      gui.add(waves, 'isAnimateAmplitude').name('Amplitude');
-      gui.add(waves, 'amplitude', -300, 300).name('Amplitude');
-      gui.add(waves, 'waveLength', -0.1, 0.1, 0.01).name('Wave Length');
-      gui.add(waves, 'frequency', -1, 1, 0.01).name('Frequency');
-      gui.add(waves, 'hue', 0, 360).name('Hue');
-      gui.add(waves, 'saturation', 0, 100).name('Saturation');
-      gui.add(waves, 'lightness', 0, 100).name('Lightness');
+      gui.addFolder('Text');
 
       return gui;
     })

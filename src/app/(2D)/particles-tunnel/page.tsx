@@ -1,12 +1,13 @@
 'use client';
+
 import { useEffect, useRef } from 'react';
 
+import { createGuiControls } from '@/app/(2D)/particles-tunnel/create-gui-controls';
+import { ParticleTunnelManager } from '@/app/(2D)/particles-tunnel/particles-tunnel-manager';
+import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { MouseController } from '@/controllers/mouse-controller';
-import { FpsTracker } from '@/classes/fps-tracker';
-import { ParticleTunnelManager } from '@/app/(2D)/particles-tunnel/particles-tunnel-manager';
-import { createGuiControls } from '@/app/(2D)/particles-tunnel/create-gui-controls';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Particles() {
@@ -60,5 +61,5 @@ export default function Particles() {
     };
   }, [isMobile]);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
+  return <canvas ref={canvasRef} className="absolute left-0 top-0 size-full" />;
 }
