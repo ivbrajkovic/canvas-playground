@@ -21,7 +21,7 @@ import { resizeCanvas } from '@/utils/resize-canvas';
 
 const DEFAULT_LIFE = 3;
 const DEFAULT_SCORE = 0;
-const DEFAULT_LEVEL = 1;
+const DEFAULT_LEVEL = 0;
 
 export default function Particles() {
   const isMobile = useIsMobile();
