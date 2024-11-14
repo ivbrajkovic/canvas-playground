@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 
 import { createGuiControls } from '@/app/(2D)/particles-text/create-gui-controls';
-import { ParticlesText } from '@/app/(2D)/particles-text/paticles-text';
+import { ParticleText } from '@/app/(2D)/particles-text/particle-text';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
@@ -20,13 +20,15 @@ export default function Page() {
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
     const ghosting = { value: 0.06 };
 
-    const particlesText = ParticlesText.of(canvasController.canvas, 'Hello, World!');
+    const particlesText = ParticleText.of(canvasController.canvas, 'Hello, World!');
 
     const animationController = AnimationController.of(() => {
       const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
       context.fillRect(0, 0, width, height);
-      particlesText.animate(context);
+
+      // TODO - Implement animate method
+
       fpsTracker.track();
     });
 

@@ -1,9 +1,9 @@
-import { ParticlesText } from '@/app/(2D)/particles-text/paticles-text';
+import { ParticleText } from '@/app/(2D)/particles-text/particle-text';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
   animationController: AnimationController,
-  waves: ParticlesText,
+  waves: ParticleText,
   particlesText: { value: number },
   isMobile: boolean,
 ) => {
