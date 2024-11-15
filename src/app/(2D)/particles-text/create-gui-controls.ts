@@ -1,9 +1,11 @@
 import { ParticleText } from '@/app/(2D)/particles-text/particle-text';
+import { BoundedValue } from '@/classes/bounded-value';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
   animationController: AnimationController,
   particleText: ParticleText,
+  mouseRadius: BoundedValue,
   isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
@@ -16,6 +18,10 @@ export const createGuiControls = (
     .then((gui) => {
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
+
+      gui.addFolder('Mouse');
+      gui.add(mouseRadius, 'min', 0, 500).name('Radius min');
+      gui.add(mouseRadius, 'max', 0, 500).name('Radius max');
 
       gui.addFolder('Text');
       gui.add(particleText, 'text').name('Text').onFinishChange(particleText.init);

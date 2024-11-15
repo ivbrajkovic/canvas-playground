@@ -54,6 +54,7 @@ export default function Page() {
     const guiControls = createGuiControls(
       animationController,
       particleText,
+      mouseRadius,
       isMobile,
     );
 
