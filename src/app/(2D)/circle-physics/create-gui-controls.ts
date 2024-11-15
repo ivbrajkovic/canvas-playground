@@ -27,6 +27,11 @@ export const createGuiControls = (
         .name('Ghosting').domElement.style.color = 'black';
 
       gui.addFolder('Circle');
+      gui.add(circlePhysics, 'radius', 10, 100).name('Radius');
+      gui.add(circlePhysics, 'friction', 0, 0.999).name('Friction');
+      gui.add(circlePhysics, 'gravity', 0, 1).name('Gravity');
+      gui.add(circlePhysics, 'bounce', -1, 0).name('Bounce');
+      gui.add(circlePhysics, 'hue', 0, 360).name('Hue');
 
       return gui;
     })

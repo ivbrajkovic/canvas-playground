@@ -1,4 +1,3 @@
-import { CanvasController } from '@/controllers/canvas-controller';
 import random from 'lodash/random';
 
 export class CirclePhysics {
@@ -11,16 +10,22 @@ export class CirclePhysics {
   public vy = 0;
   public radius = 40;
 
-  public friction = 0.999;
+  public _friction = 0.999;
   public gravity = 0.35;
   public bounce = -0.8;
+
+  get friction() {
+    return 1 - this._friction;
+  }
+
+  set friction(value: number) {
+    this._friction = 1 - value;
+  }
 
   constructor(width: number, height: number) {
     this.x = random(0, width);
     this.y = random(this.radius, height / 3);
   }
-
-  init = (width: number, height: number) => {};
 
   draw = (context: CanvasRenderingContext2D) => {
     const gradient = context.createRadialGradient(
@@ -43,7 +48,7 @@ export class CirclePhysics {
 
   update = (width: number, height: number) => {
     // Apply gravity & friction
-    this.vx *= this.friction;
+    this.vx *= this._friction;
     if (Math.abs(this.vx) < 0.3) this.vx = 0;
     this.vy += this.gravity;
     this.y += this.vy;
@@ -65,6 +70,4 @@ export class CirclePhysics {
       this.vy *= this.bounce;
     }
   };
-
-  dispose = () => {};
 }

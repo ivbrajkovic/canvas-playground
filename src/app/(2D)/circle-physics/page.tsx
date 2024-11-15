@@ -9,7 +9,6 @@ import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { MouseController } from '@/controllers/mouse-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
-import random from 'lodash/random';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
