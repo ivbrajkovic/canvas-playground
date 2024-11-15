@@ -11,6 +11,7 @@ export const links: SidebarData[] = [
       { title: 'Particles Rotating', url: '/particles-rotating' },
       { title: 'Circle Trail', url: '/circle-trail' },
       { title: 'Circle Outline', url: '/circle-outline' },
+      { title: 'Circle Physics', url: '/circle-physics' },
       { title: 'Circle Collision', url: '/circle-collision' },
       { title: 'Waves', url: '/waves' },
       { title: 'Fireworks', url: '/fireworks' },
