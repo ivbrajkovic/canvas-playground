@@ -1,36 +1,46 @@
-import { SidebarData } from '@/components/app-shell/components/sidebar-items';
+export type Links = typeof links;
 
-export const links: SidebarData[] = [
+export const links = [
   {
-    name: '2D Projects',
-    projects: [
-      { title: 'Pac-Man', url: '/pacman' },
-      { title: 'Particles', url: '/particles' },
-      { title: 'Particles Text', url: '/particles-text' },
-      { title: 'Particles Tunnel', url: '/particles-tunnel' },
-      { title: 'Particles Rotating', url: '/particles-rotating' },
-      { title: 'Circle Trail', url: '/circle-trail' },
-      { title: 'Circle Outline', url: '/circle-outline' },
-      { title: 'Circle Physics', url: '/circle-physics' },
-      { title: 'Circle Collision', url: '/circle-collision' },
-      { title: 'Waves', url: '/waves' },
-      { title: 'Fireworks', url: '/fireworks' },
+    category: '2D Projects',
+    subcategories: [
+      { title: 'Games', projects: [{ title: 'Pac Man', url: '/pacman' }] },
+      {
+        title: 'Particles',
+        projects: [
+          { title: 'Constellation', url: '/particles/constellation' },
+          { title: 'Text', url: '/particles/text' },
+          { title: 'Tunnel', url: '/particles/tunnel' },
+          { title: 'Rotating', url: '/particles/rotating' },
+        ],
+      },
+      {
+        title: 'Circle',
+        projects: [
+          { title: 'Circle Trail', url: '/circle-trail' },
+          { title: 'Circle Outline', url: '/circle-outline' },
+          { title: 'Circle Physics', url: '/circle-physics' },
+          { title: 'Circle Collision', url: '/circle-collision' },
+        ],
+      },
+      {
+        title: 'Other',
+        projects: [
+          { title: 'Waves', url: '/waves' },
+          { title: 'Fireworks', url: '/fireworks' },
+        ],
+      },
     ],
   },
-  {
-    name: '3D Projects',
-    projects: [
-      { title: 'Foo', url: '/foo' },
-      { title: 'Bar', url: '/bar' },
-    ],
-  },
-];
+] as const;
 
-const mapUrlToTitle = (links: SidebarData[]): Map<string, string> => {
+const mapUrlToTitle = (links: Links): Map<string, string> => {
   const map = new Map<string, string>();
-  for (const group of links) {
-    for (const project of group.projects) {
-      map.set(project.url, project.title);
+  for (const category of links) {
+    for (const subdirectory of category.subcategories) {
+      for (const project of subdirectory.projects) {
+        map.set(project.url, project.title);
+      }
     }
   }
   return map;

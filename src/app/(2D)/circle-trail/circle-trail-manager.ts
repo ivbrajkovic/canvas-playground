@@ -1,6 +1,6 @@
-import random from 'lodash/random';
 import { Circle } from '@/classes/circle';
 import { CanvasController } from '@/controllers/canvas-controller';
+import random from 'lodash/random';
 
 type Settings = {
   speedMin?: number;

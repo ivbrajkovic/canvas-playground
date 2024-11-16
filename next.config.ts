@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         destination: '/pacman',
         permanent: true,
       },
+      {
+        source: '/particles',
+        destination: '/particles/constellation',
+        permanent: true,
+      },
     ];
   },
 };

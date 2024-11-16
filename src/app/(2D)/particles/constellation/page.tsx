@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
-import { createGuiControls } from '@/app/(2D)/particles/create-gui-controls';
-import { ParticleManager } from '@/app/(2D)/particles/particle-manager';
+import { createGuiControls } from '@/app/(2D)/particles/constellation/create-gui-controls';
+import { ParticleManager } from '@/app/(2D)/particles/constellation/particle-manager';
 import { BoundedValue } from '@/classes/bounded-value';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';

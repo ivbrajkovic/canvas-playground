@@ -1,11 +1,9 @@
-import { ParticleManager } from '@/app/(2D)/particles/particle-manager';
-import { BoundedValue } from '@/classes/bounded-value';
+import { ParticleTunnelManager } from '@/app/(2D)/particles/tunnel/particles-tunnel-manager';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
   animationController: AnimationController,
-  particleManager: ParticleManager,
-  mouseRadius: BoundedValue,
+  particleTunnelManager: ParticleTunnelManager,
   ghosting: { value: number },
   isMobile: boolean,
 ) => {
@@ -37,20 +35,11 @@ export const createGuiControls = (
         .name('FPS').domElement.style.color = 'black';
 
       gui.addFolder('Mouse');
-      gui.add(mouseRadius, 'min', 0, 500).name('Radius min');
-      gui.add(mouseRadius, 'max', 0, 500).name('Radius max');
 
       gui.addFolder('Particles');
-      gui.add(particleManager, 'isConnections').name('Link');
-      gui.add(particleManager, 'linkingDistance', 1, 500, 1).name('Link Distance');
-      gui
-        .add(particleManager, 'particleCount', 1, 60, 1)
-        .name('Count')
-        .onFinishChange(particleManager.populate);
-
-      const colorFolder = gui.addFolder('Colors');
-      colorFolder.addColor(particleManager, 'lineColor').name('Link');
-      colorFolder.addColor(particleManager, 'particleColor').name('Particle');
+      gui.add(particleTunnelManager, 'count', 1, 100, 1).name('Count');
+      gui.add(particleTunnelManager, 'radius', 1, 100, 1).name('Radius');
+      gui.add(particleTunnelManager, 'speed', 1, 20, 1).name('Speed');
 
       return gui;
     })

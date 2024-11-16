@@ -1,4 +1,4 @@
-import { Particle } from '@/app/(2D)/particles-rotating/particle';
+import { Particle } from '@/app/(2D)/particles/rotating/particle';
 import { CanvasController } from '@/controllers/canvas-controller';
 
 type Settings = {
@@ -244,8 +244,8 @@ export class ParticleManager {
           this.depthAlphaFactor > 1
             ? 1
             : this.depthAlphaFactor < 0
-            ? 0
-            : this.depthAlphaFactor;
+              ? 0
+              : this.depthAlphaFactor;
 
         //draw
         this.particle.draw(

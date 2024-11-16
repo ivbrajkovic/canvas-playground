@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
-import { createGuiControls } from '@/app/(2D)/particles-tunnel/create-gui-controls';
-import { ParticleTunnelManager } from '@/app/(2D)/particles-tunnel/particles-tunnel-manager';
+import { createGuiControls } from '@/app/(2D)/particles/tunnel/create-gui-controls';
+import { ParticleTunnelManager } from '@/app/(2D)/particles/tunnel/particles-tunnel-manager';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';

@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 
-import { createGuiControls } from '@/app/(2D)/particles-rotating/create-gui-controls';
-import { ParticleManager } from '@/app/(2D)/particles-rotating/particle-manager';
+import { createGuiControls } from '@/app/(2D)/particles/text/create-gui-controls';
+import { ParticleText } from '@/app/(2D)/particles/text/particle-text';
+import { BoundedValue } from '@/classes/bounded-value';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
@@ -19,42 +20,49 @@ export default function Page() {
 
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
+    const ghosting = { value: 0.01 };
 
-    const particleManager = ParticleManager.of(canvasController, {
-      sphereRadius: isMobile ? 200 : 280,
-      radius_sp: isMobile ? 1.2 : 1.5,
-    });
-
+    const mouseRadius = BoundedValue.of(150, 0, 150);
     const mouseController = MouseController.of(canvasController.canvas, {
-      onScroll(position, delta) {
-        particleManager.radius_sp += delta > 0 ? 0.1 : -0.1;
-        if (particleManager.radius_sp < 0.1) particleManager.radius_sp = 0.1;
-      },
+      onMouseMove: () => (mouseRadius.value += 10),
+      onMouseDown: () => (mouseRadius.value = 150),
     });
 
-    canvasController.onResize = particleManager.init;
-    const ghosting = { value: 1 };
+    const particleText = ParticleText.of(canvasController, 'Ivan');
+    particleText.positionOffset = isMobile ? 8 : 16;
+    particleText.fontSize = isMobile ? 24 : 32;
+    particleText.init();
+
+    canvasController.onResize = particleText.init;
 
     const animationController = AnimationController.of(() => {
       const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
-      context.fillRect(0, 0, width, height);
-      particleManager.onTimer();
+      context.clearRect(0, 0, width, height);
+
+      particleText.drawScene(
+        context,
+        mouseController.x,
+        mouseController.y,
+        mouseRadius.value,
+      );
+
       fpsTracker.track();
+      mouseRadius.value -= 4;
     });
 
     const guiControls = createGuiControls(
       animationController,
-      particleManager,
-      ghosting,
+      particleText,
+      mouseRadius,
       isMobile,
     );
 
     return () => {
-      animationController.stop();
-      mouseController.dispose();
       fpsTracker.dispose();
       guiControls.dispose();
+      particleText.dispose();
+      animationController.stop();
       canvasController.dispose();
     };
   }, [isMobile]);

@@ -21,7 +21,7 @@ export const AppShell = (props: AppShellProps) => {
           <Separator orientation="vertical" className="mr-2 h-4" />
           <HeaderTitle />
         </header>
-        <div className="flex-1 flex relative">{props.children}</div>
+        <div className="relative flex flex-1">{props.children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

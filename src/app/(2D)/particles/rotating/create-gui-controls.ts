@@ -1,9 +1,9 @@
-import { ParticleTunnelManager } from '@/app/(2D)/particles-tunnel/particles-tunnel-manager';
+import { ParticleManager } from '@/app/(2D)/particles/rotating/particle-manager';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
   animationController: AnimationController,
-  particleTunnelManager: ParticleTunnelManager,
+  particleManager: ParticleManager,
   ghosting: { value: number },
   isMobile: boolean,
 ) => {
@@ -20,8 +20,8 @@ export const createGuiControls = (
       gui
         .add(ghosting, 'value', {
           Off: 1,
-          Low: 0.2,
-          Medium: 0.1,
+          Low: 0.1,
+          Medium: 0.06,
           High: 0.04,
         })
         .name('Ghosting').domElement.style.color = 'black';
@@ -34,12 +34,15 @@ export const createGuiControls = (
         })
         .name('FPS').domElement.style.color = 'black';
 
-      gui.addFolder('Mouse');
+      gui.addFolder('Sphere');
+      gui.add(particleManager, 'radius_sp', 1, 10, 0.01).name('Z Axis');
+      gui.add(particleManager, 'sphereRadius', 100, 1000, 1).name('Radius');
 
       gui.addFolder('Particles');
-      gui.add(particleTunnelManager, 'count', 1, 100, 1).name('Count');
-      gui.add(particleTunnelManager, 'radius', 1, 100, 1).name('Radius');
-      gui.add(particleTunnelManager, 'speed', 1, 20, 1).name('Speed');
+      gui.add(particleManager, 'numToAddEachFrame', 1, 50, 1).name('Add Each Frame');
+      gui.add(particleManager, 'attack', 1, 500, 1).name('Attack');
+      gui.add(particleManager, 'decay', 1, 500, 1).name('Decay');
+      gui.add(particleManager, 'gravity', -0.3, 0.3, 0.001).name('Gravity');
 
       return gui;
     })
