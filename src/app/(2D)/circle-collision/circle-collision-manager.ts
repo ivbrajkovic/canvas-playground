@@ -1,9 +1,7 @@
-import random from 'lodash/random';
-
 import { CircleCollision } from '@/app/(2D)/circle-collision/circle-collision';
-import { interpolate } from '@/utils/interpolate';
 import { findNonOverlappingPosition as _findNonOverlappingPosition } from '@/utils/find-radial-position';
-import { CanvasController } from '@/controllers/canvas-controller';
+import { interpolate } from '@/utils/interpolate';
+import random from 'lodash/random';
 
 type Settings = {
   speedMin?: number;
@@ -16,7 +14,6 @@ type Settings = {
 };
 
 export class CircleCollisionManager {
-  private _canvasController: CanvasController;
   private _circles: CircleCollision[] = [];
 
   public speedMin = -2.0;
@@ -27,13 +24,8 @@ export class CircleCollisionManager {
   public massMax = 50;
   public circleCount = 40;
 
-  public static of = (canvasController: CanvasController, settings: Settings) =>
-    new CircleCollisionManager(canvasController, settings);
-
-  constructor(canvasController: CanvasController, settings: Settings) {
-    this._canvasController = canvasController;
-    Object.assign(this, settings);
-    this.populate();
+  constructor(settings: Settings) {
+    this.setSettings(settings);
   }
 
   private _findNonOverlappingPosition = (
@@ -44,7 +36,7 @@ export class CircleCollisionManager {
     return _findNonOverlappingPosition(width, height, radius, this._circles);
   };
 
-  private calculateVelocity(radius: number) {
+  private _calculateVelocity(radius: number) {
     const velocity = interpolate(
       radius,
       this.radiusMin,
@@ -65,16 +57,27 @@ export class CircleCollisionManager {
     );
   };
 
-  public populate = () => {
-    const { width, height } = this._canvasController;
+  public setSettings = (settings: Settings) => {
+    this.speedMin = settings.speedMin ?? this.speedMin;
+    this.speedMax = settings.speedMax ?? this.speedMax;
+    this.radiusMin = settings.radiusMin ?? this.radiusMin;
+    this.radiusMax = settings.radiusMax ?? this.radiusMax;
+    this.massMin = settings.massMin ?? this.massMin;
+    this.massMax = settings.massMax ?? this.massMax;
+    this.circleCount = settings.circleCount ?? this.circleCount;
+
+    return this;
+  };
+
+  public populate = (width: number, height: number) => {
     this._circles.length = 0;
 
     Array.from({ length: this.circleCount }).forEach(() => {
       const radius = random(this.radiusMin, this.radiusMax);
       const { x, y } = this._findNonOverlappingPosition(width, height, radius);
       const vector = {
-        x: this.calculateVelocity(radius),
-        y: this.calculateVelocity(radius),
+        x: this._calculateVelocity(radius),
+        y: this._calculateVelocity(radius),
       };
       const mass = this._calculateMass(radius);
       const color = `hsl(${random(360, true)}, 50%, 50%)`;
@@ -86,8 +89,14 @@ export class CircleCollisionManager {
     return this;
   };
 
-  public animate = () => {
-    const { width, height, context } = this._canvasController;
+  public draw = (
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+  ) => {
+    context.fillStyle = `hsl(0, 0%, 10%)`;
+    context.fillRect(0, 0, width, height);
+
     this._circles.forEach((circle) => {
       circle.update(this._circles);
       circle.move(width, height);

@@ -1,27 +1,31 @@
 type FrameCallback = (time: number) => void;
+type AnimationControllerOptions = {
+  frameCallback?: FrameCallback;
+  immediate?: boolean;
+  maxFps?: number;
+};
 
 export class AnimationController {
-  private _frameCallback: FrameCallback | null = null;
-  private _maxDeltaTimeMs: number | null = null; // 0.016 - Maximum delta time of ~16ms (60 FPS)
-  private _requestId: number | null = null;
+  private _frameCallback: FrameCallback | null;
+  private _maxDeltaTimeMs: number | null; // 0.016 - Maximum delta time of ~16ms (60 FPS)
+  private _requestId: number | null;
   private _lastTime = 0;
   private _isRunning = false;
 
   static of = (
-    frameCallback: FrameCallback | null,
-    options: { immediate?: boolean; maxFps?: number } = {},
-  ) => new AnimationController(frameCallback, options);
+    frameCallback: FrameCallback,
+    options: Omit<AnimationControllerOptions, 'frameCallback'> = { immediate: true },
+  ) => new AnimationController({ frameCallback, ...options });
 
-  private constructor(
-    frameCallback: FrameCallback | null,
-    {
-      immediate = typeof frameCallback === 'function',
-      maxFps = null,
-    }: { immediate?: boolean; maxFps?: number | null },
-  ) {
-    this._frameCallback = frameCallback;
-    if (maxFps) this._maxDeltaTimeMs = 1000 / maxFps;
-    if (immediate) this.start();
+  private constructor({
+    frameCallback,
+    immediate,
+    maxFps,
+  }: AnimationControllerOptions) {
+    this._requestId = null;
+    this._frameCallback = frameCallback ?? null;
+    this._maxDeltaTimeMs = maxFps ? 1000 / maxFps : null;
+    if (immediate && this._frameCallback) this.start();
   }
 
   get isRunning() {
