@@ -1,15 +1,15 @@
-import { CircleCollisionManager } from '@/app/(2D)/circle-collision/circle-collision-manager';
+import { CircleTrailManager } from '@/app/(2D)/circles/trail/circle-trail-manager';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 
 export const createGuiControls = (
   canvasController: CanvasController,
   animationController: AnimationController,
-  circleCollisionManager: CircleCollisionManager,
+  circleTrailManager: CircleTrailManager,
   isMobile: boolean,
 ) => {
   const populate = () =>
-    circleCollisionManager.populate(canvasController.width, canvasController.height);
+    circleTrailManager.populate(canvasController.width, canvasController.height);
 
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
@@ -22,6 +22,14 @@ export const createGuiControls = (
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
       gui
+        .add(circleTrailManager, 'trail', {
+          Off: 1,
+          Low: 0.2,
+          Medium: 0.1,
+          High: 0.04,
+        })
+        .name('Trail').domElement.style.color = 'black';
+      gui
         .add(animationController, 'maxFps', {
           'No Limit': null,
           '60 FPS': 60,
@@ -32,34 +40,25 @@ export const createGuiControls = (
 
       gui.addFolder('Circles');
       gui
-        .add(circleCollisionManager, 'circleCount', 1, 60, 1)
+        .add(circleTrailManager, 'circleCount', 1, 60, 1)
         .name('Count')
         .onFinishChange(populate);
 
       gui
-        .add(circleCollisionManager, 'radiusMin', 1, 60, 1)
+        .add(circleTrailManager, 'radiusMin', 1, 60, 1)
         .name('Size Min')
         .onFinishChange(populate);
       gui
-        .add(circleCollisionManager, 'radiusMax', 1, 70, 1)
+        .add(circleTrailManager, 'radiusMax', 1, 70, 1)
         .name('Size Max')
         .onFinishChange(populate);
 
       gui
-        .add(circleCollisionManager, 'massMin', 1, 100, 0.1)
-        .name('Mass Min')
-        .onFinishChange(populate);
-      gui
-        .add(circleCollisionManager, 'massMax', 1, 100, 0.1)
-        .name('Mass Max')
-        .onFinishChange(populate);
-
-      gui
-        .add(circleCollisionManager, 'speedMin', -10, 10, 0.1)
+        .add(circleTrailManager, 'speedMin', -10, 10, 0.1)
         .name('Speed Min')
         .onFinishChange(populate);
       gui
-        .add(circleCollisionManager, 'speedMax', -10, 10, 0.1)
+        .add(circleTrailManager, 'speedMax', -10, 10, 0.1)
         .name('Speed Max')
         .onFinishChange(populate);
 

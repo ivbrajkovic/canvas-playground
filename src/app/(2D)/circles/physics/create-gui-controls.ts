@@ -1,10 +1,9 @@
-import { CirclePhysics } from '@/app/(2D)/circle-physics/circle-physics';
+import { CirclePhysics } from '@/app/(2D)/circles/physics/circle-physics';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
   animationController: AnimationController,
   circlePhysics: CirclePhysics,
-  ghosting: { value: number },
   isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
@@ -18,7 +17,7 @@ export const createGuiControls = (
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
       gui
-        .add(ghosting, 'value', {
+        .add(circlePhysics, 'ghosting', {
           Off: 1,
           Low: 0.1,
           Medium: 0.06,

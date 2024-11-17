@@ -37,6 +37,8 @@ export const createGuiControls = (
         .name('FPS').domElement.style.color = 'black';
 
       gui.addFolder('Matrix');
+      gui.add(matrix, 'fontSize', 1, 100, 1).name('Font');
+      gui.addColor(matrix, 'color').name('Color');
 
       return gui;
     })

@@ -14,8 +14,8 @@ export class AnimationController {
 
   static of = (
     frameCallback: FrameCallback,
-    options: Omit<AnimationControllerOptions, 'frameCallback'> = { immediate: true },
-  ) => new AnimationController({ frameCallback, ...options });
+    options: Omit<AnimationControllerOptions, 'frameCallback'> = {},
+  ) => new AnimationController({ frameCallback, immediate: true, ...options });
 
   private constructor({
     frameCallback,

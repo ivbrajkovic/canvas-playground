@@ -2,15 +2,15 @@
 
 import { useEffect, useRef } from 'react';
 
-import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-trail-manager';
-import { createGuiControls } from '@/app/(2D)/circle-trail/create-gui-controls';
+import { CircleCollisionManager } from '@/app/(2D)/circles/collision/circle-collision-manager';
+import { createGuiControls } from '@/app/(2D)/circles/collision/create-gui-controls';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-export default function Page() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+const CircleCollision = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -19,27 +19,23 @@ export default function Page() {
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
 
-    const circleTrailManager = CircleTrailManager.of(canvasController, {
-      circleCount: isMobile ? 60 : 80,
-      radiusMax: isMobile ? 30 : 40,
-    });
-    const circleTrail = { value: 0.1 };
+    const circleCollisionManager = new CircleCollisionManager({
+      circleCount: isMobile ? 20 : 40,
+      radiusMax: isMobile ? 40 : 50,
+    }).populate(canvasController.width, canvasController.height);
+
+    canvasController.onResize = circleCollisionManager.populate;
 
     const animationController = AnimationController.of(() => {
-      const { width, height, context } = canvasController;
-      context.fillStyle = `hsla(0, 0%, 0%, ${circleTrail.value})`;
-      context.fillRect(0, 0, width, height);
-      circleTrailManager.circles.forEach((circle) => {
-        circle.move(width, height);
-        circle.draw(context);
-      });
+      const { context, width, height } = canvasController;
+      circleCollisionManager.draw(context, width, height);
       fpsTracker.track();
     });
 
     const guiControls = createGuiControls(
+      canvasController,
       animationController,
-      circleTrailManager,
-      circleTrail,
+      circleCollisionManager,
       isMobile,
     );
 
@@ -52,6 +48,11 @@ export default function Page() {
   }, [isMobile]);
 
   return (
-    <canvas ref={canvasRef} className="absolute left-0 top-0 size-full bg-black" />
+    <canvas
+      ref={canvasRef}
+      className="absolute left-0 top-0 size-full bg-[hsla(0,0%,10%,1)]"
+    />
   );
-}
+};
+
+export default CircleCollision;

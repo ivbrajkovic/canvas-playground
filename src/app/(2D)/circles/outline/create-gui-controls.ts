@@ -1,12 +1,18 @@
-import { CircleTrailManager } from '@/app/(2D)/circle-trail/circle-trail-manager';
+import { CircleOutlineManager } from '@/app/(2D)/circles/outline/circle-outline-manager';
+import { BoundedValue } from '@/classes/bounded-value';
 import { AnimationController } from '@/controllers/animation-controller';
+import { CanvasController } from '@/controllers/canvas-controller';
 
 export const createGuiControls = (
+  canvasController: CanvasController,
   animationController: AnimationController,
-  circleTrailManager: CircleTrailManager,
-  circleTrail: { value: number },
+  circleOutlineManager: CircleOutlineManager,
+  mouseRadius: BoundedValue,
   isMobile: boolean,
 ) => {
+  const populate = () =>
+    circleOutlineManager.populate(canvasController.width, canvasController.height);
+
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
     .then((gui) => {
@@ -18,14 +24,6 @@ export const createGuiControls = (
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
       gui
-        .add(circleTrail, 'value', {
-          Off: 1,
-          Low: 0.2,
-          Medium: 0.1,
-          High: 0.04,
-        })
-        .name('Trail').domElement.style.color = 'black';
-      gui
         .add(animationController, 'maxFps', {
           'No Limit': null,
           '60 FPS': 60,
@@ -34,29 +32,33 @@ export const createGuiControls = (
         })
         .name('FPS').domElement.style.color = 'black';
 
+      gui.addFolder('Mouse');
+      gui.add(mouseRadius, 'min', 0, 500).name('Radius min');
+      gui.add(mouseRadius, 'max', 0, 500).name('Radius max');
+
       gui.addFolder('Circles');
       gui
-        .add(circleTrailManager, 'circleCount', 1, 60, 1)
+        .add(circleOutlineManager, 'circleCount', 1, 60, 1)
         .name('Count')
-        .onFinishChange(circleTrailManager.populate);
+        .onFinishChange(populate);
 
       gui
-        .add(circleTrailManager, 'radiusMin', 1, 60, 1)
+        .add(circleOutlineManager, 'radiusMin', 1, 60, 1)
         .name('Size Min')
-        .onFinishChange(circleTrailManager.populate);
+        .onFinishChange(populate);
       gui
-        .add(circleTrailManager, 'radiusMax', 1, 70, 1)
+        .add(circleOutlineManager, 'radiusMax', 1, 70, 1)
         .name('Size Max')
-        .onFinishChange(circleTrailManager.populate);
+        .onFinishChange(populate);
 
       gui
-        .add(circleTrailManager, 'speedMin', -10, 10, 0.1)
+        .add(circleOutlineManager, 'speedMin', -10, 10, 0.1)
         .name('Speed Min')
-        .onFinishChange(circleTrailManager.populate);
+        .onFinishChange(populate);
       gui
-        .add(circleTrailManager, 'speedMax', -10, 10, 0.1)
+        .add(circleOutlineManager, 'speedMax', -10, 10, 0.1)
         .name('Speed Max')
-        .onFinishChange(circleTrailManager.populate);
+        .onFinishChange(populate);
 
       return gui;
     })

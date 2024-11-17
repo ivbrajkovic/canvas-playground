@@ -1,8 +1,8 @@
 import { Particle } from '@/app/(2D)/fireworks/particle';
 
 export class ParticleManager {
+  private _particles: Particle[] = [];
   private _friction = 0.99;
-  private particles: Particle[] = [];
 
   public alphaDecay = 0.005;
   public gravity = 0.01;
@@ -17,14 +17,18 @@ export class ParticleManager {
     this._friction = 1 - value;
   }
 
-  createParticles = (mouseX: number, mouseY: number) => {
+  private _filterParticles = () => {
+    this._particles = this._particles.filter((particle) => particle.alpha >= 0.1);
+  };
+
+  public createParticles = (mouseX: number, mouseY: number) => {
     for (let i = 0; i < this.count; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = Math.random() * 4 + 2;
       const vx = Math.cos(angle) * speed;
       const vy = Math.sin(angle) * speed;
 
-      this.particles.push(
+      this._particles.push(
         new Particle(
           mouseX,
           mouseY,
@@ -39,13 +43,9 @@ export class ParticleManager {
     }
   };
 
-  private _filterParticles = () => {
-    this.particles = this.particles.filter((particle) => particle.alpha >= 0.1);
-  };
-
-  public animate = (context: CanvasRenderingContext2D) => {
+  public draw = (context: CanvasRenderingContext2D) => {
     this._filterParticles();
-    this.particles.forEach((particle) => {
+    this._particles.forEach((particle) => {
       particle.update();
       particle.draw(context);
     });

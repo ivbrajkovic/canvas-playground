@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 
+import { createGuiControls } from '@/app/(2D)/fireworks/create-gui-controls';
+import { ParticleManager } from '@/app/(2D)/fireworks/particle-manager';
+import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
-import { FpsTracker } from '@/classes/fps-tracker';
-import { ParticleManager } from '@/app/(2D)/fireworks/particle-manager';
-import { createGuiControls } from '@/app/(2D)/fireworks/create-gui-controls';
 import { MouseController } from '@/controllers/mouse-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -32,7 +32,7 @@ export default function Page() {
       const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
       context.fillRect(0, 0, width, height);
-      particleManager.animate(context);
+      particleManager.draw(context);
       fpsTracker.track();
     });
 

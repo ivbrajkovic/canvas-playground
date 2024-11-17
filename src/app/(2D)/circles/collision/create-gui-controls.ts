@@ -1,13 +1,16 @@
-import { CircleOutlineManager } from '@/app/(2D)/circle-outline/circle-outline-manager';
-import { BoundedValue } from '@/classes/bounded-value';
+import { CircleCollisionManager } from '@/app/(2D)/circles/collision/circle-collision-manager';
 import { AnimationController } from '@/controllers/animation-controller';
+import { CanvasController } from '@/controllers/canvas-controller';
 
 export const createGuiControls = (
+  canvasController: CanvasController,
   animationController: AnimationController,
-  circleOutlineManager: CircleOutlineManager,
-  mouseRadius: BoundedValue,
+  circleCollisionManager: CircleCollisionManager,
   isMobile: boolean,
 ) => {
+  const populate = () =>
+    circleCollisionManager.populate(canvasController.width, canvasController.height);
+
   const guiControls = import('dat.gui')
     .then((dat) => new dat.GUI())
     .then((gui) => {
@@ -27,33 +30,38 @@ export const createGuiControls = (
         })
         .name('FPS').domElement.style.color = 'black';
 
-      gui.addFolder('Mouse');
-      gui.add(mouseRadius, 'min', 0, 500).name('Radius min');
-      gui.add(mouseRadius, 'max', 0, 500).name('Radius max');
-
       gui.addFolder('Circles');
       gui
-        .add(circleOutlineManager, 'circleCount', 1, 60, 1)
+        .add(circleCollisionManager, 'circleCount', 1, 60, 1)
         .name('Count')
-        .onFinishChange(circleOutlineManager.populate);
+        .onFinishChange(populate);
 
       gui
-        .add(circleOutlineManager, 'radiusMin', 1, 60, 1)
+        .add(circleCollisionManager, 'radiusMin', 1, 60, 1)
         .name('Size Min')
-        .onFinishChange(circleOutlineManager.populate);
+        .onFinishChange(populate);
       gui
-        .add(circleOutlineManager, 'radiusMax', 1, 70, 1)
+        .add(circleCollisionManager, 'radiusMax', 1, 70, 1)
         .name('Size Max')
-        .onFinishChange(circleOutlineManager.populate);
+        .onFinishChange(populate);
 
       gui
-        .add(circleOutlineManager, 'speedMin', -10, 10, 0.1)
-        .name('Speed Min')
-        .onFinishChange(circleOutlineManager.populate);
+        .add(circleCollisionManager, 'massMin', 1, 100, 0.1)
+        .name('Mass Min')
+        .onFinishChange(populate);
       gui
-        .add(circleOutlineManager, 'speedMax', -10, 10, 0.1)
+        .add(circleCollisionManager, 'massMax', 1, 100, 0.1)
+        .name('Mass Max')
+        .onFinishChange(populate);
+
+      gui
+        .add(circleCollisionManager, 'speedMin', -10, 10, 0.1)
+        .name('Speed Min')
+        .onFinishChange(populate);
+      gui
+        .add(circleCollisionManager, 'speedMax', -10, 10, 0.1)
         .name('Speed Max')
-        .onFinishChange(circleOutlineManager.populate);
+        .onFinishChange(populate);
 
       return gui;
     })

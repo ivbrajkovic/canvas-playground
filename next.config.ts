@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         destination: '/particles/constellation',
         permanent: true,
       },
+      {
+        source: '/circles',
+        destination: '/circles/trail',
+        permanent: true,
+      },
     ];
   },
 };

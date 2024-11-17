@@ -9,8 +9,9 @@ export class CirclePhysics {
   public vx = random(10, 20);
   public vy = 0;
   public radius = 40;
+  public ghosting = 1;
 
-  public _friction = 0.999;
+  private _friction = 0.999;
   public gravity = 0.35;
   public bounce = -0.8;
 
@@ -27,7 +28,10 @@ export class CirclePhysics {
     this.y = random(this.radius, height / 3);
   }
 
-  draw = (context: CanvasRenderingContext2D) => {
+  draw = (context: CanvasRenderingContext2D, width: number, height: number) => {
+    context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
+    context.fillRect(0, 0, width, height);
+
     const gradient = context.createRadialGradient(
       this.x - this.radius * 0.25,
       this.y - this.radius * 0.35,

@@ -1,4 +1,4 @@
-import { CircleOutline } from '@/app/(2D)/circle-outline/circle-outline';
+import { CircleOutline } from '@/app/(2D)/circles/outline/circle-outline';
 import random from 'lodash/random';
 
 type Settings = {
@@ -10,7 +10,8 @@ type Settings = {
 };
 
 export class CircleOutlineManager {
-  public circles: CircleOutline[] = [];
+  private _circles: CircleOutline[] = [];
+
   public circleCount = 200;
   public speedMin = -2.0;
   public speedMax = 2.0;
@@ -31,7 +32,7 @@ export class CircleOutlineManager {
   };
 
   public populate = (width: number, height: number) => {
-    this.circles = Array.from({ length: this.circleCount }, () => {
+    this._circles = Array.from({ length: this.circleCount }, () => {
       const radius = random(this.radiusMin, this.radiusMax);
       const x = random(radius, width - radius);
       const y = random(radius, height - radius);
@@ -47,14 +48,14 @@ export class CircleOutlineManager {
   draw = (context: CanvasRenderingContext2D, width: number, height: number) => {
     context.fillStyle = `hsl(0, 0%, 10%)`;
     context.fillRect(0, 0, width, height);
-    this.circles.forEach((circle) => {
+    this._circles.forEach((circle) => {
       circle.move(width, height);
       circle.draw(context);
     });
   };
 
   respondToForces = (x: number, y: number, radius: number) => {
-    this.circles.forEach((circle) => {
+    this._circles.forEach((circle) => {
       circle.respondToForces(x, y, radius);
     });
   };

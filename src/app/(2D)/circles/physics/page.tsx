@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
-import { CirclePhysics } from '@/app/(2D)/circle-physics/circle-physics';
-import { createGuiControls } from '@/app/(2D)/circle-physics/create-gui-controls';
+import { CirclePhysics } from '@/app/(2D)/circles/physics/circle-physics';
+import { createGuiControls } from '@/app/(2D)/circles/physics/create-gui-controls';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
@@ -16,8 +16,6 @@ export default function Page() {
 
   useEffect(() => {
     if (isMobile === undefined) return;
-
-    const ghosting = { value: 1 };
 
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
@@ -56,19 +54,14 @@ export default function Page() {
 
     const animationController = AnimationController.of(() => {
       const { context, width, height } = canvasController;
-      context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
-      context.fillRect(0, 0, width, height);
-
-      circlePhysics.draw(context);
+      circlePhysics.draw(context, width, height);
       if (!mouseController.isMouseDown) circlePhysics.update(width, height);
-
       fpsTracker.track();
     });
 
     const guiControls = createGuiControls(
       animationController,
       circlePhysics,
-      ghosting,
       isMobile,
     );
 

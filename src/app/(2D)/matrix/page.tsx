@@ -18,16 +18,21 @@ export default function Page() {
 
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
-    const matrix = Matrix.of(canvasController);
-    matrix.populate();
+    const matrix = new Matrix().populate(
+      canvasController.width,
+      canvasController.height,
+    );
 
     const animationController = AnimationController.of(
       () => {
-        matrix.draw(canvasController.context);
+        const { context, width, height } = canvasController;
+        matrix.draw(context, width, height);
         fpsTracker.track();
       },
       { maxFps: 15 },
     );
+
+    canvasController.onResize = matrix.populate;
 
     const guiControls = createGuiControls(animationController, matrix, isMobile);
 

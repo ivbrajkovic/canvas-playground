@@ -15,12 +15,12 @@ export const links = [
         ],
       },
       {
-        title: 'Circle',
+        title: 'Circles',
         projects: [
-          { title: 'Circle Trail', url: '/circle-trail' },
-          { title: 'Circle Outline', url: '/circle-outline' },
-          { title: 'Circle Physics', url: '/circle-physics' },
-          { title: 'Circle Collision', url: '/circle-collision' },
+          { title: 'Trail', url: '/circles/trail' },
+          { title: 'Outline', url: '/circles/outline' },
+          { title: 'Physics', url: '/circles/physics' },
+          { title: 'Collision', url: '/circles/collision' },
         ],
       },
       {
