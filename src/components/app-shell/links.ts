@@ -4,7 +4,10 @@ export const links = [
   {
     category: '2D Projects',
     subcategories: [
-      { title: 'Games', projects: [{ title: 'Pac Man', url: '/pacman' }] },
+      {
+        title: 'Games',
+        projects: [{ title: 'Pac Man', url: '/games/pacman' }],
+      },
       {
         title: 'Particles',
         projects: [
@@ -26,9 +29,9 @@ export const links = [
       {
         title: 'Other',
         projects: [
-          { title: 'Matrix', url: '/matrix' },
-          { title: 'Waves', url: '/waves' },
-          { title: 'Fireworks', url: '/fireworks' },
+          { title: 'Matrix', url: '/other/matrix' },
+          { title: 'Waves', url: '/other/waves' },
+          { title: 'Fireworks', url: '/other/fireworks' },
         ],
       },
     ],

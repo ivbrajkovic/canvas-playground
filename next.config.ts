@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         destination: '/circles/trail',
         permanent: true,
       },
+      {
+        source: '/other',
+        destination: '/other/matrix',
+        permanent: true,
+      },
     ];
   },
 };
