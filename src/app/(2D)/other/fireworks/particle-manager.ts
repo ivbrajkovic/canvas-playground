@@ -1,4 +1,4 @@
-import { Particle } from '@/app/(2D)/fireworks/particle';
+import { Particle } from '@/app/(2D)/other/fireworks/particle';
 
 export class ParticleManager {
   private _particles: Particle[] = [];

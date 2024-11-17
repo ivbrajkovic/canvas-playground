@@ -1,4 +1,4 @@
-import { ParticleText } from '@/app/(2D)/other/particles/text/particle-text';
+import { ParticleText } from '@/app/(2D)/particles/text/particle-text';
 import { BoundedValue } from '@/classes/bounded-value';
 import { AnimationController } from '@/controllers/animation-controller';
 

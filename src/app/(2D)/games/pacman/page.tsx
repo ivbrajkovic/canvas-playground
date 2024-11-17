@@ -57,7 +57,7 @@ export default function Particles() {
     if (!context) throw new Error('Canvas context not found');
 
     const fpsTracker = FpsTracker.of(canvas.parentElement!);
-    const animationController = AnimationController.of(null);
+    const animationController = new AnimationController();
 
     const game = new Game({
       map,

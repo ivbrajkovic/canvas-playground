@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
-import { createGuiControls } from '@/app/(2D)/fireworks/create-gui-controls';
-import { ParticleManager } from '@/app/(2D)/fireworks/particle-manager';
+import { createGuiControls } from '@/app/(2D)/particles/rotating/create-gui-controls';
+import { ParticleManager } from '@/app/(2D)/particles/rotating/particle-manager';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
@@ -20,19 +20,26 @@ export default function Page() {
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
 
-    const particleManager = new ParticleManager();
+    const particleManager = ParticleManager.of(canvasController, {
+      sphereRadius: isMobile ? 200 : 280,
+      radius_sp: isMobile ? 1.2 : 1.5,
+    });
+
     const mouseController = MouseController.of(canvasController.canvas, {
-      onMouseDown: ({ x, y }) => {
-        particleManager.createParticles(x, y);
+      onScroll(position, delta) {
+        particleManager.radius_sp += delta > 0 ? 0.1 : -0.1;
+        if (particleManager.radius_sp < 0.1) particleManager.radius_sp = 0.1;
       },
     });
-    const ghosting = { value: 0.1 };
+
+    canvasController.onResize = particleManager.init;
+    const ghosting = { value: 1 };
 
     const animationController = AnimationController.of(() => {
       const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
       context.fillRect(0, 0, width, height);
-      particleManager.draw(context);
+      particleManager.onTimer();
       fpsTracker.track();
     });
 
@@ -44,8 +51,8 @@ export default function Page() {
     );
 
     return () => {
-      mouseController.dispose();
       animationController.stop();
+      mouseController.dispose();
       fpsTracker.dispose();
       guiControls.dispose();
       canvasController.dispose();
@@ -55,7 +62,7 @@ export default function Page() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-full bg-[hsla(0,0%,10%,1)]"
+      className="absolute left-0 top-0 size-full bg-[hsla(0,0%,10%,1)]"
     />
   );
 }

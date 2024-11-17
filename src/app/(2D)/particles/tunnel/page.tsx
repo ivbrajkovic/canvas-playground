@@ -2,15 +2,15 @@
 
 import { useEffect, useRef } from 'react';
 
-import { createGuiControls } from '@/app/(2D)/other/particles/rotating/create-gui-controls';
-import { ParticleManager } from '@/app/(2D)/other/particles/rotating/particle-manager';
+import { createGuiControls } from '@/app/(2D)/particles/tunnel/create-gui-controls';
+import { ParticleTunnelManager } from '@/app/(2D)/particles/tunnel/particles-tunnel-manager';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { MouseController } from '@/controllers/mouse-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-export default function Page() {
+export default function Particles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isMobile = useIsMobile();
 
@@ -19,50 +19,47 @@ export default function Page() {
 
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
+    const particleTunnelManager = ParticleTunnelManager.of();
 
-    const particleManager = ParticleManager.of(canvasController, {
-      sphereRadius: isMobile ? 200 : 280,
-      radius_sp: isMobile ? 1.2 : 1.5,
-    });
-
+    let isMouseDown = false;
     const mouseController = MouseController.of(canvasController.canvas, {
-      onScroll(position, delta) {
-        particleManager.radius_sp += delta > 0 ? 0.1 : -0.1;
-        if (particleManager.radius_sp < 0.1) particleManager.radius_sp = 0.1;
-      },
+      onMouseDown: () => (isMouseDown = true),
+      onMouseUp: () => (isMouseDown = false),
     });
-
-    canvasController.onResize = particleManager.init;
     const ghosting = { value: 1 };
 
-    const animationController = AnimationController.of(() => {
+    let lastTime = 0;
+
+    const animationController = AnimationController.of((time) => {
       const { context, width, height } = canvasController;
       context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
       context.fillRect(0, 0, width, height);
-      particleManager.onTimer();
+      particleTunnelManager.interval.value += isMouseDown ? -2 : 6;
+      const deltaTime = time - lastTime;
+      if (deltaTime > particleTunnelManager.interval.value) {
+        particleTunnelManager.generateRing(mouseController.x, mouseController.y);
+        lastTime = time;
+      }
+      particleTunnelManager.changeHue();
+      particleTunnelManager.drawParticles(context);
       fpsTracker.track();
     });
 
     const guiControls = createGuiControls(
       animationController,
-      particleManager,
+      particleTunnelManager,
       ghosting,
       isMobile,
     );
 
     return () => {
-      animationController.stop();
       mouseController.dispose();
+      animationController.stop();
       fpsTracker.dispose();
       guiControls.dispose();
       canvasController.dispose();
     };
   }, [isMobile]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute left-0 top-0 size-full bg-[hsla(0,0%,10%,1)]"
-    />
-  );
+  return <canvas ref={canvasRef} className="absolute left-0 top-0 size-full" />;
 }

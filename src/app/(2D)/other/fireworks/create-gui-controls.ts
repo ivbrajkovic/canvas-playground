@@ -1,4 +1,4 @@
-import { ParticleManager } from '@/app/(2D)/other/particles/rotating/particle-manager';
+import { ParticleManager } from '@/app/(2D)/other/fireworks/particle-manager';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (
@@ -34,15 +34,12 @@ export const createGuiControls = (
         })
         .name('FPS').domElement.style.color = 'black';
 
-      gui.addFolder('Sphere');
-      gui.add(particleManager, 'radius_sp', 1, 10, 0.01).name('Z Axis');
-      gui.add(particleManager, 'sphereRadius', 100, 1000, 1).name('Radius');
-
-      gui.addFolder('Particles');
-      gui.add(particleManager, 'numToAddEachFrame', 1, 50, 1).name('Add Each Frame');
-      gui.add(particleManager, 'attack', 1, 500, 1).name('Attack');
-      gui.add(particleManager, 'decay', 1, 500, 1).name('Decay');
-      gui.add(particleManager, 'gravity', -0.3, 0.3, 0.001).name('Gravity');
+      gui.addFolder('Fireworks');
+      gui.add(particleManager, 'count', 0, 1000).name('Count');
+      gui.add(particleManager, 'radius', 1, 10).name('Radius');
+      gui.add(particleManager, 'gravity', 0, 1).name('Gravity');
+      gui.add(particleManager, 'friction', 0.01, 0.05).name('Friction');
+      gui.add(particleManager, 'alphaDecay', 0.001, 0.01).name('Alpha Decay');
 
       return gui;
     })

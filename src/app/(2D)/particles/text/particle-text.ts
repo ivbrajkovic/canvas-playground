@@ -1,4 +1,4 @@
-import { Particle } from '@/app/(2D)/other/particles/text/particle';
+import { Particle } from '@/app/(2D)/particles/text/particle';
 import { CanvasController } from '@/controllers/canvas-controller';
 
 export class ParticleText {

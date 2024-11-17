@@ -17,11 +17,7 @@ export class AnimationController {
     options: Omit<AnimationControllerOptions, 'frameCallback'> = {},
   ) => new AnimationController({ frameCallback, immediate: true, ...options });
 
-  private constructor({
-    frameCallback,
-    immediate,
-    maxFps,
-  }: AnimationControllerOptions) {
+  constructor({ frameCallback, immediate, maxFps }: AnimationControllerOptions = {}) {
     this._requestId = null;
     this._frameCallback = frameCallback ?? null;
     this._maxDeltaTimeMs = maxFps ? 1000 / maxFps : null;

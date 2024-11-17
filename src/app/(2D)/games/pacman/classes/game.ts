@@ -169,6 +169,7 @@ export class Game {
     this._isGameWin = false;
     this._pacmanLife = this._originalPacmanLife;
     this._score = 0;
+    this._currentLevel = 0;
     this._initMap();
     this._initPlayers();
     this.onScoreChange?.(this._score);

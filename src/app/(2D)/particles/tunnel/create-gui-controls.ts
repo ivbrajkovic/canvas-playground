@@ -1,4 +1,4 @@
-import { ParticleTunnelManager } from '@/app/(2D)/other/particles/tunnel/particles-tunnel-manager';
+import { ParticleTunnelManager } from '@/app/(2D)/particles/tunnel/particles-tunnel-manager';
 import { AnimationController } from '@/controllers/animation-controller';
 
 export const createGuiControls = (

@@ -1,4 +1,4 @@
-import { Particle } from '@/app/(2D)/other/particles/tunnel/particle';
+import { Particle } from '@/app/(2D)/particles/tunnel/particle';
 import { BoundedValue } from '@/classes/bounded-value';
 
 export class ParticleTunnelManager {

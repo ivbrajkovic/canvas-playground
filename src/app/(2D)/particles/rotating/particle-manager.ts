@@ -1,4 +1,4 @@
-import { Particle } from '@/app/(2D)/other/particles/rotating/particle';
+import { Particle } from '@/app/(2D)/particles/rotating/particle';
 import { CanvasController } from '@/controllers/canvas-controller';
 
 type Settings = {

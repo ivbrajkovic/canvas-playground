@@ -17,6 +17,12 @@ export const createGuiControls = (
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
       gui
+        .add(matrix, 'isFullScreen')
+        .name('Full Screen')
+        .onFinishChange((value) => {
+          if (value) gui.close();
+        });
+      gui
         .add(matrix, 'ghosting', {
           Off: 1,
           Low: 0.1,
