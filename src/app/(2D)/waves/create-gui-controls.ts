@@ -4,7 +4,6 @@ import { AnimationController } from '@/controllers/animation-controller';
 export const createGuiControls = (
   animationController: AnimationController,
   waves: Waves,
-  ghosting: { value: number },
   isMobile: boolean,
 ) => {
   const guiControls = import('dat.gui')
@@ -18,7 +17,7 @@ export const createGuiControls = (
       gui.addFolder('Canvas');
       gui.add(animationController, 'isRunning').name('Animate');
       gui
-        .add(ghosting, 'value', {
+        .add(waves, 'ghosting', {
           Off: 1,
           Low: 0.1,
           Medium: 0.06,

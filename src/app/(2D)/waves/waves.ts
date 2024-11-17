@@ -1,4 +1,8 @@
+type Size = { width: number; height: number };
+
 export class Waves {
+  private _size: Size;
+
   public isAnimateColor = true;
   public isAnimateAmplitude = true;
   public amplitude = 100;
@@ -7,13 +11,21 @@ export class Waves {
   public hue = 255;
   public saturation = 50;
   public lightness = 50;
+  public ghosting = 0.06;
+  public y: number;
 
   private increment = this.frequency;
 
-  public static of = (y: number) => new Waves(y);
-  constructor(public y: number) {}
+  public static of = (size: Size, y?: number) => new Waves(size, y);
+  constructor(size: Size, y = size.height / 2) {
+    this._size = size;
+    this.y = y;
+  }
 
   draw(context: CanvasRenderingContext2D) {
+    context.fillStyle = `hsla(0, 0%, 10%, ${this.ghosting})`;
+    context.fillRect(0, 0, this._size.width, this._size.height);
+
     const hue = this.isAnimateColor
       ? Math.abs(this.hue * Math.sin(this.increment))
       : this.hue;

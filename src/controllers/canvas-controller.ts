@@ -8,7 +8,7 @@ export class CanvasController {
   private _context: CanvasRenderingContext2D;
   private _cleanupResizeObserver: () => void;
 
-  public onResize?: () => void;
+  public onResize?: (width: number, height: number, pixelRatio: number) => void;
 
   static of = (canvas: HTMLCanvasElement | null) => new CanvasController(canvas);
 
@@ -40,7 +40,7 @@ export class CanvasController {
 
       this._width = clientWidth / this._pixelRatio;
       this._height = clientHeight / this._pixelRatio;
-      this.onResize?.();
+      this.onResize?.(this._width, this._height, this._pixelRatio);
     }
   };
 

@@ -18,23 +18,18 @@ export default function Page() {
 
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
-    const waves = Waves.of(canvasController.height / 2);
-    const ghosting = { value: 0.06 };
+    const waves = Waves.of(canvasController);
+
+    canvasController.onResize = (_, height: number) => {
+      waves.y = height / 2;
+    };
 
     const animationController = AnimationController.of(() => {
-      const { context, width, height } = canvasController;
-      context.fillStyle = `hsla(0, 0%, 10%, ${ghosting.value})`;
-      context.fillRect(0, 0, width, height);
-      waves.draw(context);
+      waves.draw(canvasController.context);
       fpsTracker.track();
     });
 
-    const guiControls = createGuiControls(
-      animationController,
-      waves,
-      ghosting,
-      isMobile,
-    );
+    const guiControls = createGuiControls(animationController, waves, isMobile);
 
     return () => {
       animationController.stop();
