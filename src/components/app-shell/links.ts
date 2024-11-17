@@ -26,6 +26,7 @@ export const links = [
       {
         title: 'Other',
         projects: [
+          { title: 'Matrix', url: '/matrix' },
           { title: 'Waves', url: '/waves' },
           { title: 'Fireworks', url: '/fireworks' },
         ],
