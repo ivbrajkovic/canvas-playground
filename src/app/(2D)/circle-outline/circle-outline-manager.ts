@@ -1,6 +1,5 @@
-import random from 'lodash/random';
 import { CircleOutline } from '@/app/(2D)/circle-outline/circle-outline';
-import { CanvasController } from '@/controllers/canvas-controller';
+import random from 'lodash/random';
 
 type Settings = {
   speedMin?: number;
@@ -11,8 +10,6 @@ type Settings = {
 };
 
 export class CircleOutlineManager {
-  private _canvasController: CanvasController;
-
   public circles: CircleOutline[] = [];
   public circleCount = 200;
   public speedMin = -2.0;
@@ -20,18 +17,20 @@ export class CircleOutlineManager {
   public radiusMin = 20;
   public radiusMax = 40;
 
-  public static of = (canvasController: CanvasController, settings: Settings) =>
-    new CircleOutlineManager(canvasController, settings);
-
-  private constructor(canvasController: CanvasController, settings: Settings) {
-    this._canvasController = canvasController;
-    Object.assign(this, settings);
-    this.populate();
+  constructor(settings: Settings) {
+    this.setSettings(settings);
   }
 
-  public populate = () => {
-    const { width, height } = this._canvasController;
+  public setSettings = (settings: Settings) => {
+    this.circleCount = settings.circleCount ?? this.circleCount;
+    this.speedMin = settings.speedMin ?? this.speedMin;
+    this.speedMax = settings.speedMax ?? this.speedMax;
+    this.radiusMin = settings.radiusMin ?? this.radiusMin;
+    this.radiusMax = settings.radiusMax ?? this.radiusMax;
+    return this;
+  };
 
+  public populate = (width: number, height: number) => {
     this.circles = Array.from({ length: this.circleCount }, () => {
       const radius = random(this.radiusMin, this.radiusMax);
       const x = random(radius, width - radius);
@@ -41,6 +40,22 @@ export class CircleOutlineManager {
       const vector = { x: vx, y: vy };
       const color = `hsl(${random(0, 360)}, 50%, 50%)`;
       return new CircleOutline(x, y, vector, color, radius);
+    });
+    return this;
+  };
+
+  draw = (context: CanvasRenderingContext2D, width: number, height: number) => {
+    context.fillStyle = `hsl(0, 0%, 10%)`;
+    context.fillRect(0, 0, width, height);
+    this.circles.forEach((circle) => {
+      circle.move(width, height);
+      circle.draw(context);
+    });
+  };
+
+  respondToForces = (x: number, y: number, radius: number) => {
+    this.circles.forEach((circle) => {
+      circle.respondToForces(x, y, radius);
     });
   };
 }

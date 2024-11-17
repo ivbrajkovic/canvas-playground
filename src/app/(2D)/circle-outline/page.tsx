@@ -2,13 +2,13 @@
 
 import { useEffect, useRef } from 'react';
 
-import { CanvasController } from '@/controllers/canvas-controller';
+import { CircleOutlineManager } from '@/app/(2D)/circle-outline/circle-outline-manager';
+import { createGuiControls } from '@/app/(2D)/circle-outline/create-gui-controls';
+import { BoundedValue } from '@/classes/bounded-value';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
-import { CircleOutlineManager } from '@/app/(2D)/circle-outline/circle-outline-manager';
+import { CanvasController } from '@/controllers/canvas-controller';
 import { MouseController } from '@/controllers/mouse-controller';
-import { BoundedValue } from '@/classes/bounded-value';
-import { createGuiControls } from '@/app/(2D)/circle-outline/create-gui-controls';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Page() {
@@ -21,10 +21,10 @@ export default function Page() {
     const canvasController = CanvasController.of(canvasRef.current);
     const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
 
-    const circleOutlineManager = CircleOutlineManager.of(canvasController, {
+    const circleOutlineManager = new CircleOutlineManager({
       circleCount: isMobile ? 80 : 200,
       radiusMax: isMobile ? 30 : 40,
-    });
+    }).populate(canvasController.width, canvasController.height);
 
     canvasController.onResize = circleOutlineManager.populate;
 
@@ -35,19 +35,12 @@ export default function Page() {
 
     const animationController = AnimationController.of(() => {
       const { context, width, height } = canvasController;
-      context.fillStyle = `hsl(0, 0%, 10%)`;
-      context.fillRect(0, 0, width, height);
-      circleOutlineManager.circles.forEach((circle) => {
-        circle.respondToForces(
-          mouseController.x,
-          mouseController.y,
-          mouseRadius.value,
-        );
-        circle.move(width, height);
-        circle.draw(context);
-      });
-      fpsTracker.track();
+      const { x, y } = mouseController;
+      const radius = mouseRadius.value;
+      circleOutlineManager.respondToForces(x, y, radius);
+      circleOutlineManager.draw(context, width, height);
       mouseRadius.value -= 4;
+      fpsTracker.track();
     });
 
     const guiControls = createGuiControls(
@@ -58,13 +51,13 @@ export default function Page() {
     );
 
     return () => {
-      mouseController.dispose();
       animationController.stop();
       fpsTracker.dispose();
       guiControls.dispose();
+      mouseController.dispose();
       canvasController.dispose();
     };
   }, [isMobile]);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
+  return <canvas ref={canvasRef} className="absolute left-0 top-0 size-full" />;
 }
