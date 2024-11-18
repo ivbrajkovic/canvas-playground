@@ -34,12 +34,11 @@ export const createPlusShape = (x: number, y: number): Tetromino => ({
  * @param {number} y - Initial Y position on the grid.
  * @returns {Tetromino} The vertical line-shaped tetromino.
  */
-export const createVerticalLineShape = (x: number, y: number): Tetromino => ({
+export const createLineShape = (x: number, y: number): Tetromino => ({
   shape: [
-    [0, 1, 0],
-    [0, 1, 0],
-    [0, 1, 0],
-    [0, 1, 0],
+    [0, 0, 0, 0],
+    [1, 1, 1, 1],
+    [0, 0, 0, 0],
   ],
   x,
   y,
@@ -153,7 +152,7 @@ export const createZShape = (x: number, y: number): Tetromino => ({
 export const createRandomShape = (x: number, y: number): Tetromino => {
   const shapeCreators = [
     createPlusShape,
-    createVerticalLineShape,
+    createLineShape,
     createSquareShape,
     createTShape,
     createLShape,

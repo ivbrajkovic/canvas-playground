@@ -17,7 +17,7 @@ export default function Page() {
     if (isMobile === undefined) return;
 
     const canvasController = CanvasController.of(canvasRef.current);
-    // const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
+    const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
 
     const tetris = new Tetris();
     tetris.onGameOver = () => {
@@ -38,14 +38,14 @@ export default function Page() {
     const animationController = AnimationController.of(() => {
       const { context, width, height } = canvasController;
       tetris.draw(context, width, height);
-      // fpsTracker.track();
+      fpsTracker.track();
     });
 
     const guiControls = createGuiControls(animationController, tetris, isMobile);
 
     return () => {
       animationController.stop();
-      // fpsTracker.dispose();
+      fpsTracker.dispose();
       guiControls.dispose();
       document.removeEventListener('keydown', onKeydown);
       canvasController.dispose();
