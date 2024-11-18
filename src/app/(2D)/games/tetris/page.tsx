@@ -24,9 +24,14 @@ export default function Page() {
 
   const [isDialogOpen, setDialogOpen] = useState(true);
 
-  const startGame = () => {
+  const resetGame = () => {
     setDialogOpen(false);
     tetrisRef.current?.resetGameState();
+    tetrisRef.current?.start();
+  };
+
+  const startGame = () => {
+    setDialogOpen(false);
     tetrisRef.current?.start();
   };
 
@@ -42,7 +47,7 @@ export default function Page() {
 
     const tetris = new Tetris();
     tetris.onGameOver = () => {
-      alert('Game Over!');
+      setDialogOpen(true);
     };
 
     const size = tetris.getSize();
@@ -57,6 +62,10 @@ export default function Page() {
       if (event.key === 'ArrowDown') tetris.moveDown();
       if (event.key === 'ArrowUp') tetris.rotate();
       if (event.key === ' ') tetris.drop();
+      if (event.key === 'Escape') {
+        tetris.pause();
+        setDialogOpen(true);
+      }
     };
 
     document.addEventListener('keydown', onKeydown);
@@ -80,31 +89,48 @@ export default function Page() {
     <div className="relative flex flex-1 flex-col items-center justify-center gap-4 bg-[hsla(0,0%,10%,1)]">
       <canvas ref={canvasRef} />
       <h1 className="text-white">
-        Tetris Game, use arrow keys to move and rotate the pieces, space to drop.
+        Use arrow keys to move and rotate the pieces, space to drop. Press{' '}
+        <code>Esc</code> to pause the game.
       </h1>
 
       <AlertDialog open={isDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {tetrisRef.current?.isGameOver ? 'Game Over!' : 'Welcome to Tetris!'}
+              {tetrisRef.current?.isPaused
+                ? 'Game Paused!'
+                : tetrisRef.current?.isGameOver
+                  ? 'Game Over!'
+                  : 'Welcome to Tetris!'}
             </AlertDialogTitle>
-            <AlertDialogDescription>
-              {tetrisRef.current?.isGameOver ? (
-                <span>
-                  Score: {tetrisRef.current?.score}
-                  <br />
-                  High Score: {tetrisRef.current?.bestScore}
-                  <br />
-                  Game Over! Ready to play again?
-                </span>
+            <AlertDialogDescription className="flex flex-col gap-3">
+              {tetrisRef.current?.isPaused ? (
+                'Do you want to resume?'
+              ) : tetrisRef.current?.isGameOver ? (
+                <>
+                  <span>
+                    Score: {tetrisRef.current?.score}
+                    <br />
+                    High Score: {tetrisRef.current?.bestScore}
+                    <br />
+                  </span>
+                  <span>Ready to play again?</span>
+                </>
               ) : (
                 'Ready to play?'
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={startGame}>Start Game</AlertDialogAction>
+            <AlertDialogAction
+              onClick={tetrisRef.current?.isPaused ? startGame : resetGame}
+            >
+              {tetrisRef.current?.isPaused
+                ? 'Resume Game'
+                : tetrisRef.current?.isGameOver
+                  ? 'Play Again'
+                  : 'Start Game'}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

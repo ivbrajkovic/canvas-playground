@@ -33,11 +33,16 @@ export class Tetris {
   private _timer: ReturnType<typeof setTimeout> | null = null;
 
   private _isGameOver = false;
+  private _isPaused = false;
   private _score = 0;
   private _bestScore = 0;
 
   get isGameOver() {
     return this._isGameOver;
+  }
+
+  get isPaused() {
+    return this._isPaused;
   }
 
   get score() {
@@ -72,10 +77,6 @@ export class Tetris {
       this._bestScore = this._score;
       localStorage.setItem('tetris-best-score', this._bestScore.toString());
     }
-  };
-
-  public start = () => {
-    this._timer = setTimeout(this._onTick, this._interval);
   };
 
   public resetGameState = () => {
@@ -148,7 +149,19 @@ export class Tetris {
 
   // Game loop
 
+  public start = () => {
+    this._isPaused = false;
+    this._timer = setTimeout(this._onTick, this._interval);
+  };
+
+  public pause = () => {
+    this._isPaused = true;
+    if (this._timer) clearTimeout(this._timer);
+  };
+
   private _onTick = () => {
+    if (this._isPaused) return;
+
     if (isTetrominoBottomColliding(this._currentPiece, this._grid)) {
       this._addPieceToGrid();
       this._generateRandomTetromino();
