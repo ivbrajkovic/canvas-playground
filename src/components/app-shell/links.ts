@@ -6,7 +6,10 @@ export const links = [
     subcategories: [
       {
         title: 'Games',
-        projects: [{ title: 'Pac Man', url: '/games/pacman' }],
+        projects: [
+          { title: 'Pac Man', url: '/games/pacman' },
+          { title: 'Tetris', url: '/games/tetris' },
+        ],
       },
       {
         title: 'Particles',
