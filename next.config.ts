@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/',
-        destination: '/pacman',
+        destination: '/games/pacman',
         permanent: true,
       },
       {
