@@ -36,9 +36,9 @@ export const createPlusShape = (x: number, y: number): Tetromino => ({
  */
 export const createLineShape = (x: number, y: number): Tetromino => ({
   shape: [
-    [0, 0, 0, 0],
+    // [0, 0, 0, 0],
     [1, 1, 1, 1],
-    [0, 0, 0, 0],
+    // [0, 0, 0, 0],
   ],
   x,
   y,

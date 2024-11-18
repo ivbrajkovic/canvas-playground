@@ -23,22 +23,76 @@ export class Tetris {
 
   private _scorePerRow = 100;
   private _bonusPerRow = 10;
+
   private _cellSize = 50;
-  private _gridOffsetX = 4;
+  private _gridOffsetX = 0;
   private _gridOffsetY = 2;
   private _rows = 20;
   private _columns = 10;
   private _interval = 1000;
   private _timer: ReturnType<typeof setTimeout> | null = null;
 
+  private _isGameOver = false;
   private _score = 0;
   private _bestScore = 0;
 
-  onGameOver?: () => void;
+  get isGameOver() {
+    return this._isGameOver;
+  }
+
+  get score() {
+    return this._score;
+  }
+
+  get bestScore() {
+    return this._bestScore;
+  }
+
+  onGameOver?: (score: number, bestScore: number) => void;
+  onInit?: (
+    width: number,
+    height: number,
+    widthOffset: number,
+    heightOffset: number,
+  ) => void;
 
   constructor() {
-    this.init();
+    this.resetGameState();
   }
+
+  // Initialization methods
+
+  private _loadBestScore = () => {
+    const bestScore = localStorage.getItem('tetris-best-score');
+    if (bestScore) this._bestScore = parseInt(bestScore, 10);
+  };
+
+  private _saveBestScore = () => {
+    if (this._score > this._bestScore) {
+      this._bestScore = this._score;
+      localStorage.setItem('tetris-best-score', this._bestScore.toString());
+    }
+  };
+
+  public start = () => {
+    this._timer = setTimeout(this._onTick, this._interval);
+  };
+
+  public resetGameState = () => {
+    this._score = 0;
+    this._isGameOver = false;
+    this._resetGrid();
+    this._loadBestScore();
+    this._generateRandomTetromino();
+  };
+
+  public getSize = () => {
+    const width = this._columns * this._cellSize;
+    const height = this._rows * this._cellSize;
+    const widthOffset = this._gridOffsetX * this._cellSize;
+    const heightOffset = this._gridOffsetY * this._cellSize;
+    return { width: width + widthOffset * 2, height: height + heightOffset };
+  };
 
   private _generateRandomTetromino = () => {
     const createPiece = () => {
@@ -50,7 +104,7 @@ export class Tetris {
     this._nextPiece = createPiece();
   };
 
-  private _clearGrid = () => {
+  private _resetGrid = () => {
     this._grid = createGrid(this._columns, this._rows);
   };
 
@@ -100,8 +154,9 @@ export class Tetris {
       this._generateRandomTetromino();
 
       if (this._hasPiecesInTopLimit()) {
-        this.onGameOver?.();
+        this._isGameOver = true;
         this._saveBestScore();
+        this.onGameOver?.(this._score, this._bestScore);
         return;
       }
     }
@@ -115,7 +170,7 @@ export class Tetris {
 
   private _drawGridBorder = (context: CanvasRenderingContext2D) => {
     context.strokeStyle = 'white';
-    context.lineWidth = 1;
+    context.lineWidth = 2;
     context.strokeRect(
       this._gridOffsetX * this._cellSize,
       this._gridOffsetY * this._cellSize,
@@ -129,6 +184,7 @@ export class Tetris {
     context.lineWidth = 1;
     this._grid.forEach((row, rowIndex) => {
       row.forEach((cell, columnIndex) => {
+        if (cell === filled) return;
         context.strokeRect(
           columnIndex * this._cellSize + this._gridOffsetX * this._cellSize,
           rowIndex * this._cellSize + this._gridOffsetY * this._cellSize,
@@ -174,24 +230,18 @@ export class Tetris {
 
   private _drawScore = (context: CanvasRenderingContext2D) => {
     const scoreText = `Score: ${this._score}`;
-    const scoreWidth = context.measureText(scoreText).width;
-    const positionX =
-      this._columns * this._cellSize + this._gridOffsetX * this._cellSize;
-    const positionY = this._gridOffsetY * this._cellSize - 20;
-    context.font = 'bold 16px Arial';
-    context.fillStyle = 'white';
-    context.fillText(scoreText, positionX - scoreWidth, positionY);
-  };
-
-  private _drawBestScore = (context: CanvasRenderingContext2D) => {
     const bestScoreText = `Best: ${this._bestScore}`;
+
+    const scoreWidth = context.measureText(scoreText).width;
     const bestScoreWidth = context.measureText(bestScoreText).width;
-    const positionX =
-      this._columns * this._cellSize + this._gridOffsetX * this._cellSize;
-    const positionY = this._gridOffsetY * this._cellSize - 40;
+
+    const x = this._columns * this._cellSize + this._gridOffsetX * this._cellSize;
+    const y = this._gridOffsetY * this._cellSize;
+
     context.font = 'bold 16px Arial';
     context.fillStyle = 'white';
-    context.fillText(bestScoreText, positionX - bestScoreWidth, positionY);
+    context.fillText(scoreText, x - scoreWidth, y - 20);
+    context.fillText(bestScoreText, x - bestScoreWidth, y - 40);
   };
 
   private _drawNextPiece = (context: CanvasRenderingContext2D) => {
@@ -222,13 +272,12 @@ export class Tetris {
     height: number,
   ) => {
     context.clearRect(0, 0, width, height);
-    this._drawGridBorder(context);
-    this._drawBestScore(context);
     this._drawScore(context);
     this._drawGrid(context);
     this._drawCurrentPiece(context);
     this._drawNextPiece(context);
     this._drawGuides(context);
+    this._drawGridBorder(context);
   };
 
   // Move methods for the current piece
@@ -272,26 +321,10 @@ export class Tetris {
     this._currentPiece = rotated;
   };
 
-  // Initialization methods
-
-  private _loadBestScore = () => {
-    const bestScore = localStorage.getItem('tetris-best-score');
-    if (bestScore) this._bestScore = parseInt(bestScore, 10);
-  };
-
-  private _saveBestScore = () => {
-    if (this._score > this._bestScore) {
-      this._bestScore = this._score;
-      localStorage.setItem('tetris-best-score', this._bestScore.toString());
+  public drop = () => {
+    while (!isTetrominoBottomColliding(this._currentPiece, this._grid)) {
+      this.moveDown();
     }
-  };
-
-  public init = () => {
-    this._score = 0;
-    this._loadBestScore();
-    this._clearGrid();
-    this._generateRandomTetromino();
-    this._timer = setTimeout(this._onTick, this._interval);
   };
 
   // Cleanup method
