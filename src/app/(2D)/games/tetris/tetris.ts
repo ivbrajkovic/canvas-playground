@@ -113,28 +113,26 @@ export class Tetris {
     this._grid = createGrid(this._columns, this._rows);
   };
 
-  private _checkRows = () => {
-    let removedRows = 0;
+  private _clearFilledRows = () => {
+    const filledRowIndices = this._grid.flatMap((row, index) =>
+      row.every((cell) => cell === filled) ? index : [],
+    );
 
-    this._grid.forEach((row, rowIndex) => {
-      const isRowFilled = row.every((cell) => cell === filled);
-      if (!isRowFilled) return;
-      this._removeRow(rowIndex);
-      removedRows++;
-    });
-
-    // If no rows were removed, return
+    const removedRows = filledRowIndices.length;
     if (!removedRows) return;
 
-    this._score += removedRows * this._scorePerRow;
+    // Remove filled rows and add new empty rows at top
+    filledRowIndices.forEach(this._removeRow);
 
-    // Add bonus points for multiple rows cleared
-    if (removedRows > 1) {
-      const bonus = this._bonusPerRow * Math.pow(2, removedRows - 1);
-      this._score += bonus;
-    }
+    // Calculate score with base points and bonus
+    this._score += removedRows * this._scorePerRow;
+    if (removedRows > 1) this._score += this._calculateBonus(removedRows);
 
     this._updateLevelAndSpeed();
+  };
+
+  private _calculateBonus = (removedRows: number) => {
+    return this._bonusPerRow * Math.pow(2, removedRows - 1);
   };
 
   private _updateLevelAndSpeed = () => {
@@ -203,7 +201,7 @@ export class Tetris {
     }
 
     this.moveDown();
-    this._checkRows();
+    this._clearFilledRows();
     this._timer = setTimeout(this._onTick, this._interval);
   };
 
