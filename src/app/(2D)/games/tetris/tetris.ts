@@ -29,6 +29,8 @@ export class Tetris {
   private _gridOffsetY = 2;
   private _rows = 20;
   private _columns = 10;
+
+  private _level = 1;
   private _interval = 1000;
   private _timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -82,6 +84,8 @@ export class Tetris {
   public resetGameState = () => {
     this._score = 0;
     this._isGameOver = false;
+    this._level = 1;
+    this._interval = 1000;
     this._resetGrid();
     this._loadBestScore();
     this._generateRandomTetromino();
@@ -113,19 +117,43 @@ export class Tetris {
     let removedRows = 0;
 
     this._grid.forEach((row, rowIndex) => {
-      if (row.every((cell) => cell === filled)) {
-        this._removeRow(rowIndex);
-        removedRows++;
-      }
+      const isRowFilled = row.every((cell) => cell === filled);
+      if (!isRowFilled) return;
+      this._removeRow(rowIndex);
+      removedRows++;
     });
 
-    // Add points for cleared rows
-    if (removedRows) this._score += removedRows * this._scorePerRow;
+    // If no rows were removed, return
+    if (!removedRows) return;
+
+    this._score += removedRows * this._scorePerRow;
 
     // Add bonus points for multiple rows cleared
     if (removedRows > 1) {
       const bonus = this._bonusPerRow * Math.pow(2, removedRows - 1);
       this._score += bonus;
+    }
+
+    this._updateLevelAndSpeed();
+  };
+
+  private _updateLevelAndSpeed = () => {
+    const numLevels = 10;
+    const baseScore = 1000;
+    const baseInterval = 1000;
+    const intervalDecrement = 10;
+
+    // Calculate the score thresholds for each level
+    const scoreThresholds = Array.from(
+      { length: numLevels },
+      (_, i) => baseScore * Math.pow(2, i), // 1000, 2000, 4000, 8000, ...
+    );
+
+    // Check if the score is higher than the current level threshold
+    const scoreThresholdsIndex = this._level - 1;
+    if (this._score >= scoreThresholds[scoreThresholdsIndex]) {
+      this._level++;
+      this._interval = baseInterval - scoreThresholdsIndex * intervalDecrement;
     }
   };
 
