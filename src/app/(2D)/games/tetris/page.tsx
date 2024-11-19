@@ -5,15 +5,16 @@ import { useEffect, useRef, useState } from 'react';
 import { createGuiControls } from '@/app/(2D)/games/tetris/create-gui-controls';
 import { Tetris } from '@/app/(2D)/games/tetris/tetris';
 import { FpsTracker } from '@/classes/fps-tracker';
+import { Button } from '@/components/ui/button';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { AnimationController } from '@/controllers/animation-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -27,12 +28,12 @@ export default function Page() {
   const resetGame = () => {
     setDialogOpen(false);
     tetrisRef.current?.resetGameState();
-    tetrisRef.current?.start();
+    tetrisRef.current?.resume();
   };
 
-  const startGame = () => {
+  const resumeGame = () => {
     setDialogOpen(false);
-    tetrisRef.current?.start();
+    tetrisRef.current?.resume();
   };
 
   useEffect(() => {
@@ -45,24 +46,30 @@ export default function Page() {
 
     const fpsTracker = FpsTracker.of(canvas.parentElement!);
 
-    const tetris = new Tetris();
-    tetris.onGameOver = () => {
-      setDialogOpen(true);
-    };
+    const tetris = new Tetris({
+      cellSize: isMobile ? 36 : 48,
+      handlers: {
+        onGameOver: () => {
+          setDialogOpen(true);
+        },
+      },
+    });
 
-    const size = tetris.getSize();
+    // TODO: Resize using DPI scaling
+    const size = tetris.getGridSize();
     canvas.width = size.width;
     canvas.height = size.height;
 
     tetrisRef.current = tetris;
 
     const onKeydown = (event: KeyboardEvent) => {
+      if (tetris.isPaused) return;
       if (event.key === 'ArrowLeft') tetris.moveLeft();
       if (event.key === 'ArrowRight') tetris.moveRight();
       if (event.key === 'ArrowDown') tetris.moveDown();
       if (event.key === 'ArrowUp') tetris.rotate();
       if (event.key === ' ') tetris.drop();
-      if (event.key === 'Escape') {
+      if (event.key === 'p') {
         tetris.pause();
         setDialogOpen(true);
       }
@@ -71,7 +78,7 @@ export default function Page() {
     document.addEventListener('keydown', onKeydown);
 
     const animationController = AnimationController.of(() => {
-      tetris.draw(context, canvas.width, canvas.height);
+      tetris.renderGrid(context, canvas.width, canvas.height);
       fpsTracker.track();
     });
 
@@ -85,55 +92,72 @@ export default function Page() {
     };
   }, [isMobile]);
 
+  const isStarted = tetrisRef.current?.isStarted;
+  const isPaused = tetrisRef.current?.isPaused;
+  const isGameOver = tetrisRef.current?.isGameOver;
+
   return (
     <div className="relative flex flex-1 flex-col items-center justify-center gap-4 bg-[hsla(0,0%,10%,1)]">
       <canvas ref={canvasRef} />
-      <h1 className="text-white">
-        Use arrow keys to move and rotate the pieces, space to drop. Press{' '}
-        <code>Esc</code> to pause the game.
-      </h1>
 
-      <AlertDialog open={isDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {tetrisRef.current?.isPaused
-                ? 'Game Paused!'
-                : tetrisRef.current?.isGameOver
+      <Dialog open={isDialogOpen} onOpenChange={resumeGame}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              {!isStarted
+                ? 'Welcome to Tetris!'
+                : isGameOver
                   ? 'Game Over!'
-                  : 'Welcome to Tetris!'}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="flex flex-col gap-3">
-              {tetrisRef.current?.isPaused ? (
-                'Do you want to resume?'
-              ) : tetrisRef.current?.isGameOver ? (
-                <>
-                  <span>
-                    Score: {tetrisRef.current?.score}
-                    <br />
-                    High Score: {tetrisRef.current?.bestScore}
-                    <br />
-                  </span>
-                  <span>Ready to play again?</span>
-                </>
-              ) : (
-                'Ready to play?'
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction
-              onClick={tetrisRef.current?.isPaused ? startGame : resetGame}
-            >
-              {tetrisRef.current?.isPaused
-                ? 'Resume Game'
-                : tetrisRef.current?.isGameOver
-                  ? 'Play Again'
-                  : 'Start Game'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+                  : isPaused
+                    ? 'Paused'
+                    : ''}
+            </DialogTitle>
+            <DialogDescription>
+              {!isStarted ? (
+                'Are you ready to play?'
+              ) : isGameOver ? (
+                <span>Ready for another round?</span>
+              ) : isPaused ? (
+                'Game paused. Resume or start a new game?'
+              ) : null}
+            </DialogDescription>
+          </DialogHeader>
+          {!isStarted ? (
+            <div className="grid gap-1 py-2">
+              <p>← → : Move piece</p>
+              <p>↑ : Rotate piece</p>
+              <p>↓ : Move down</p>
+              <p>SPACE : Drop piece</p>
+              <p>P : Pause game</p>
+            </div>
+          ) : isGameOver ? (
+            <div className="grid gap-1 py-2">
+              <p>Best Score: {tetrisRef.current?.bestScore}</p>
+              <p>Your Score: {tetrisRef.current?.score}</p>
+            </div>
+          ) : isPaused ? (
+            <div className="grid gap-1 py-2">
+              <p>Score: {tetrisRef.current?.score}</p>
+            </div>
+          ) : null}
+          <DialogFooter>
+            {!isStarted ? (
+              <Button onClick={resumeGame}>Play</Button>
+            ) : isGameOver ? (
+              <Button onClick={resetGame}>New Game</Button>
+            ) : isPaused ? (
+              <>
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    Resume
+                  </Button>
+                </DialogClose>
+                <Button onClick={resetGame}>New Game</Button>
+              </>
+            ) : null}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

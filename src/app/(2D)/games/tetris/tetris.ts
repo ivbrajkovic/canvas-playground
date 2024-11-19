@@ -1,9 +1,9 @@
+import { getLevelSpeedInMs } from '@/app/(2D)/games/tetris/level-speed';
 import {
-  createRandomShape,
+  createRandomTetromino,
   Direction,
-  isTetrominoBottomColliding,
   isTetrominoColliding,
-  isTetrominoOutOfBounds,
+  mergeTetrominoWithGrid,
   moveTetromino,
   rotateTetromino,
   Tetromino,
@@ -16,28 +16,46 @@ type Filled = 1;
 const empty: Empty = 0;
 const filled: Filled = 1;
 
+type Handlers = {
+  onGameOver?: (score: number, bestScore: number) => void;
+};
+
+type Options = {
+  cellSize: number;
+  handlers?: Handlers;
+};
+
 export class Tetris {
+  private _isPaused = true;
+  private _isStarted = false;
+  private _isGameOver = false;
+
   private _grid: number[][] = [];
   private _currentPiece!: Tetromino; // !Should be defined in the init method
   private _nextPiece: Tetromino | null = null;
 
-  private _scorePerRow = 100;
-  private _bonusPerRow = 10;
+  public gridFixedColor = 'gray';
+  public gridEmptyColor = 'black';
+  public gridBorderColor = 'white';
+  public gridGuidesColor = '#ffffff30';
+  public currentPieceColor = 'cyan';
 
-  private _cellSize = 50;
+  private _cellSize = 36;
   private _gridOffsetX = 0;
   private _gridOffsetY = 2;
   private _rows = 20;
   private _columns = 10;
 
-  private _level = 1;
   private _interval = 1000;
   private _timer: ReturnType<typeof setTimeout> | null = null;
 
-  private _isGameOver = false;
-  private _isPaused = false;
+  private _filledRowCount = 0;
+
   private _score = 0;
   private _bestScore = 0;
+  private _level = 0;
+  private _bestLevel = 0;
+  private _maxLevel = 29;
 
   get isGameOver() {
     return this._isGameOver;
@@ -45,6 +63,10 @@ export class Tetris {
 
   get isPaused() {
     return this._isPaused;
+  }
+
+  get isStarted() {
+    return this._isStarted;
   }
 
   get score() {
@@ -55,43 +77,35 @@ export class Tetris {
     return this._bestScore;
   }
 
-  onGameOver?: (score: number, bestScore: number) => void;
-  onInit?: (
-    width: number,
-    height: number,
-    widthOffset: number,
-    heightOffset: number,
-  ) => void;
+  get level() {
+    return this._level;
+  }
 
-  constructor() {
+  get bestLevel() {
+    return this._bestLevel;
+  }
+
+  onGameOver?: (score: number, bestScore: number) => void;
+
+  constructor({ cellSize, handlers }: Options) {
+    this._cellSize = cellSize;
+    this.onGameOver = handlers?.onGameOver;
+
     this.resetGameState();
   }
 
-  // Initialization methods
-
-  private _loadBestScore = () => {
-    const bestScore = localStorage.getItem('tetris-best-score');
-    if (bestScore) this._bestScore = parseInt(bestScore, 10);
-  };
-
-  private _saveBestScore = () => {
-    if (this._score > this._bestScore) {
-      this._bestScore = this._score;
-      localStorage.setItem('tetris-best-score', this._bestScore.toString());
-    }
-  };
-
   public resetGameState = () => {
-    this._score = 0;
+    this._isPaused = true;
     this._isGameOver = false;
-    this._level = 1;
-    this._interval = 1000;
-    this._resetGrid();
+    this._score = 0;
+    this._level = 0;
+    this._interval = getLevelSpeedInMs(0);
+    this._grid = createGrid(this._columns, this._rows);
     this._loadBestScore();
-    this._generateRandomTetromino();
+    this._spawnTetromino();
   };
 
-  public getSize = () => {
+  public getGridSize = () => {
     const width = this._columns * this._cellSize;
     const height = this._rows * this._cellSize;
     const widthOffset = this._gridOffsetX * this._cellSize;
@@ -99,9 +113,25 @@ export class Tetris {
     return { width: width + widthOffset * 2, height: height + heightOffset };
   };
 
-  private _generateRandomTetromino = () => {
+  private _loadBestScore = () => {
+    const bestScore = localStorage.getItem('tetris-best-score');
+    const bestLevel = localStorage.getItem('tetris-best-level');
+    if (bestScore) this._bestScore = parseInt(bestScore, 10);
+    if (bestLevel) this._bestLevel = parseInt(bestLevel, 10);
+  };
+
+  private _saveBestScore = () => {
+    if (this._score > this._bestScore) {
+      this._bestScore = this._score;
+      localStorage.setItem('tetris-best-score', this._bestScore.toString());
+      localStorage.setItem('tetris-best-level', this._level.toString());
+    }
+  };
+
+  private _spawnTetromino = () => {
     const createPiece = () => {
-      const newShape = createRandomShape(0, 0);
+      const newShape = createRandomTetromino(0, 0);
+      // const newShape = createLineShape(0, 0);
       newShape.x = Math.floor(this._columns / 2 - newShape.shape[0].length / 2);
       return newShape;
     };
@@ -109,64 +139,43 @@ export class Tetris {
     this._nextPiece = createPiece();
   };
 
-  private _resetGrid = () => {
-    this._grid = createGrid(this._columns, this._rows);
+  private _clearCompletedRows = () => {
+    let rowsCleared = 0;
+    for (let row = this._rows - 1; row >= 0; row--) {
+      if (this._grid[row].every((cell) => cell === filled)) {
+        this._grid.splice(row, 1);
+        this._grid.unshift(new Array(this._columns).fill(empty));
+        rowsCleared++;
+      }
+    }
+    return rowsCleared;
   };
 
-  private _clearFilledRows = () => {
-    const filledRowIndices = this._grid.flatMap((row, index) =>
-      row.every((cell) => cell === filled) ? index : [],
-    );
-
-    const removedRows = filledRowIndices.length;
-    if (!removedRows) return;
-
-    // Remove filled rows and add new empty rows at top
-    filledRowIndices.forEach(this._removeRow);
-
-    // Calculate score with base points and bonus
-    this._score += removedRows * this._scorePerRow;
-    if (removedRows > 1) this._score += this._calculateBonus(removedRows);
-
-    this._updateLevelAndSpeed();
+  private _getPointsPerCompletedRows = (filledRows: number) => {
+    // 1 -> 40 *(level + 1)
+    // 2 -> 100 * (level + 1)
+    // 3 -> 300 * (level + 1)
+    // 4 -> 1200 * (level + 1
+    return [40, 100, 300, 1200][filledRows - 1] * (this._level + 1);
   };
 
-  private _calculateBonus = (removedRows: number) => {
-    return this._bonusPerRow * Math.pow(2, removedRows - 1);
-  };
+  private _checkForCompletedRows = () => {
+    const rowsCleared = this._clearCompletedRows();
+    if (!rowsCleared) return;
 
-  private _updateLevelAndSpeed = () => {
-    const numLevels = 10;
-    const baseScore = 1000;
-    const baseInterval = 1000;
-    const intervalDecrement = 10;
+    // Update score and filled row count
+    this._score += this._getPointsPerCompletedRows(rowsCleared);
+    this._filledRowCount += rowsCleared;
 
-    // Calculate the score thresholds for each level
-    const scoreThresholds = Array.from(
-      { length: numLevels },
-      (_, i) => baseScore * Math.pow(2, i), // 1000, 2000, 4000, 8000, ...
-    );
-
-    // Check if the score is higher than the current level threshold
-    const scoreThresholdsIndex = this._level - 1;
-    if (this._score >= scoreThresholds[scoreThresholdsIndex]) {
+    // Increase level and speed every 10 filled rows
+    if (this._filledRowCount % 10 === 0 && this._level < this._maxLevel) {
       this._level++;
-      this._interval = baseInterval - scoreThresholdsIndex * intervalDecrement;
+      this._interval = getLevelSpeedInMs(this._level);
     }
   };
 
-  private _removeRow = (index: number) => {
-    this._grid.splice(index, 1);
-    this._grid.unshift(new Array(this._columns).fill(empty));
-  };
-
   private _addPieceToGrid = () => {
-    const { shape, x, y } = this._currentPiece;
-    shape.forEach((row, rowIndex) => {
-      row.forEach((cell, columnIndex) => {
-        if (cell === filled) this._grid[y + rowIndex][x + columnIndex] = filled;
-      });
-    });
+    this._grid = mergeTetrominoWithGrid(this._currentPiece, this._grid);
   };
 
   private _hasPiecesInTopLimit = () => {
@@ -175,34 +184,54 @@ export class Tetris {
 
   // Game loop
 
-  public start = () => {
-    this._isPaused = false;
+  private _handleGameOver = () => {
+    if (this._isGameOver) return;
+    this._isGameOver = true;
+    this._isPaused = true;
+    this._saveBestScore();
+    this.onGameOver?.(this._score, this._bestScore);
+  };
+
+  private _scheduleNextTick(): void {
     this._timer = setTimeout(this._onTick, this._interval);
+  }
+
+  private _onTick = () => {
+    if (this._isPaused) return;
+
+    const movedTetromino = this._moveTetromino('down');
+
+    // If the piece can move down, update the current piece and schedule the next tick
+    if (movedTetromino) {
+      this._currentPiece = movedTetromino;
+      this._scheduleNextTick();
+      return;
+    }
+
+    // If the piece can't move down, it means it has collided with something
+    this._addPieceToGrid();
+    this._checkForCompletedRows();
+    this._spawnTetromino();
+
+    // If the grid has pieces in the top limit, the game is over
+    if (this._hasPiecesInTopLimit()) {
+      this._handleGameOver();
+      return;
+    }
+
+    this._scheduleNextTick();
+  };
+
+  public resume = () => {
+    if (!this._isPaused) return;
+    this._isPaused = false;
+    this._isStarted = true;
+    this._scheduleNextTick();
   };
 
   public pause = () => {
     this._isPaused = true;
     if (this._timer) clearTimeout(this._timer);
-  };
-
-  private _onTick = () => {
-    if (this._isPaused) return;
-
-    if (isTetrominoBottomColliding(this._currentPiece, this._grid)) {
-      this._addPieceToGrid();
-      this._generateRandomTetromino();
-
-      if (this._hasPiecesInTopLimit()) {
-        this._isGameOver = true;
-        this._saveBestScore();
-        this.onGameOver?.(this._score, this._bestScore);
-        return;
-      }
-    }
-
-    this.moveDown();
-    this._clearFilledRows();
-    this._timer = setTimeout(this._onTick, this._interval);
   };
 
   // Drawing methods for the grid and pieces
@@ -234,43 +263,52 @@ export class Tetris {
     });
   };
 
+  private _drawBlock = (
+    context: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    color: string,
+  ) => {
+    const normalizedX = x * this._cellSize + this._gridOffsetX * this._cellSize;
+    const normalizedY = y * this._cellSize + this._gridOffsetY * this._cellSize;
+    const normalizedSize = this._cellSize;
+
+    context.fillStyle = color;
+    context.fillRect(normalizedX, normalizedY, normalizedSize, normalizedSize);
+    context.strokeStyle = 'black';
+    context.strokeRect(normalizedX, normalizedY, normalizedSize, normalizedSize);
+  };
+
   private _drawGrid = (context: CanvasRenderingContext2D) => {
     this._grid.forEach((row, rowIndex) => {
       row.forEach((cell, columnIndex) => {
-        context.fillStyle = cell ? 'white' : 'black';
-        context.fillRect(
-          columnIndex * this._cellSize + this._gridOffsetX * this._cellSize,
-          rowIndex * this._cellSize + this._gridOffsetY * this._cellSize,
-          this._cellSize,
-          this._cellSize,
-        );
+        const color = cell === filled ? this.gridFixedColor : this.gridEmptyColor;
+        this._drawBlock(context, columnIndex, rowIndex, color);
       });
     });
   };
 
   private _drawCurrentPiece = (context: CanvasRenderingContext2D) => {
-    this._currentPiece.shape.forEach((row, rowIndex) => {
+    const { x, y, shape, color } = this._currentPiece;
+    shape.forEach((row, rowIndex) => {
       row.forEach((cell, columnIndex) => {
         if (cell === empty) return;
-
-        const x = columnIndex + this._currentPiece.x;
-        const y = rowIndex + this._currentPiece.y;
-
-        context.fillStyle = 'white';
-        context.fillRect(
-          x * this._cellSize + this._gridOffsetX * this._cellSize,
-          y * this._cellSize + this._gridOffsetY * this._cellSize,
-          this._cellSize,
-          this._cellSize,
+        this._drawBlock(
+          context,
+          x + columnIndex,
+          y + rowIndex,
+          color || this.currentPieceColor,
         );
       });
     });
   };
 
-  private _drawScore = (context: CanvasRenderingContext2D) => {
+  private _drawLevelAndScore = (context: CanvasRenderingContext2D) => {
+    const levelText = `Level: ${this._level}`;
     const scoreText = `Score: ${this._score}`;
     const bestScoreText = `Best: ${this._bestScore}`;
 
+    const levelWidth = context.measureText(levelText).width;
     const scoreWidth = context.measureText(scoreText).width;
     const bestScoreWidth = context.measureText(bestScoreText).width;
 
@@ -279,6 +317,7 @@ export class Tetris {
 
     context.font = 'bold 16px Arial';
     context.fillStyle = 'white';
+    context.fillText(levelText, x * 0.5 - levelWidth * 0.5, y - 20);
     context.fillText(scoreText, x - scoreWidth, y - 20);
     context.fillText(bestScoreText, x - bestScoreWidth, y - 40);
   };
@@ -305,13 +344,13 @@ export class Tetris {
     });
   };
 
-  public draw = (
+  public renderGrid = (
     context: CanvasRenderingContext2D,
     width: number,
     height: number,
   ) => {
     context.clearRect(0, 0, width, height);
-    this._drawScore(context);
+    this._drawLevelAndScore(context);
     this._drawGrid(context);
     this._drawCurrentPiece(context);
     this._drawNextPiece(context);
@@ -319,51 +358,55 @@ export class Tetris {
     this._drawGridBorder(context);
   };
 
-  // Move methods for the current piece
+  // Movement methods
 
   private _moveTetromino = (direction: Direction) => {
-    const newPiece = moveTetromino(this._currentPiece, direction);
-
-    if (
-      isTetrominoOutOfBounds(newPiece, this._grid) ||
-      isTetrominoColliding(newPiece, this._grid)
-    )
-      return;
-
-    this._currentPiece = newPiece;
+    const movedTetromino = moveTetromino(this._currentPiece, direction);
+    if (!isTetrominoColliding(movedTetromino, this._grid)) return movedTetromino;
+    return null;
   };
 
-  public moveLeft = () => {
-    this._moveTetromino('left');
-  };
+  private _rotate = () => {
+    const rotated = rotateTetromino(this._currentPiece);
+    if (!isTetrominoColliding(rotated, this._grid)) return rotated;
 
-  public moveRight = () => {
-    this._moveTetromino('right');
-  };
+    const shiftedLeft = moveTetromino(rotated, 'left');
+    if (!isTetrominoColliding(shiftedLeft, this._grid)) return shiftedLeft;
 
-  public moveDown = () => {
-    this._moveTetromino('down');
-  };
+    const shiftedRight = moveTetromino(rotated, 'right');
+    if (!isTetrominoColliding(shiftedRight, this._grid)) return shiftedRight;
 
-  public moveUp = () => {
-    this._moveTetromino('up');
+    return null;
   };
 
   public rotate = () => {
-    const rotated = rotateTetromino(this._currentPiece);
-    if (
-      isTetrominoOutOfBounds(rotated, this._grid) ||
-      isTetrominoColliding(rotated, this._grid)
-    )
-      return;
+    const rotated = this._rotate();
+    if (rotated) this._currentPiece = rotated;
+  };
 
-    this._currentPiece = rotated;
+  public moveLeft = () => {
+    const moved = this._moveTetromino('left');
+    if (moved) this._currentPiece = moved;
+  };
+
+  public moveRight = () => {
+    const moved = this._moveTetromino('right');
+    if (moved) this._currentPiece = moved;
+  };
+
+  public moveDown = () => {
+    const moved = this._moveTetromino('down');
+    if (moved) this._currentPiece = moved;
   };
 
   public drop = () => {
-    while (!isTetrominoBottomColliding(this._currentPiece, this._grid)) {
-      this.moveDown();
+    let dropCount = 0;
+    let movedTetromino = null;
+    while ((movedTetromino = this._moveTetromino('down'))) {
+      this._currentPiece = movedTetromino;
+      dropCount++;
     }
+    this._score += dropCount;
   };
 
   // Cleanup method

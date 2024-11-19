@@ -8,48 +8,43 @@ export type Tetromino = {
   shape: number[][];
   x: number; // Column position on the grid
   y: number; // Row position on the grid
+  color?: string;
 };
 
 /**
- * Creates a plus-shaped Tetromino.
- *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} The plus-shaped tetromino.
+ * Creates a I-shaped Tetromino (I-piece).
+ * The shape is represented as:
+ * ```
+ * [0, 0, 0, 0],
+ * [1, 1, 1, 1],
+ * [0, 0, 0, 0],
+ * [0, 0, 0, 0],
+ * ```
+ * @param x - The initial x-coordinate position of the Tetromino
+ * @param y - The initial y-coordinate position of the Tetromino
+ * @returns A Tetromino object containing the shape matrix and position coordinates
  */
-export const createPlusShape = (x: number, y: number): Tetromino => ({
+export const createIShape = (x: number, y: number): Tetromino => ({
   shape: [
-    [0, 1, 0],
-    [1, 1, 1],
-    [0, 1, 0],
-  ],
-  x,
-  y,
-});
-
-/**
- * Creates a vertical line-shaped Tetromino.
- *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} The vertical line-shaped tetromino.
- */
-export const createLineShape = (x: number, y: number): Tetromino => ({
-  shape: [
-    // [0, 0, 0, 0],
+    [0, 0, 0, 0],
     [1, 1, 1, 1],
-    // [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
   ],
   x,
   y,
 });
 
 /**
- * Creates a square-shaped Tetromino.
- *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} The square-shaped tetromino.
+ * Creates a square-shaped Tetromino piece.
+ * The shape is represented as:
+ * ```
+ * [1, 1]
+ * [1, 1]
+ * ```
+ * @param x - The initial x-coordinate position of the tetromino
+ * @param y - The initial y-coordinate position of the tetromino
+ * @returns A Tetromino object with a 2x2 square shape matrix and position coordinates
  */
 export const createSquareShape = (x: number, y: number): Tetromino => ({
   shape: [
@@ -61,27 +56,36 @@ export const createSquareShape = (x: number, y: number): Tetromino => ({
 });
 
 /**
- * Creates a T-shaped Tetromino.
- *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} The T-shaped tetromino.
+ * Creates a T-shaped Tetromino piece
+ * The shape is represented as:
+ * ```
+ * [1, 1, 1]
+ * [0, 1, 0]
+ * ```
+ * @param x - The initial x coordinate position of the tetromino
+ * @param y - The initial y coordinate position of the tetromino
+ * @returns A new Tetromino object representing a T-shape
  */
 export const createTShape = (x: number, y: number): Tetromino => ({
   shape: [
-    [0, 1, 0],
     [1, 1, 1],
+    [0, 1, 0],
   ],
   x,
   y,
 });
 
 /**
- * Creates an L-shaped Tetromino.
- *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} The L-shaped tetromino.
+ * Creates an L-shaped Tetromino piece.
+ * The shape is represented as:
+ * ```
+ * 1 0
+ * 1 0
+ * 1 1
+ * ```
+ * @param x - The initial x-coordinate position of the tetromino
+ * @param y - The initial y-coordinate position of the tetromino
+ * @returns A Tetromino object with L shape configuration and position
  */
 export const createLShape = (x: number, y: number): Tetromino => ({
   shape: [
@@ -94,11 +98,16 @@ export const createLShape = (x: number, y: number): Tetromino => ({
 });
 
 /**
- * Creates a J-shaped Tetromino.
- *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} The J-shaped tetromino.
+ * Creates a J-shaped Tetromino piece at the specified coordinates.
+ * The J shape is represented by a 3x2 matrix where 1 indicates a filled cell:
+ * ```
+ *  0 1
+ *  0 1
+ *  1 1
+ * ```
+ * @param x - The initial x-coordinate position of the tetromino
+ * @param y - The initial y-coordinate position of the tetromino
+ * @returns A Tetromino object with the J shape and specified position
  */
 export const createJShape = (x: number, y: number): Tetromino => ({
   shape: [
@@ -111,11 +120,15 @@ export const createJShape = (x: number, y: number): Tetromino => ({
 });
 
 /**
- * Creates an S-shaped Tetromino.
- *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} The S-shaped tetromino.
+ * Creates an S-shaped Tetromino piece
+ * The shape is represented as:
+ * ```
+ * [0 1 1]
+ * [1 1 0]
+ * ```
+ * @param x The initial x-coordinate position of the tetromino
+ * @param y The initial y-coordinate position of the tetromino
+ * @returns A Tetromino object with an S-shape pattern and its position
  */
 export const createSShape = (x: number, y: number): Tetromino => ({
   shape: [
@@ -127,11 +140,15 @@ export const createSShape = (x: number, y: number): Tetromino => ({
 });
 
 /**
- * Creates a Z-shaped Tetromino.
- *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} The Z-shaped tetromino.
+ * Creates a Z-shaped Tetromino piece
+ * The shape is represented as:
+ * ```
+ * [1 1 0]
+ * [0 1 1]
+ * ```
+ * @param x - The initial x coordinate of the tetromino
+ * @param y - The initial y coordinate of the tetromino
+ * @returns A Tetromino object containing the shape and position
  */
 export const createZShape = (x: number, y: number): Tetromino => ({
   shape: [
@@ -143,35 +160,43 @@ export const createZShape = (x: number, y: number): Tetromino => ({
 });
 
 /**
- * Returns a random Tetromino shape.
+ * Creates a random Tetromino shape at the specified coordinates.
  *
- * @param {number} x - Initial X position on the grid.
- * @param {number} y - Initial Y position on the grid.
- * @returns {Tetromino} A random Tetromino shape.
+ * @param x - The x-coordinate where the shape will be created
+ * @param y - The y-coordinate where the shape will be created
+ * @returns A new Tetromino instance with a randomly selected shape
+ *
+ * @remarks
+ * The shape is randomly selected from the following types:
+ * - Line (I)
+ * - Square (O)
+ * - T-shape (T)
+ * - L-shape (L)
+ * - J-shape (J)
+ * - S-shape (S)
+ * - Z-shape (Z)
  */
-export const createRandomShape = (x: number, y: number): Tetromino => {
-  const shapeCreators = [
-    createPlusShape,
-    createLineShape,
+export const createRandomTetromino = (x: number, y: number) => {
+  const tetrominoCreators = [
     createSquareShape,
+    createIShape,
     createTShape,
     createLShape,
     createJShape,
     createSShape,
     createZShape,
   ];
-
-  return shapeCreators[Math.floor(Math.random() * shapeCreators.length)](x, y);
+  const randomIndex = Math.floor(Math.random() * tetrominoCreators.length);
+  return tetrominoCreators[randomIndex](x, y);
 };
 
 export type Direction = 'left' | 'right' | 'up' | 'down';
 
 /**
- * Moves a Tetromino shape left or right.
- *
- * @param {Tetromino} tetromino - The Tetromino to move.
- * @param {number} direction - The direction to move the Tetromino.
- * @returns {Tetromino} The moved Tetromino.
+ * Moves a tetromino in the specified direction.
+ * @param tetromino - The tetromino to move
+ * @param direction - The direction to move the tetromino ('left', 'right', 'up', 'down')
+ * @returns A new tetromino with updated coordinates based on the direction
  */
 export const moveTetromino = (
   tetromino: Tetromino,
@@ -192,10 +217,30 @@ export const moveTetromino = (
 };
 
 /**
- * Rotates a Tetromino shape clockwise.
+ * Rotates a Tetromino shape 90 degrees clockwise.
+ * The rotation is achieved by transposing the matrix and reversing each row.
  *
- * @param {Tetromino} tetromino - The Tetromino to rotate.
- * @returns {Tetromino} The rotated Tetromino.
+ * @param tetromino - The Tetromino object to be rotated
+ * @returns A new Tetromino object with the rotated shape
+ *
+ * @example
+ * ```typescript
+ *  const tetromino = {
+ *    shape: [
+ *      [0, 1, 0],
+ *      [1, 1, 1],
+ *    ],
+ *    x: 0,
+ *    y: 0
+ *  };
+ *  const rotatedTetromino = rotateTetromino(tetromino);
+ *  // rotatedTetromino.shape:
+ *  // [
+ *  //   [1, 0],
+ *  //   [1, 1],
+ *  //   [1, 0]
+ *  // ]
+ * ```
  */
 export const rotateTetromino = (tetromino: Tetromino): Tetromino => {
   const { shape } = tetromino;
@@ -205,13 +250,40 @@ export const rotateTetromino = (tetromino: Tetromino): Tetromino => {
 };
 
 /**
- * Checks if a Tetromino shape is out of bounds.
+ * Checks if a Tetromino is colliding with the grid boundaries or other blocks.
  *
- * @param {Tetromino} tetromino - The Tetromino to check.
- * @param {number[][]} grid - The grid to check against.
- * @returns {boolean} `true` if the Tetromino is out of bounds, `false` otherwise.
+ * @param tetromino - The Tetromino object containing shape and position information
+ * @param grid - The game grid represented as a 2D array of numbers
+ * @returns True if the Tetromino is colliding, false otherwise
+ *
+ * @remarks
+ * The function performs two types of collision checks:
+ * 1. Boundary collision - checks if the Tetromino is outside the grid
+ * 2. Block collision - checks if the Tetromino overlaps with existing blocks
+ *
+ * Non-zero values in the shape array are considered solid blocks.
+ * Non-zero values in the grid array are considered occupied spaces.
+ *
+ * @example
+ * ```typescript
+ * const tetromino = {
+ *   shape: [
+ *     [1, 1],
+ *     [1, 1],
+ *   ],
+ *   x: 2,
+ *   y: 0,
+ * };
+ * const grid = [
+ *   [0, 0, 0, 0],
+ *   [0, 0, 0, 0],
+ *   [1, 1, 1, 1],
+ *   [1, 1, 1, 1],
+ * ];
+ * const isColliding = isTetrominoColliding(tetromino, grid); // true
+ * ```
  */
-export const isTetrominoOutOfBounds = (
+export const isTetrominoColliding = (
   tetromino: Tetromino,
   grid: number[][],
 ): boolean => {
@@ -230,35 +302,9 @@ export const isTetrominoOutOfBounds = (
       if (gridX < 0 || gridX >= grid[0].length || gridY < 0 || gridY >= grid.length) {
         return true;
       }
-    }
-  }
-  return false;
-};
-
-/**
- * Checks if a Tetromino shape is colliding with the grid.
- *
- * @param {Tetromino} tetromino - The Tetromino to check.
- * @param {number[][]} grid - The grid to check against.
- * @returns {boolean} `true` if the Tetromino is colliding with the grid, `false` otherwise.
- */
-export const isTetrominoColliding = (
-  tetromino: Tetromino,
-  grid: number[][],
-): boolean => {
-  const { shape, x, y } = tetromino;
-  const rowLength = shape.length;
-  const columnLength = shape[0].length;
-
-  for (let row = 0; row < rowLength; row++) {
-    for (let col = 0; col < columnLength; col++) {
-      if (shape[row][col] === 0) continue;
-
-      const gridX = x + col;
-      const gridY = y + row;
 
       // Check if the Tetromino is colliding with the grid
-      if (grid[gridY][gridX]) {
+      if (grid[gridY][gridX] !== 0) {
         return true;
       }
     }
@@ -267,31 +313,42 @@ export const isTetrominoColliding = (
 };
 
 /**
- * Checks if a Tetromino shape is colliding with the bottom of the grid (i.e., the floor).
+ * Merges a tetromino with the game grid by overlaying the tetromino's shape onto the grid at its current position.
+ * Creates a new grid to avoid mutating the original.
  *
- * @param {Tetromino} tetromino - The Tetromino to check.
- * @param {number[][]} grid - The grid to check against.
- * @returns {boolean} `true` if the Tetromino is colliding with the bottom of the grid, `false` otherwise.
+ * @param tetromino - The tetromino object containing shape and position information
+ * @param grid - The current state of the game grid
+ * @returns A new grid with the tetromino merged into it
+ *
+ * @example
+ * const tetromino = {
+ *   shape: [[1,1],[1,1]], x: 0, y: 0 };
+ * const grid = [[0,0,0], [0,0,0], [0,0,0]];
+ * const newGrid = mergeTetrominoWithGrid(tetromino, grid);
+ * // newGrid:
+ * // [
+ * //   [1, 1, 0],
+ * //   [1, 1, 0],
+ * //   [0, 0, 0]
+ * // ]
  */
-export const isTetrominoBottomColliding = (
+export const mergeTetrominoWithGrid = (
   tetromino: Tetromino,
   grid: number[][],
-): boolean => {
+): number[][] => {
   const { shape, x, y } = tetromino;
-  const rowLength = shape.length;
-  const columnLength = shape[0].length;
+  const newGrid = grid.map((row) => [...row]);
 
-  for (let row = 0; row < rowLength; row++) {
-    for (let col = 0; col < columnLength; col++) {
-      if (shape[row][col] === 0) continue;
+  shape.forEach((row, rowIndex) => {
+    row.forEach((cell, colIndex) => {
+      if (cell === 0) return;
 
-      const gridX = x + col;
-      const gridY = y + row;
+      const gridX = x + colIndex;
+      const gridY = y + rowIndex;
 
-      if (gridY + 1 >= grid.length || grid[gridY + 1][gridX]) {
-        return true;
-      }
-    }
-  }
-  return false;
+      newGrid[gridY][gridX] = cell;
+    });
+  });
+
+  return newGrid;
 };
