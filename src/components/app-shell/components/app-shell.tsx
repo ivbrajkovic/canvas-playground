@@ -12,6 +12,8 @@ import {
 type AppShellProps = PropsWithChildren;
 
 export const AppShell = (props: AppShellProps) => {
+  // return <>{props.children}</>;
+
   return (
     <SidebarProvider>
       <Sidebar />

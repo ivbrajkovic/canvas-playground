@@ -17,6 +17,8 @@ import {
 } from '@/components/ui/dialog';
 import { AnimationController } from '@/controllers/animation-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { SwipeDirectionObserver } from '@/utils/swipe-detection';
+import { TapDetectorObserver } from '@/utils/tap-detection';
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -44,10 +46,10 @@ export default function Page() {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Canvas context not found');
 
-    const fpsTracker = FpsTracker.of(canvas.parentElement!);
+    // const fpsTracker = FpsTracker.of(canvas.parentElement!);
 
     const tetris = new Tetris({
-      cellSize: isMobile ? 36 : 48,
+      cellSize: isMobile ? 28 : 48,
       handlers: {
         onGameOver: () => {
           setDialogOpen(true);
@@ -56,9 +58,17 @@ export default function Page() {
     });
 
     // TODO: Resize using DPI scaling
+    const dpi = window.devicePixelRatio;
     const size = tetris.getGridSize();
-    canvas.width = size.width;
-    canvas.height = size.height;
+    console.log({ dpi, size });
+
+    // set initial canvas size to match the grid size and cell size of the game board (tetris) using DPI scaling
+    canvas.width = size.width; // * dpi;
+    canvas.height = size.height; // * dpi;
+
+    // context scale to match the DPI scaling
+    // context.setTransform(1, 0, 0, 1, 0, 0);
+    // context.scale(dpi, dpi);
 
     tetrisRef.current = tetris;
 
@@ -79,15 +89,32 @@ export default function Page() {
 
     const animationController = AnimationController.of(() => {
       tetris.renderGrid(context, canvas.width, canvas.height);
-      fpsTracker.track();
+      // fpsTracker.track();
     });
 
     const guiControls = createGuiControls(animationController, tetris, isMobile);
 
+    const swipeDirectionObserver = SwipeDirectionObserver.of(canvas);
+    swipeDirectionObserver.observe((direction) => {
+      if (tetris.isPaused) return;
+      if (direction === 'left') tetris.moveLeft();
+      if (direction === 'right') tetris.moveRight();
+      if (direction === 'down') tetris.moveDown();
+      if (direction === 'up') tetris.rotate();
+    });
+
+    const tapDetectorObserver = TapDetectorObserver.of(canvas);
+    tapDetectorObserver.observe((tapType) => {
+      if (tetris.isPaused) return;
+      if (tapType === 'double-tap') tetris.drop();
+    });
+
     return () => {
       animationController.stop();
-      fpsTracker.dispose();
+      // fpsTracker.dispose();
       guiControls.dispose();
+      tapDetectorObserver.dispose();
+      swipeDirectionObserver.dispose();
       document.removeEventListener('keydown', onKeydown);
     };
   }, [isMobile]);
@@ -100,8 +127,20 @@ export default function Page() {
     <div className="relative flex flex-1 flex-col items-center justify-center gap-4 bg-[hsla(0,0%,10%,1)]">
       <canvas ref={canvasRef} />
 
+      {isMobile ? (
+        <Button
+          className="absolute bottom-4 right-4 rounded-full"
+          onClick={() => {
+            tetrisRef.current?.pause();
+            setDialogOpen(true);
+          }}
+        >
+          P
+        </Button>
+      ) : null}
+
       <Dialog open={isDialogOpen} onOpenChange={resumeGame}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-11/12 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {!isStarted

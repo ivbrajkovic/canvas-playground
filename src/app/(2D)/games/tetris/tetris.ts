@@ -327,7 +327,7 @@ export class Tetris {
     if (!nextPiece) return;
 
     const positionX = this._gridOffsetX * this._cellSize;
-    const positionY = this._gridOffsetY * this._cellSize - 60;
+    const positionY = this._gridOffsetY * this._cellSize - 40;
     const pieceSize = this._cellSize * 0.3;
 
     nextPiece.shape.forEach((row, rowIndex) => {
