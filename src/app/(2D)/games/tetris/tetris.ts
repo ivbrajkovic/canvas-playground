@@ -1,4 +1,3 @@
-import { grid1 } from '@/app/(2D)/games/tetris/grids';
 import { getLevelSpeedInMs } from '@/app/(2D)/games/tetris/level-speed';
 import {
   createRandomTetromino,
@@ -100,9 +99,9 @@ export class Tetris {
     this._isGameOver = false;
     this._score = 0;
     this._level = 0;
-    // this._interval = getLevelSpeedInMs(0);
+    this._interval = getLevelSpeedInMs(0);
     this._grid = createGrid(this._columns, this._rows);
-    this._grid = grid1;
+    // this._grid = grid1;
     this._loadBestScore();
     this._spawnTetromino();
   };
