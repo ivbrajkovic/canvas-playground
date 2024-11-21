@@ -1,3 +1,4 @@
+import { grid1 } from '@/app/(2D)/games/tetris/grids';
 import { getLevelSpeedInMs } from '@/app/(2D)/games/tetris/level-speed';
 import {
   createRandomTetromino,
@@ -99,8 +100,9 @@ export class Tetris {
     this._isGameOver = false;
     this._score = 0;
     this._level = 0;
-    this._interval = getLevelSpeedInMs(0);
+    // this._interval = getLevelSpeedInMs(0);
     this._grid = createGrid(this._columns, this._rows);
+    this._grid = grid1;
     this._loadBestScore();
     this._spawnTetromino();
   };
@@ -131,7 +133,7 @@ export class Tetris {
   private _spawnTetromino = () => {
     const createPiece = () => {
       const newShape = createRandomTetromino(0, 0);
-      // const newShape = createLineShape(0, 0);
+      // const newShape = createIShape(0, 0);
       newShape.x = Math.floor(this._columns / 2 - newShape.shape[0].length / 2);
       return newShape;
     };
@@ -140,15 +142,14 @@ export class Tetris {
   };
 
   private _clearCompletedRows = () => {
-    let rowsCleared = 0;
-    for (let row = this._rows - 1; row >= 0; row--) {
-      if (this._grid[row].every((cell) => cell === filled)) {
-        this._grid.splice(row, 1);
-        this._grid.unshift(new Array(this._columns).fill(empty));
-        rowsCleared++;
-      }
-    }
-    return rowsCleared;
+    let clearedRows = 0;
+    this._grid.forEach((row, rowIndex, grid) => {
+      if (row.some((cell) => cell !== filled)) return;
+      grid.splice(rowIndex, 1);
+      grid.unshift(new Array(this._columns).fill(empty));
+      clearedRows++;
+    });
+    return clearedRows;
   };
 
   private _getPointsPerCompletedRows = (filledRows: number) => {
