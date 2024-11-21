@@ -27,18 +27,17 @@ type Options = {
 
 export class Tetris {
   private _isPaused = true;
-  private _isStarted = false;
   private _isGameOver = false;
 
   private _grid: number[][] = [];
   private _currentPiece!: Tetromino; // !Should be defined in the init method
   private _nextPiece: Tetromino | null = null;
 
-  public gridFixedColor = 'gray';
-  public gridEmptyColor = 'black';
-  public gridBorderColor = 'white';
+  public currentPieceColor = '#00ffff';
+  public gridFixedColor = '#808080';
+  public gridEmptyColor = '#000000';
+  public gridBorderColor = '#ffffff70';
   public gridGuidesColor = '#ffffff30';
-  public currentPieceColor = 'cyan';
 
   private _cellSize = 36;
   private _gridOffsetX = 0;
@@ -65,8 +64,9 @@ export class Tetris {
     return this._isPaused;
   }
 
-  get isStarted() {
-    return this._isStarted;
+  set isPaused(value: boolean) {
+    if (value) this.pause();
+    else this.resume();
   }
 
   get score() {
@@ -110,7 +110,7 @@ export class Tetris {
     const height = this._rows * this._cellSize;
     const widthOffset = this._gridOffsetX * this._cellSize;
     const heightOffset = this._gridOffsetY * this._cellSize;
-    return { width: width + widthOffset * 2, height: height + heightOffset };
+    return { width: width + widthOffset, height: height + heightOffset };
   };
 
   private _loadBestScore = () => {
@@ -225,7 +225,6 @@ export class Tetris {
   public resume = () => {
     if (!this._isPaused) return;
     this._isPaused = false;
-    this._isStarted = true;
     this._scheduleNextTick();
   };
 
@@ -237,7 +236,7 @@ export class Tetris {
   // Drawing methods for the grid and pieces
 
   private _drawGridBorder = (context: CanvasRenderingContext2D) => {
-    context.strokeStyle = 'white';
+    context.strokeStyle = this.gridBorderColor;
     context.lineWidth = 2;
     context.strokeRect(
       this._gridOffsetX * this._cellSize,
@@ -248,7 +247,7 @@ export class Tetris {
   };
 
   private _drawGuides = (context: CanvasRenderingContext2D) => {
-    context.strokeStyle = '#ffffff30';
+    context.strokeStyle = this.gridGuidesColor;
     context.lineWidth = 1;
     this._grid.forEach((row, rowIndex) => {
       row.forEach((cell, columnIndex) => {
@@ -326,9 +325,9 @@ export class Tetris {
     const nextPiece = this._nextPiece;
     if (!nextPiece) return;
 
-    const positionX = this._gridOffsetX * this._cellSize;
-    const positionY = this._gridOffsetY * this._cellSize - 40;
     const pieceSize = this._cellSize * 0.3;
+    const positionX = this._gridOffsetX * this._cellSize;
+    const positionY = this._gridOffsetY * this._cellSize - pieceSize * 4;
 
     nextPiece.shape.forEach((row, rowIndex) => {
       row.forEach((cell, columnIndex) => {

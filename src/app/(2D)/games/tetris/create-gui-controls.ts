@@ -15,7 +15,7 @@ export const createGuiControls = (
     })
     .then((gui) => {
       gui.addFolder('Canvas');
-      gui.add(animationController, 'isRunning').name('Animate');
+      gui.add(tetris, 'isPaused').name('Paused').listen();
       gui
         .add(animationController, 'maxFps', {
           'No Limit': null,
@@ -28,6 +28,8 @@ export const createGuiControls = (
         .name('FPS').domElement.style.color = 'black';
 
       gui.addFolder('Tetris');
+      gui.addColor(tetris, 'currentPieceColor').name('Current Piece');
+      gui.addColor(tetris, 'gridFixedColor').name('Fixed Grid');
 
       return gui;
     })
