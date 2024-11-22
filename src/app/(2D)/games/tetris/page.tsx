@@ -16,8 +16,10 @@ import {
 } from '@/components/ui/dialog';
 import { AnimationController } from '@/controllers/animation-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { SwipeDirectionObserver } from '@/utils/swipe-detection';
-import { TapDetectorObserver } from '@/utils/tap-detection';
+import { SwipeDetector } from '@/utils/swipe-detector';
+import { TapDetector } from '@/utils/tap-detector';
+import { TouchMoveDetector } from '@/utils/touch-move-detector';
+import { RotateCwIcon } from 'lucide-react';
 
 const setCanvasSize = (
   canvas: HTMLCanvasElement,
@@ -110,19 +112,24 @@ export default function Page() {
     };
     document.addEventListener('keydown', onKeydown);
 
-    const swipeDirectionObserver = SwipeDirectionObserver.of(canvas);
-    swipeDirectionObserver.observe((direction) => {
+    const swipeDirector = SwipeDetector.of(canvas);
+    swipeDirector.observe((direction) => {
+      if (tetris.isPaused) return;
+      if (direction === 'up') tetris.rotate();
+    });
+
+    const tapDetector = TapDetector.of(canvas);
+    tapDetector.observe((tapType) => {
+      if (tetris.isPaused) return;
+      if (tapType === 'double-tap') tetris.drop();
+    });
+
+    const touchMoveDetector = TouchMoveDetector.of(canvas, { threshold: cellSize });
+    touchMoveDetector.observe((direction) => {
       if (tetris.isPaused) return;
       if (direction === 'left') tetris.moveLeft();
       if (direction === 'right') tetris.moveRight();
       if (direction === 'down') tetris.moveDown();
-      if (direction === 'up') tetris.rotate();
-    });
-
-    const tapDetectorObserver = TapDetectorObserver.of(canvas);
-    tapDetectorObserver.observe((tapType) => {
-      if (tetris.isPaused) return;
-      if (tapType === 'double-tap') tetris.drop();
     });
 
     const guiControls = createGuiControls(animationController, tetris, isMobile);
@@ -131,8 +138,9 @@ export default function Page() {
       animationController.stop();
       fpsTracker.dispose();
       guiControls.dispose();
-      tapDetectorObserver.dispose();
-      swipeDirectionObserver.dispose();
+      touchMoveDetector.dispose();
+      tapDetector.dispose();
+      swipeDirector.dispose();
       document.removeEventListener('keydown', onKeydown);
     };
   }, [isMobile]);
@@ -143,13 +151,24 @@ export default function Page() {
 
       {isMobile ? (
         <Button
+          className="absolute bottom-4 left-4 size-10 rounded-full"
+          onClick={() => {
+            tetrisRef.current?.rotate();
+          }}
+        >
+          <RotateCwIcon />
+        </Button>
+      ) : null}
+
+      {isMobile ? (
+        <Button
           className="absolute bottom-4 right-4 rounded-full"
           onClick={() => {
             tetrisRef.current?.pause();
             setDialogState('pause');
           }}
         >
-          P
+          <span className="font-bold">P</span>
         </Button>
       ) : null}
 
@@ -179,11 +198,11 @@ export default function Page() {
             <div className="grid gap-1 py-2">
               {isMobile ? (
                 <>
-                  <p>Swipe ← → ↓ ↑ : Move piece</p>
-                  <p>Swipe ↓ : Drop piece</p>
+                  <p>Swipe ← → ↓ : Move piece</p>
                   <p>Swipe ↑ : Rotate piece</p>
                   <p>Double Tap : Drop piece</p>
-                  <p>P : Pause game</p>
+                  <p>Tap rotate button (↻) to rotate piece</p>
+                  <p>Tap P button to pause game</p>
                 </>
               ) : (
                 <>

@@ -1,36 +1,12 @@
-type SwipeDirection = 'horizontal' | 'vertical';
-type HorizontalMove = 'left' | 'right';
-type VerticalMove = 'up' | 'down';
-type Direction = 'left' | 'right' | 'up' | 'down';
+import {
+  Direction,
+  getSwipeDirection,
+  swipeDir,
+  swipeLeftOrRight,
+  swipeUpOrDown,
+} from '@/utils/get-swipe-direction';
 
 const MIN_SWIPE_DISTANCE = 50;
-
-// Detect if swipe was horizontal or vertical
-const swipeDir = (deltaX: number, deltaY: number): SwipeDirection => {
-  return Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
-};
-
-// Detect if swipe was left or right
-const swipeLeftOrRight = (x: number, threshold: number): HorizontalMove | null => {
-  return x > threshold ? 'right' : x < -threshold ? 'left' : null;
-};
-
-// Detect if swipe was up or down
-const swipeUpOrDown = (y: number, threshold: number): VerticalMove | null => {
-  return y > threshold ? 'down' : y < -threshold ? 'up' : null;
-};
-
-// Get the direction of the swipe
-const getDirection = (
-  deltaX: number,
-  deltaY: number,
-  threshold: number,
-): Direction | null => {
-  const direction = swipeDir(deltaX, deltaY);
-  if (direction === 'horizontal') return swipeLeftOrRight(deltaX, threshold);
-  if (direction === 'vertical') return swipeUpOrDown(deltaY, threshold);
-  return null;
-};
 
 type Handlers = {
   onSwipeLeft: () => void;
@@ -94,21 +70,21 @@ export const swipeDetection = ({
   };
 };
 
-type SwipeDirectionObserverOptions = {
+type SwipeDetectorOptions = {
   isPreventDefault?: boolean;
 };
 
-export class SwipeDirectionObserver {
+export class SwipeDetector {
   private _target: HTMLElement;
   private _touchStartX = 0;
   private _touchStartY = 0;
   private _isPreventDefault = true;
   private _observers: ((direction: Direction) => void)[] = [];
 
-  static of = (target: HTMLElement, options?: SwipeDirectionObserverOptions) =>
-    new SwipeDirectionObserver(target, options);
+  static of = (target: HTMLElement, options?: SwipeDetectorOptions) =>
+    new SwipeDetector(target, options);
 
-  constructor(target: HTMLElement, options?: SwipeDirectionObserverOptions) {
+  constructor(target: HTMLElement, options?: SwipeDetectorOptions) {
     this._target = target;
     this._isPreventDefault = options?.isPreventDefault ?? this._isPreventDefault;
     this._target.addEventListener('touchstart', this._onTouchStart);
@@ -132,7 +108,7 @@ export class SwipeDirectionObserver {
     const deltaX = touchEndX - this._touchStartX;
     const deltaY = touchEndY - this._touchStartY;
 
-    const direction = getDirection(deltaX, deltaY, MIN_SWIPE_DISTANCE);
+    const direction = getSwipeDirection(deltaX, deltaY, MIN_SWIPE_DISTANCE);
     if (direction) this._observers.forEach((observer) => observer(direction));
   };
 
