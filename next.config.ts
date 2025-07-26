@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/games',
+        destination: '/games/pacman',
+        permanent: true,
+      },
+      {
         source: '/particles',
         destination: '/particles/constellation',
         permanent: true,
