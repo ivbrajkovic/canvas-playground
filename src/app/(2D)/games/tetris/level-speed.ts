@@ -1,4 +1,4 @@
- const levelSpeeds: { [level: number]: number } = {
+const levelSpeeds: { [level: number]: number } = {
   0: 0.8,
   1: 0.7167,
   2: 0.6333,

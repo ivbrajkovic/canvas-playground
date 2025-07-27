@@ -36,19 +36,22 @@ const eslintConfig = [
           ],
         },
       ],
+
+      'import/first': 'error',
+      'import/no-unresolved': 'error',
+      'import/no-duplicates': 'error',
+      'import/newline-after-import': 'error',
+
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          'argsIgnorePattern': '^_',
+          'varsIgnorePattern': '^_',
+          'caughtErrorsIgnorePattern': '^_',
+        },
+      ],
     },
-    'import/first': 'error',
-    'import/no-unresolved': 'error',
-    'import/no-duplicates': 'error',
-    'import/newline-after-import': 'error',
-    '@typescript-eslint/no-unused-vars': [
-      'warn',
-      {
-        'argsIgnorePattern': '^_',
-        'varsIgnorePattern': '^_',
-        'caughtErrorsIgnorePattern': '^_',
-      },
-    ],
   }),
 ];
 

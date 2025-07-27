@@ -1,6 +1,7 @@
+import random from 'lodash/random';
+
 import { Direction } from '@/app/(2D)/games/pacman/utils/enum';
 import { getRandomDirection } from '@/app/(2D)/games/pacman/utils/utils';
-import random from 'lodash/random';
 
 import { Player } from './player';
 import { WallMap } from './wall-map';

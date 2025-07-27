@@ -7,8 +7,12 @@
     "dev:lan": "next dev --turbopack -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "ts:check": "tsc --noEmit"
+    "lint:check": "next lint",
+    "lint:fix": "next lint --fix",
+    "format:check": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "ts:check": "tsc --noEmit",
+    "ts:check:watch": "tsc --noEmit --watch"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.14",
