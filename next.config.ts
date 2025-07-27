@@ -7,27 +7,27 @@ const nextConfig: NextConfig = {
       {
         source: '/',
         destination: '/games/pacman',
-        permanent: true,
+        statusCode: 307,
       },
       {
         source: '/games',
         destination: '/games/pacman',
-        permanent: true,
+        statusCode: 307,
       },
       {
         source: '/particles',
         destination: '/particles/constellation',
-        permanent: true,
+        statusCode: 307,
       },
       {
         source: '/circles',
         destination: '/circles/trail',
-        permanent: true,
+        statusCode: 307,
       },
       {
         source: '/other',
         destination: '/other/matrix',
-        permanent: true,
+        statusCode: 307,
       },
     ];
   },

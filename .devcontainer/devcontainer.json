@@ -8,7 +8,6 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "biomejs.biome",
         "mikestead.dotenv",
         "dsznajder.es7-react-js-snippets",
         "johnpapa.winteriscoming",
@@ -23,7 +22,9 @@
         "slevesque.shader",
         "mateuszmigas.webgl-shader-viewer",
         "bradlc.vscode-tailwindcss",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
       ]
     }
   },
