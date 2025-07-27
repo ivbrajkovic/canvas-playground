@@ -1,5 +1,6 @@
-import { Circle } from '@/classes/circle';
 import random from 'lodash/random';
+
+import { Circle } from '@/classes/circle';
 
 type Settings = {
   speedMin?: number;

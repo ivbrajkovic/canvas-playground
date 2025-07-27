@@ -1,5 +1,6 @@
-import { CircleOutline } from '@/app/(2D)/circles/outline/circle-outline';
 import random from 'lodash/random';
+
+import { CircleOutline } from '@/app/(2D)/circles/outline/circle-outline';
 
 type Settings = {
   speedMin?: number;

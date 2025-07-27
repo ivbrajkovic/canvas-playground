@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
 
 import './globals.css';
 
+import localFont from 'next/font/local';
+import { PropsWithChildren } from 'react';
+
 import { AppShell } from '@/components/app-shell';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -21,18 +24,18 @@ export const metadata: Metadata = {
   description: '2024 @ Ivan Brajković - Canvas Playground',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en">
-      <body
-        // className={`${geistSans.variable} ${geistMono.variable} dark flex min-h-screen flex-col antialiased`}
-        className={`${geistSans.variable} ${geistMono.variable} dark antialiased`}
-      >
-        <AppShell>{children}</AppShell>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AppShell>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   );

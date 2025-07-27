@@ -44,7 +44,7 @@ export const createGuiControls = (
       gui.add(particleManager, 'isConnections').name('Link');
       gui.add(particleManager, 'linkingDistance', 1, 500, 1).name('Link Distance');
       gui
-        .add(particleManager, 'particleCount', 1, 60, 1)
+        .add(particleManager, 'particleCount', 1, 500, 1)
         .name('Count')
         .onFinishChange(particleManager.populate);
 

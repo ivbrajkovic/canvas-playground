@@ -1,7 +1,8 @@
+import random from 'lodash/random';
+
 import { CircleCollision } from '@/app/(2D)/circles/collision/circle-collision';
 import { findNonOverlappingPosition as _findNonOverlappingPosition } from '@/utils/find-radial-position';
 import { interpolate } from '@/utils/interpolate';
-import random from 'lodash/random';
 
 type Settings = {
   speedMin?: number;

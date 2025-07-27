@@ -1,14 +1,13 @@
 {
   "name": "canvas-playground",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
-    "features": {
-      "ghcr.io/devcontainers/features/common-utils:1": {},
-      "ghcr.io/joshuanianji/devcontainer-features/mount-pnpm-store:1": {}
-    },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {},
+    "ghcr.io/joshuanianji/devcontainer-features/mount-pnpm-store:1": {}
+  },
   "customizations": {
     "vscode": {
       "extensions": [
-        "biomejs.biome",
         "mikestead.dotenv",
         "dsznajder.es7-react-js-snippets",
         "johnpapa.winteriscoming",
@@ -23,7 +22,9 @@
         "slevesque.shader",
         "mateuszmigas.webgl-shader-viewer",
         "bradlc.vscode-tailwindcss",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
       ]
     }
   },
