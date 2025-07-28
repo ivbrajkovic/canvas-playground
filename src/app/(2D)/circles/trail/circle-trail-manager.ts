@@ -20,20 +20,19 @@ export class CircleTrailManager {
   public radiusMax = 35;
   public trail = 0.1;
 
-  constructor(settings: Settings) {
-    this.setSettings(settings);
+  static of(settings: Settings = {}) {
+    return new CircleTrailManager(settings);
   }
 
-  setSettings = (settings: Settings) => {
+  private constructor(settings: Settings) {
     this.circleCount = settings.circleCount ?? this.circleCount;
     this.speedMin = settings.speedMin ?? this.speedMin;
     this.speedMax = settings.speedMax ?? this.speedMax;
     this.radiusMin = settings.radiusMin ?? this.radiusMin;
     this.radiusMax = settings.radiusMax ?? this.radiusMax;
-    return this;
-  };
+  }
 
-  public populate = (width: number, height: number) => {
+  public initializeCircles = (width: number, height: number) => {
     this._circles = Array.from({ length: this.circleCount }, () => {
       const radius = random(this.radiusMin, this.radiusMax);
       const x = random(radius, width - radius);
@@ -47,7 +46,7 @@ export class CircleTrailManager {
     return this;
   };
 
-  public draw = (
+  public renderCircles = (
     context: CanvasRenderingContext2D,
     width: number,
     height: number,

@@ -11,7 +11,7 @@ import { CanvasController } from '@/controllers/canvas-controller';
 import { MouseController } from '@/controllers/mouse-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-export default function Page() {
+const CircleOutlinePage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isMobile = useIsMobile();
 
@@ -61,4 +61,6 @@ export default function Page() {
   }, [isMobile]);
 
   return <canvas ref={canvasRef} className="absolute left-0 top-0 size-full" />;
-}
+};
+
+export default CircleOutlinePage;

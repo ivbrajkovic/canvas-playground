@@ -2,14 +2,15 @@
 
 import { useEffect, useRef } from 'react';
 
-import { CircleTrailManager } from '@/app/(2D)/circles/trail/circle-trail-manager';
-import { createGuiControls } from '@/app/(2D)/circles/trail/create-gui-controls';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-export default function Page() {
+import { CircleTrailManager } from './circle-trail-manager';
+import { createGuiControls } from './create-gui-controls';
+
+const CircleTrailPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isMobile = useIsMobile();
 
@@ -17,16 +18,18 @@ export default function Page() {
     if (isMobile === undefined) return;
 
     const canvasController = CanvasController.of(canvasRef.current);
-    const fpsTracker = FpsTracker.of(canvasController.canvas.parentElement!);
+    const fpsTracker = FpsTracker.of(canvasController.canvas);
 
-    const circleTrailManager = new CircleTrailManager({
+    const circleTrailManager = CircleTrailManager.of({
       circleCount: isMobile ? 60 : 80,
       radiusMax: isMobile ? 30 : 40,
-    }).populate(canvasController.width, canvasController.height);
+    }).initializeCircles(canvasController.width, canvasController.height);
+
+    canvasController.onResize = circleTrailManager.initializeCircles;
 
     const animationController = AnimationController.of(() => {
       const { width, height, context } = canvasController;
-      circleTrailManager.draw(context, width, height);
+      circleTrailManager.renderCircles(context, width, height);
       fpsTracker.track();
     });
 
@@ -34,8 +37,9 @@ export default function Page() {
       canvasController,
       animationController,
       circleTrailManager,
-      isMobile,
     );
+
+    isMobile ? guiControls.close() : guiControls.open();
 
     return () => {
       animationController.stop();
@@ -45,7 +49,7 @@ export default function Page() {
     };
   }, [isMobile]);
 
-  return (
-    <canvas ref={canvasRef} className="absolute left-0 top-0 size-full bg-black" />
-  );
-}
+  return <canvas ref={canvasRef} className="absolute left-0 top-0 size-full bg-black" />;
+};
+
+export default CircleTrailPage;

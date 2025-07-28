@@ -9,7 +9,7 @@ import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const CircleCollision = () => {
+const CircleCollisionPage = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isMobile = useIsMobile();
 
@@ -55,4 +55,4 @@ const CircleCollision = () => {
   );
 };
 
-export default CircleCollision;
+export default CircleCollisionPage;

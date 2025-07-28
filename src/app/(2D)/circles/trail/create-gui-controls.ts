@@ -6,13 +6,12 @@ export const createGuiControls = (
   canvasController: CanvasController,
   animationController: AnimationController,
   circleTrailManager: CircleTrailManager,
-  isMobile: boolean,
 ) => {
-  const populate = () =>
-    circleTrailManager.populate(canvasController.width, canvasController.height);
+  const initializeCircles = () =>
+    circleTrailManager.initializeCircles(canvasController.width, canvasController.height);
 
   const guiControls = import('dat.gui')
-    .then((dat) => new dat.GUI())
+    .then((dat) => new dat.GUI({ closed: true }))
     .then((gui) => {
       gui.domElement.style.marginTop = '64px';
       gui.domElement.style.marginRight = '0px';
@@ -42,34 +41,32 @@ export const createGuiControls = (
       gui
         .add(circleTrailManager, 'circleCount', 1, 60, 1)
         .name('Count')
-        .onFinishChange(populate);
+        .onFinishChange(initializeCircles);
 
       gui
         .add(circleTrailManager, 'radiusMin', 1, 60, 1)
         .name('Size Min')
-        .onFinishChange(populate);
+        .onFinishChange(initializeCircles);
       gui
         .add(circleTrailManager, 'radiusMax', 1, 70, 1)
         .name('Size Max')
-        .onFinishChange(populate);
+        .onFinishChange(initializeCircles);
 
       gui
         .add(circleTrailManager, 'speedMin', -10, 10, 0.1)
         .name('Speed Min')
-        .onFinishChange(populate);
+        .onFinishChange(initializeCircles);
       gui
         .add(circleTrailManager, 'speedMax', -10, 10, 0.1)
         .name('Speed Max')
-        .onFinishChange(populate);
+        .onFinishChange(initializeCircles);
 
-      return gui;
-    })
-    .then((gui) => {
-      if (isMobile) gui.close();
       return gui;
     });
 
   return {
+    open: () => guiControls.then((gui) => gui.open()),
+    close: () => guiControls.then((gui) => gui.close()),
     dispose: () => guiControls.then((gui) => gui.destroy()),
   };
 };
