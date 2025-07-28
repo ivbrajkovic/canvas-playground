@@ -2,7 +2,7 @@ import { CircleCollisionManager } from '@/app/(2D)/circles/collision/circle-coll
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
 
-export const createGuiControls = (
+export const circleCollisionGuiControls = (
   canvasController: CanvasController,
   animationController: AnimationController,
   circleCollisionManager: CircleCollisionManager,

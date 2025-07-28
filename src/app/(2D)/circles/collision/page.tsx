@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
+import { circleCollisionGuiControls } from '@/app/(2D)/circles/collision/cicrle-collision-gui-controls';
 import { CircleCollisionManager } from '@/app/(2D)/circles/collision/circle-collision-manager';
-import { createGuiControls } from '@/app/(2D)/circles/collision/create-gui-controls';
 import { FpsTracker } from '@/classes/fps-tracker';
 import { AnimationController } from '@/controllers/animation-controller';
 import { CanvasController } from '@/controllers/canvas-controller';
@@ -32,7 +32,7 @@ const CircleCollision = () => {
       fpsTracker.track();
     });
 
-    const guiControls = createGuiControls(
+    const guiControls = circleCollisionGuiControls(
       canvasController,
       animationController,
       circleCollisionManager,
