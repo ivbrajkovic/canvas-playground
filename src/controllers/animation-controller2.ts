@@ -25,10 +25,13 @@ export class AnimationController {
 
   private _tick = (now: number) => {
     if (!this._isRunning) return;
-    if (!this._minDt || now - this._last >= this._minDt) {
+    const deltaTime = now - this._last;
+
+    if (!this._minDt || deltaTime >= this._minDt) {
+      this._callback(deltaTime);
       this._last = now;
-      this._callback(now);
     }
+
     this._id = requestAnimationFrame(this._tick);
   };
 

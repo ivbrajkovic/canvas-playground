@@ -3,19 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { Game } from '@/app/(2D)/games/pacman/classes/game';
-import {
-  GameInfo,
-  type GameInfoHandle,
-} from '@/app/(2D)/games/pacman/components/game-info';
+import { GameInfo, GameInfoHandle } from '@/app/(2D)/games/pacman/components/game-info';
 import { LevaControls } from '@/app/(2D)/games/pacman/components/leva-controls';
 import {
-  DEFAULT_LEVEL,
-  DEFAULT_LIFE,
-  DEFAULT_SCORE,
+  INITIAL_LEVEL,
+  INITIAL_LIFE,
+  INITIAL_SCORE,
   VELOCITY,
   WALL_SIZE,
 } from '@/app/(2D)/games/pacman/constants';
 import { map } from '@/app/(2D)/games/pacman/map';
+import { Direction } from '@/app/(2D)/games/pacman/utils/enum';
 import { FpsTracker } from '@/components/fps-tracker/fps-tracker';
 import { Particles } from '@/components/magicui/particles';
 import { useAnimationController } from '@/hooks/use-animation-controller';
@@ -34,13 +32,46 @@ export default function Pacman() {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const { isCanvasMounted, canvasRefCallback, canvas, context } = useCanvas();
 
-  const animation = useAnimationController(() => {
+  const animation = useAnimationController((deltaTime) => {
     if (!isCanvasMounted) return;
 
+    gameRef.current?.update(deltaTime);
     context.clearRect(0, 0, canvas.width, canvas.height);
     gameRef.current?.renderScene(context);
     fpsTrackerRef.current?.update();
   });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const game = gameRef.current;
+      if (!game) return;
+
+      let direction: Direction | null = null;
+      switch (e.key) {
+        case 'ArrowUp':
+          direction = Direction.Up;
+          break;
+        case 'ArrowDown':
+          direction = Direction.Down;
+          break;
+        case 'ArrowLeft':
+          direction = Direction.Left;
+          break;
+        case 'ArrowRight':
+          direction = Direction.Right;
+          break;
+      }
+
+      if (direction !== null) {
+        game.pacman.setNextDirection(direction);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     if (!isCanvasMounted) return;
@@ -49,9 +80,9 @@ export default function Pacman() {
       map,
       wallSize: WALL_SIZE,
       velocity: VELOCITY,
-      score: DEFAULT_SCORE,
-      pacmanLife: DEFAULT_LIFE,
-      level: DEFAULT_LEVEL,
+      pacmanLife: INITIAL_LIFE,
+      level: INITIAL_LEVEL,
+      score: INITIAL_SCORE,
       handlers: {
         onMapChange: (width, height) => resizeCanvas(canvas, context, width, height),
         onGameWin: () => (animation.stop(), setDialogOpen(true)),
@@ -68,7 +99,7 @@ export default function Pacman() {
 
   const handleResume = () => {
     setDialogOpen(false);
-    gameRef.current?.resetGameState();
+    gameRef.current?.initGame();
     animation.start();
   };
 
@@ -81,13 +112,8 @@ export default function Pacman() {
 
       <div>
         <FpsTracker ref={fpsTrackerRef} />
-        <GameInfo
-          ref={gameInfoRef}
-          initialLife={DEFAULT_LIFE}
-          initialScore={DEFAULT_SCORE}
-          initialLevel={DEFAULT_LEVEL + 1}
-        />
-        <canvas ref={canvasRefCallback} className="" />
+        <GameInfo ref={gameInfoRef} />
+        <canvas ref={canvasRefCallback} />
       </div>
 
       <GameDialog

@@ -49,6 +49,10 @@ export class Game {
   public onMapChange?: (mapWidth: number, mapHeight: number) => void;
   public onEatGhost?: () => void;
 
+  get pacman() {
+    return this._pacman;
+  }
+
   get isGameOver() {
     return this._isGameOver;
   }
@@ -93,8 +97,7 @@ export class Game {
     this.onMapChange = handlers?.onMapChange;
     this.onGameReset = handlers?.onGameReset;
 
-    this._initMap();
-    this._initPlayers();
+    this.initGame();
   }
 
   private _initMap() {
@@ -114,7 +117,6 @@ export class Game {
     this._pacman.onStartMove = () => this._ghosts.forEach((g) => g.startMoving());
     this._pacman.onEatPowerPellet = () => this._ghosts.forEach((g) => g.setScared());
     this._pacman.onEatPellet = () => this._changeScore(1);
-    this._pacman.startKeyDownListener();
   }
 
   private _eatPacman() {
@@ -157,11 +159,16 @@ export class Game {
     }
   };
 
+  public update = (deltaTime: number) => {
+    this._pacman.update(deltaTime);
+    this._ghosts.forEach((ghost) => ghost.update(deltaTime));
+    this._pacmanGhostCollision();
+  };
+
   public renderScene = (context: CanvasRenderingContext2D) => {
     this._wallMap.draw(context);
     this._pacman.render(context);
     this._ghosts.forEach((ghost) => ghost.render(context));
-    this._pacmanGhostCollision();
   };
 
   public nextLevel = (): void => {
@@ -173,7 +180,7 @@ export class Game {
     this.onLevelChange?.(this._currentLevel + 1);
   };
 
-  public resetGameState = (): void => {
+  public initGame = (): void => {
     this._isGameOver = false;
     this._isGameWin = false;
     this._pacmanLife = this._originalPacmanLife;

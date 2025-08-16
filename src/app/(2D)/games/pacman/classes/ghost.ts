@@ -7,11 +7,11 @@ import { Player } from './player';
 import { WallMap } from './wall-map';
 
 const ghostImage = '/images/ghost.png';
-const scaredGhostImage = '/images/scaredGhost.png';
-const scaredGhostImage2 = '/images/scaredGhost2.png';
+const scaredGhostBlueImage = '/images/scaredGhost.png';
+const scaredGhostWhiteImage = '/images/scaredGhost2.png';
 
-const SCARED_ACTIVE_TIME = 4000;
-const SCARED_EXPIRE_TIME = SCARED_ACTIVE_TIME / 2;
+const SCARED_TIME_BLUE = 4000;
+const SCARED_TIME_WHITE = 2000;
 
 const getRandomTimer = () => random(1000, 5000);
 
@@ -20,13 +20,14 @@ export class Ghost extends Player {
   private _isPaused = true;
   private _isVisible = true;
   private _normalGhost: HTMLImageElement | null = null;
-  private _scaredGhost: HTMLImageElement | null = null;
-  private _scaredGhost2: HTMLImageElement | null = null;
+  private _scaredGhostBlue: HTMLImageElement | null = null;
+  private _scaredGhostWhite: HTMLImageElement | null = null;
   private _currentImage: HTMLImageElement | null = null;
   private _direction: Direction;
   private _nextDirection: Direction;
-  private _directionChangeTimer: ReturnType<typeof setTimeout>;
-  private _timers: ReturnType<typeof setTimeout>[] = [];
+  private _scaredTimeBlue = 0;
+  private _scaredTimeWhite = 0;
+  private _directionChangeTimer = 0;
 
   constructor(
     public x: number,
@@ -39,14 +40,14 @@ export class Ghost extends Player {
     super(x, y, size);
     this._normalGhost = new Image();
     this._normalGhost.src = ghostImage;
-    this._scaredGhost = new Image();
-    this._scaredGhost.src = scaredGhostImage;
-    this._scaredGhost2 = new Image();
-    this._scaredGhost2.src = scaredGhostImage2;
+    this._scaredGhostBlue = new Image();
+    this._scaredGhostBlue.src = scaredGhostBlueImage;
+    this._scaredGhostWhite = new Image();
+    this._scaredGhostWhite.src = scaredGhostWhiteImage;
     this._currentImage = this._normalGhost;
     this._direction = getRandomDirection();
     this._nextDirection = this._direction;
-    this._directionChangeTimer = this._resetDirectionChangeTimer();
+    this._directionChangeTimer = getRandomTimer();
   }
 
   get scared() {
@@ -55,25 +56,13 @@ export class Ghost extends Player {
 
   setScared() {
     this._isScared = true;
-    this._currentImage = this._scaredGhost;
-    this._timers.forEach((timer) => clearTimeout(timer));
-    this._timers = [
-      setTimeout(() => {
-        this._isScared = false;
-        this._currentImage = this._normalGhost;
-      }, SCARED_ACTIVE_TIME),
-      setTimeout(() => {
-        this._currentImage = this._scaredGhost2;
-      }, SCARED_EXPIRE_TIME),
-    ];
+    this._currentImage = this._scaredGhostBlue;
+    this._scaredTimeBlue = SCARED_TIME_BLUE;
   }
 
   private _resetDirectionChangeTimer = () => {
-    clearTimeout(this._directionChangeTimer);
-    const ms = getRandomTimer();
-    return (this._directionChangeTimer = setTimeout(() => {
-      this._nextDirection = getRandomDirection();
-    }, ms));
+    this._directionChangeTimer = getRandomTimer();
+    this._nextDirection = getRandomDirection();
   };
 
   private _move = () => {
@@ -106,6 +95,33 @@ export class Ghost extends Player {
     }
   };
 
+  update = (deltaTime: number) => {
+    if (this._isScared && this._scaredTimeBlue) {
+      this._scaredTimeBlue -= deltaTime;
+      if (this._scaredTimeBlue <= 0) {
+        this._currentImage = this._scaredGhostWhite;
+        this._scaredTimeBlue = 0;
+        this._scaredTimeWhite = SCARED_TIME_WHITE;
+      }
+    }
+
+    if (this._isScared && this._scaredTimeWhite) {
+      this._scaredTimeWhite -= deltaTime;
+      if (this._scaredTimeWhite <= 0) {
+        this._scaredTimeWhite = 0;
+        this._currentImage = this._normalGhost;
+        this._isScared = false;
+      }
+    }
+
+    this._directionChangeTimer -= deltaTime;
+    if (this._directionChangeTimer <= 0) {
+      this._resetDirectionChangeTimer();
+    }
+
+    if (!this._isPaused) this._move();
+  };
+
   private _draw(context: CanvasRenderingContext2D) {
     if (!this._isVisible) return;
     if (!this._currentImage) return;
@@ -113,7 +129,6 @@ export class Ghost extends Player {
   }
 
   render = (context: CanvasRenderingContext2D) => {
-    if (!this._isPaused) this._move();
     this._draw(context);
   };
 
@@ -123,15 +138,14 @@ export class Ghost extends Player {
 
   remove = () => {
     this._isVisible = false;
-    this._timers.forEach((timer) => clearTimeout(timer));
   };
 
   public dispose = () => {
     this.remove();
     this.wallMap = null!;
     this._normalGhost = null!;
-    this._scaredGhost = null!;
-    this._scaredGhost2 = null!;
+    this._scaredGhostBlue = null!;
+    this._scaredGhostWhite = null!;
     this._currentImage = null!;
   };
 }

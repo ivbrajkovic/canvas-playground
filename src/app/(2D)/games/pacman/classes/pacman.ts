@@ -57,29 +57,18 @@ export class Pacman extends Player {
     this._radius = this.rectSize / 2;
   }
 
-  private _keyDownHandler = ({ key }: KeyboardEvent) => {
+  public setNextDirection = (direction: Direction) => {
     if (this._direction === null) this.onStartMove?.();
-    switch (key) {
-      case 'ArrowUp':
-        if (this._direction === Direction.Down) this._direction = Direction.Up;
-        this._nextDirection = Direction.Up;
-        break;
 
-      case 'ArrowDown':
-        if (this._direction === Direction.Up) this._direction = Direction.Down;
-        this._nextDirection = Direction.Down;
-        break;
-
-      case 'ArrowLeft':
-        if (this._direction === Direction.Right) this._direction = Direction.Left;
-        this._nextDirection = Direction.Left;
-        break;
-
-      case 'ArrowRight':
-        if (this._direction === Direction.Left) this._direction = Direction.Right;
-        this._nextDirection = Direction.Right;
-        break;
+    if (
+      (direction === Direction.Up && this._direction === Direction.Down) ||
+      (direction === Direction.Down && this._direction === Direction.Up) ||
+      (direction === Direction.Left && this._direction === Direction.Right) ||
+      (direction === Direction.Right && this._direction === Direction.Left)
+    ) {
+      this._direction = direction;
     }
+    this._nextDirection = direction;
   };
 
   private _updatePosition = () => {
@@ -133,8 +122,8 @@ export class Pacman extends Player {
       this._mouthAngle <= 0
         ? true
         : this._mouthAngle >= 0.8
-          ? false
-          : this._isOpeningMouth;
+        ? false
+        : this._isOpeningMouth;
   };
 
   private _eatPellet = () => {
@@ -162,10 +151,13 @@ export class Pacman extends Player {
     context.restore();
   };
 
-  public render = (context: CanvasRenderingContext2D) => {
+  public update = (_deltaTime: number) => {
     this._updatePosition();
     this._updateMouthMovement();
     this._eatPellet();
+  };
+
+  public render = (context: CanvasRenderingContext2D) => {
     this._draw(context);
   };
 
@@ -175,15 +167,6 @@ export class Pacman extends Player {
     return (
       rect.x < x && rect.x + rect.width > x && rect.y < y && rect.y + rect.height > y
     );
-  };
-
-  public startKeyDownListener = () => {
-    document.removeEventListener('keydown', this._keyDownHandler);
-    document.addEventListener('keydown', this._keyDownHandler);
-  };
-
-  public removeKeyDownListener = () => {
-    document.removeEventListener('keydown', this._keyDownHandler);
   };
 
   public reset = () => {
@@ -205,7 +188,6 @@ export class Pacman extends Player {
   };
 
   public dispose = () => {
-    this.removeKeyDownListener();
     this._wallMap = null!;
   };
 }
