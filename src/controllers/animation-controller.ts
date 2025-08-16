@@ -60,6 +60,7 @@ export class AnimationController {
   };
 
   start = () => {
+    this._isRunning && this.stop();
     this._isRunning = true;
     this._requestId = requestAnimationFrame(this.loop);
   };
@@ -69,5 +70,12 @@ export class AnimationController {
     if (!this._requestId) return;
     cancelAnimationFrame(this._requestId);
     this._requestId = null;
+  };
+
+  dispose = () => {
+    console.log('AnimationController disposed');
+
+    this.stop();
+    this._frameCallback = null;
   };
 }

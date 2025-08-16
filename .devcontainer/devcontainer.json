@@ -24,7 +24,12 @@
         "bradlc.vscode-tailwindcss",
         "eamodio.gitlens",
         "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "ms-azuretools.vscode-containers",
+        "heybourn.headwind",
+        "bradgashler.htmltagwrap",
+        "chrisdias.promptboost",
+        "meganrogge.template-string-converter"
       ]
     }
   },

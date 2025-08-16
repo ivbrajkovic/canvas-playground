@@ -1,7 +1,8 @@
-import { createFpsTracker } from '@/utils/create-fps-tracker';
+import { createFpsTracker } from '@/components/fps-tracker/create-fps-tracker';
 
 export class FpsTracker {
   private element: HTMLSpanElement;
+  public track: (() => void) | null;
   public static of = (targetEl: HTMLElement) => new FpsTracker(targetEl);
 
   private constructor(targetEl: HTMLElement) {
@@ -17,12 +18,14 @@ export class FpsTracker {
     element.innerText = 'FPS: 0';
 
     this.element = element;
+    this.track = createFpsTracker(this.updateFps);
     targetEl.appendChild(this.element);
   }
 
   private updateFps = (fps: number) => (this.element.textContent = `FPS: ${fps}`);
 
-  public track = createFpsTracker(this.updateFps);
-
-  public dispose = () => this.element.remove();
+  public dispose = () => {
+    this.track = null;
+    this.element.remove();
+  };
 }

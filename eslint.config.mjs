@@ -1,18 +1,14 @@
 import { FlatCompat } from '@eslint/eslintrc';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  // import.meta.dirname is available after Node.js v20.11.0
+  baseDirectory: import.meta.dirname,
 });
 
 const eslintConfig = [
   ...compat.config({
     plugins: ['simple-import-sort', 'import'],
-    extends: ['next/core-web-vitals', 'next/typescript', 'prettier'],
+    extends: ['next/core-web-vitals', 'next/typescript'],
     rules: {
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
@@ -22,12 +18,7 @@ const eslintConfig = [
           // The default grouping, but with type imports first as a separate
           // group, sorting that group like non-type imports are grouped.
           groups: [
-            [
-              '^node:.*\\u0000$',
-              '^@?\\w.*\\u0000$',
-              '^[^.].*\\u0000$',
-              '^\\..*\\u0000$',
-            ],
+            ['^node:.*\\u0000$', '^@?\\w.*\\u0000$', '^[^.].*\\u0000$', '^\\..*\\u0000$'],
             ['^\\u0000'],
             ['^node:'],
             ['^@?\\w'],

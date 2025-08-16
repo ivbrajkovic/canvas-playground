@@ -20,7 +20,7 @@ type GameProps = {
     onPacmanLifeChange?: (life: number) => void;
     onScoreChange?: (score: number) => void;
     onLevelChange?: (level: number) => void;
-    onMapChange?: (width: number, height: number) => void;
+    onMapChange?: (mapWidth: number, mapHeight: number) => void;
   };
 };
 
@@ -46,7 +46,7 @@ export class Game {
   public onLevelChange?: (level: number) => void;
   public onGameWin?: () => void;
   public onGameReset?: () => void;
-  public onMapChange?: (width: number, height: number) => void;
+  public onMapChange?: (mapWidth: number, mapHeight: number) => void;
   public onEatGhost?: () => void;
 
   get isGameOver() {
@@ -55,6 +55,14 @@ export class Game {
 
   get IsGameWin() {
     return this._isGameWin;
+  }
+
+  get width() {
+    return this._wallMap.width;
+  }
+
+  get height() {
+    return this._wallMap.height;
   }
 
   constructor({
@@ -119,7 +127,7 @@ export class Game {
       this._pacman.reset();
     } else {
       this._isGameOver = true;
-      this._gameOverSound.play();
+      this._gameOverSound.play().catch(() => {});
       this.onGameOver?.();
     }
   }
@@ -127,7 +135,7 @@ export class Game {
   private _eatGhost(ghostIndex: number) {
     this._ghosts[ghostIndex].remove();
     this._ghosts.splice(ghostIndex, 1);
-    this._eatGhostSound.play();
+    this._eatGhostSound.play().catch(() => {});
     this._changeScore(10);
   }
 
@@ -142,7 +150,7 @@ export class Game {
     const isLastLevel = this._currentLevel === this._maps.length - 1;
     if (isLastLevel) {
       this._isGameWin = true;
-      this._gameWinSound.play();
+      this._gameWinSound.play().catch(() => {});
       this.onGameWin?.();
     } else {
       this.nextLevel();
@@ -156,15 +164,16 @@ export class Game {
     this._pacmanGhostCollision();
   };
 
-  public nextLevel = () => {
+  public nextLevel = (): void => {
     if (this._currentLevel === this._maps.length - 1) this._currentLevel = 0;
     else this._currentLevel++;
     this._initMap();
     this._initPlayers();
-    this.onLevelChange?.(this._currentLevel);
+    // Emit human-friendly level (1-based)
+    this.onLevelChange?.(this._currentLevel + 1);
   };
 
-  public resetGameState = () => {
+  public resetGameState = (): void => {
     this._isGameOver = false;
     this._isGameWin = false;
     this._pacmanLife = this._originalPacmanLife;
@@ -172,13 +181,24 @@ export class Game {
     this._currentLevel = 0;
     this._initMap();
     this._initPlayers();
+    // Emit initial HUD values (score 0, full life, level 1)
     this.onScoreChange?.(this._score);
     this.onPacmanLifeChange?.(this._pacmanLife);
+    this.onLevelChange?.(this._currentLevel + 1);
   };
 
   public dispose = () => {
     this._pacman.dispose();
     this._ghosts.forEach((ghost) => ghost.dispose());
     this._wallMap.dispose();
+
+    this.onGameOver = undefined;
+    this.onPacmanLifeChange = undefined;
+    this.onScoreChange = undefined;
+    this.onLevelChange = undefined;
+    this.onGameWin = undefined;
+    this.onGameReset = undefined;
+    this.onMapChange = undefined;
+    this.onEatGhost = undefined;
   };
 }

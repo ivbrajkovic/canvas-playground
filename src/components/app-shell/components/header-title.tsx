@@ -14,12 +14,12 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 
-export const HeaderTitle = () => {
+export const HeaderTitle = (props: React.ComponentProps<'nav'>) => {
   const pathName = usePathname();
   const pathNames = pathName.split('/').filter((path) => path !== '');
 
   return (
-    <Breadcrumb>
+    <Breadcrumb {...props}>
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -51,5 +51,3 @@ export const HeaderTitle = () => {
     </Breadcrumb>
   );
 };
-
-// return <div>{urlToTitleMap.get(pathName)}</div>;
